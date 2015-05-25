@@ -63,6 +63,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		border: 1px solid #D0D0D0;
 		box-shadow: 0 0 8px #D0D0D0;
 	}
+
 	</style>
 </head>
 <body>
@@ -80,6 +81,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<code>application/controllers/Welcome.php</code>
 
 		<p>If you are exploring CodeIgniter for the very first time, you should start by reading the <a href="user_guide/">User Guide</a>.</p>
+			<span class="imgval" style="width:5px;">
+				<div class="imgtxt" style="margin-left:-16px;"></div>
+			</span>
+			<span class="imgval" style="width:27px;">
+				<div class="imgtxt" style="margin-left:-61px;"></div>
+			</span>
+			<span class="imgval" style=\"width:6px;">
+				<div class="imgtxt" style="margin-left:-128px;"></div>
+			</span>
+			<span class="imgval" style="width:2px;">
+				<div class="imgtxt" style="margin-left:-190px;"></div>
+			</span>
 	</div>
 
 	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
