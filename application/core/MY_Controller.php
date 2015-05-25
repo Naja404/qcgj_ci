@@ -23,7 +23,6 @@ class WebBase extends MY_Controller {
 			);
 
 		$this->load->model('WebBaseModel');
-		$this->load->helper('url');
 
 		$this->sideBar = $this->setSideBar();
 	}

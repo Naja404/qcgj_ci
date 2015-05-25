@@ -19,6 +19,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $config['base_url'] = 'http://ci.qcgj.com/';
 $config['html_url'] = $config['base_url'].'html/';
+$config['db_prefix'] = 'tb_';
 
 /*
 |--------------------------------------------------------------------------

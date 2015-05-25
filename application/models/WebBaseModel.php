@@ -20,9 +20,9 @@ class WebBaseModel extends CI_Model {
 					c.module_title, 
 					c.action_title, 
 					c.action_url 
-					FROM qcgj_role_user AS a 
-					LEFT JOIN qcgj_role AS b ON b.role_id = a.role_id
-					LEFT JOIN qcgj_role_rule AS c ON FIND_IN_SET(c.id, b.rule)
+					FROM ".tname('qcgj_role_user')." AS a 
+					LEFT JOIN ".tname('qcgj_role')." AS b ON b.role_id = a.role_id
+					LEFT JOIN ".tname('qcgj_role_rule')." AS c ON FIND_IN_SET(c.id, b.rule)
 					WHERE a.user_id = '".$userID."' 
 						AND c.type = 1 
 						AND c.status = 1 

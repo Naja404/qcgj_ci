@@ -226,7 +226,7 @@
 
 						<li class="light-blue">
 							<a data-toggle="dropdown" href="#" class="dropdown-toggle">
-								<img class="nav-user-photo" src="{:C('WEB_HTML_PATH')}avatars/user.jpg" alt="Jason's Photo" />
+								<img class="nav-user-photo" src="<?php echo config_item('base_url');?>html/avatars/user.jpg" alt="Jason's Photo" />
 								<span class="user-info">
 									<small>Welcome,</small>
 									Jason

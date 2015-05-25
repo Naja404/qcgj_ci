@@ -103,17 +103,17 @@
 														</td>
 
 														<td>
-															<a href="#">{{$v->userName}}</a>
+															<a href="#"><?php echo $v->name;?></a>
 														</td>
-														<td>{{$v->roleName}}</td>
-														<td class="hidden-480">{{date('Y-m-d H:i:s', $v->created_time)}}</td>
+														<td><?php echo $v->role_name;?></td>
+														<td class="hidden-480"><?php echo date('Y-m-d H:i:s', $v->created_time);?></td>
 
 														<td class="hidden-480">
-															@if ($v->status == 1)
+															<?php if ($v->status == 1){?>
 																<span class="label label-error"><?php echo $this->lang->line('TEXT_STATUS_NORMAL');?></span>
-															@else
+															<?php }else{ ?>
 																<span class="label label-success"><?php echo $this->lang->line('TEXT_STATUS_STOP');?></span>
-															@endif
+															<?php }?>
 															
 														</td>
 
@@ -175,7 +175,7 @@
 												</tbody>
 											</table>
 										</div><!-- /.table-responsive -->
-										<?php echo $roleList->render();?>
+										<?php echo $pagination;?>
 									</div><!-- /span -->
 								</div>
 							</div><!-- /.col -->
@@ -186,14 +186,13 @@
 						<div id="modal-addrole" class="modal fade" tabindex="-1">
 							<div class="modal-dialog">
 								<form id="addrole_form" >
-								<input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
 								<div class="modal-content">
 									<div class="modal-header no-padding">
 										<div class="table-header">
 											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
 												<span class="white">&times;</span>
 											</button>
-											{{trans('role.TEXT_ROLE_ADD')}}
+											<?php echo $this->lang->line('TEXT_ROLE_ADD');?>
 										</div>
 									</div>
 
@@ -202,7 +201,7 @@
 											<tbody>
 												<tr>
 													<td>
-														{{trans('role.TEXT_ROLE_NAME')}}
+														<?php echo $this->lang->line('TEXT_ROLE_NAME');?>
 													</td>
 													<td>
 														<input type="text" name="role_name" />
@@ -211,7 +210,7 @@
 
 												<tr>
 													<td>
-														{{trans('role.TEXT_ROLE_RULE')}}
+														<?php echo $this->lang->line('TEXT_ROLE_RULE');?>
 													</td>
 													
 													<td>
@@ -258,7 +257,7 @@
 											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
 												<span class="white">&times;</span>
 											</button>
-											{{trans('role.TEXT_ROLE_RULE_ADD')}}
+											<?php echo $this->lang->line('TEXT_ROLE_RULE_ADD');?>
 										</div>
 									</div>
 
@@ -268,54 +267,54 @@
 											<tbody>
 												<tr>
 													<td>
-														{{trans('role.TEXT_RULE_MODULE')}}
+														<?php echo $this->lang->line('TEXT_RULE_MODULE');?>
 													</td>
 													<td>
-														<input type="text" name="module" placeholder="{{trans('role.TEXT_PLACEHOLDER_RULE_MODULE')}}"/>
-													</td>
-												</tr>
-												<tr>
-													<td>
-														{{trans('role.TEXT_RULE_MODULE_TITLE')}}
-													</td>
-													<td>
-														<input type="text" name="module_title" placeholder="{{trans('role.TEXT_PLACEHOLDER_RULE_MODULE_TITLE')}}"/>
+														<input type="text" name="module" placeholder="<?php echo $this->lang->line('TEXT_PLACEHOLDER_RULE_MODULE');?>"/>
 													</td>
 												</tr>
 												<tr>
 													<td>
-														{{trans('role.TEXT_RULE_ACTION_TITLE')}}
+														<?php echo $this->lang->line('TEXT_RULE_MODULE_TITLE');?>
 													</td>
 													<td>
-														<input type="text" name="action_title" placeholder="{{trans('role.TEXT_PLACEHOLDER_RULE_ACTION_TITLE')}}"/>
-													</td>
-												</tr>
-												<tr>
-													<td>
-														{{trans('role.TEXT_RULE_ACTION_URL')}}
-													</td>
-													<td>
-														<input type="text" name="action_url" placeholder="{{trans('role.TEXT_PLACEHOLDER_RULE_ACTION_URL')}}"/>
+														<input type="text" name="module_title" placeholder="<?php echo $this->lang->line('TEXT_PLACEHOLDER_RULE_MODULE_TITLE');?>"/>
 													</td>
 												</tr>
 												<tr>
 													<td>
-														{{trans('role.TEXT_RULE_SORT')}}
+														<?php echo $this->lang->line('TEXT_RULE_ACTION_TITLE');?>
 													</td>
 													<td>
-														<input type="text" name="sort" placeholder="{{trans('role.TEXT_PLACEHOLDER_RULE_SORT')}}"/>
+														<input type="text" name="action_title" placeholder="<?php echo $this->lang->line('TEXT_PLACEHOLDER_RULE_ACTION_TITLE');?>"/>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<?php echo $this->lang->line('TEXT_RULE_ACTION_URL');?>
+													</td>
+													<td>
+														<input type="text" name="action_url" placeholder="<?php echo $this->lang->line('TEXT_PLACEHOLDER_RULE_ACTION_URL');?>"/>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<?php echo $this->lang->line('TEXT_RULE_SORT');?>
+													</td>
+													<td>
+														<input type="text" name="sort" placeholder="<?php echo $this->lang->line('TEXT_PLACEHOLDER_RULE_SORT');?>"/>
 													</td>
 												</tr>
 
 												<tr>
 													<td>
-														{{trans('role.TEXT_RULE_TYPE')}}
+														<?php echo $this->lang->line('TEXT_RULE_TYPE');?>
 													</td>
 													<td>
 														<select name="type">
-															<option value="1">{{trans('role.TEXT_RULE_TYPE_1')}}</option>
-															<option value="2">{{trans('role.TEXT_RULE_TYPE_2')}}</option>
-														</select>{{trans('role.TEXT_RULE_TYPE_NOTE')}}
+															<option value="1"><?php echo $this->lang->line('TEXT_RULE_TYPE_1');?></option>
+															<option value="2"><?php echo $this->lang->line('TEXT_RULE_TYPE_2');?></option>
+														</select><?php echo $this->lang->line('TEXT_RULE_TYPE_NOTE');?>
 													</td>
 												</tr>
 
@@ -327,15 +326,15 @@
 									<div class="modal-footer no-margin-top">
 										<button class="btn btn-sm btn-danger pull-left" data-dismiss="modal" id="addrule_dismiss">
 											<i class="icon-remove"></i>
-											{{trans('basic.BTN_CLOSE')}}
+											<?php echo $this->lang->line('BTN_CLOSE');?>
 										</button>
 
 										<button class="btn pull-right" onclick="subAddRuleForm();return false;">
-											{{trans('basic.BTN_SUBMIT')}}
+											<?php echo $this->lang->line('BTN_SUBMIT');?>
 										</button>
 
 										<button class="btn btn-info pull-right" type="reset">
-											{{trans('basic.BTN_RESET')}}
+											<?php echo $this->lang->line('BTN_RESET');?>
 										</button>
 
 									</div>

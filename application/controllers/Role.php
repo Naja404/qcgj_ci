@@ -13,7 +13,8 @@ class Role extends WebBase {
 	}
 
 	public function rolelist(){
-
+		$this->data['roleList'] = $this->RoleModel->getRoleList();
+		$this->data['pagination'] = $this->RoleModel->setPagination();
 		$this->load->view('Role/rolelist', $this->data);
 	}
 
