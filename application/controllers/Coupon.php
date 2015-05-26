@@ -17,6 +17,19 @@ class Coupon extends WebBase {
 	 *
 	 */
 	public function addCoupon(){
+
+		if ($this->input->is_ajax_request()) {
+
+			$test = $this->form_validation->set_rules($this->lang->line('ADD_COUPON_VALIDATION'));
+			if ($this->form_validation->run()) {
+
+			}
+			validation_errors();
+			
+			print_r(validation_errors());exit;
+			jsonReturn($this->ajaxRes);
+		}
+
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ADDCOUPON');
 		$this->load->view('Coupon/addCoupon', $this->outData);
 	}

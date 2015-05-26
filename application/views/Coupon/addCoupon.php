@@ -79,22 +79,17 @@
 														<ul class="wizard-steps">
 															<li data-target="#step1" class="active">
 																<span class="step">1</span>
-																<span class="title">Validation states</span>
+																<span class="title"><?php echo $this->lang->line('TEXT_COUPON_FORM_STEP_1');?></span>
 															</li>
 
 															<li data-target="#step2">
 																<span class="step">2</span>
-																<span class="title">Alerts</span>
+																<span class="title"><?php echo $this->lang->line('TEXT_COUPON_FORM_STEP_2');?></span>
 															</li>
 
 															<li data-target="#step3">
 																<span class="step">3</span>
-																<span class="title">Payment Info</span>
-															</li>
-
-															<li data-target="#step4">
-																<span class="step">4</span>
-																<span class="title">Other Info</span>
+																<span class="title"><?php echo $this->lang->line('TEXT_COUPON_FORM_STEP_3');?></span>
 															</li>
 														</ul>
 													</div>
@@ -109,7 +104,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<input type="text" name="couponTitle" id="couponTitle" class="col-xs-12 col-sm-6" />
+																			<input type="text" name="couponTitle" id="couponTitle" class="col-xs-12 col-sm-6" maxlength="40" placeholder="<?php echo $this->lang->line('TEXT_COUPON_TITLE_PLACEHOLDER');?>"/>
 																		</div>
 																	</div>
 																</div>
@@ -195,14 +190,14 @@
 																<div class="hr hr-dotted"></div>
 
 																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="name"><?php echo $this->lang->line('TEXT_COUPON_EXPIRE');?>:</label>
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponExpireDate"><?php echo $this->lang->line('TEXT_COUPON_EXPIRE');?>:</label>
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="input-group">
 																			<span class="input-group-addon">
 																				<i class="icon-calendar bigger-110"></i>
 																			</span>
 
-																			<input type="text" name="date-range-picker" id="id-date-range-picker-1" />
+																			<input type="text" name="couponExpireDate" id="couponExpireDate" class="col-xs-6 col-sm-3"/>
 																		</div>
 																	</div>
 																</div>
@@ -210,15 +205,14 @@
 																<div class="space-2"></div>
 
 																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="phone">Phone Number:</label>
-
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponReceiveDate"><?php echo $this->lang->line('TEXT_COUPON_RECEIVE');?>:</label>
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="input-group">
 																			<span class="input-group-addon">
-																				<i class="icon-phone"></i>
+																				<i class="icon-calendar bigger-110"></i>
 																			</span>
 
-																			<input type="tel" id="phone" name="phone" />
+																			<input type="text" name="couponReceiveDate" id="couponReceiveDate" class="col-xs-6 col-sm-3"/>
 																		</div>
 																	</div>
 																</div>
@@ -226,11 +220,28 @@
 																<div class="space-2"></div>
 
 																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="url">Company URL:</label>
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponUseTime"><?php echo $this->lang->line('TEXT_COUPON_USE_TIME');?>:</label>
 
-																	<div class="col-xs-12 col-sm-9">
-																		<div class="clearfix">
-																			<input type="url" id="url" name="url" class="col-xs-12 col-sm-8" />
+																	<div class="col-xs-12 col-sm-8">
+																		<div class="row">
+																			<div class="col-xs-6">
+																			<div class="input-group bootstrap-timepicker">
+																				<span class="input-group-addon">
+																					<i class="icon-time bigger-110"></i>
+																				</span>
+																				<input id="couponUseTimeStart" type="text" name="couponUseTimeStart" class="col-xs-6 col-sm-3" />
+																			</div>
+																			</div>
+
+																			<div class="col-xs-6">
+																				<div class="input-group bootstrap-timepicker">
+																					<span class="input-group-addon">
+																						<i class="icon-time bigger-110"></i>
+																					</span>
+																					<input id="couponUseTimeEnd" type="text" name="couponUseTimeEnd" class="col-xs-6 col-sm-3" />
+																				</div>
+																			</div>
+
 																		</div>
 																	</div>
 																</div>
@@ -238,90 +249,53 @@
 																<div class="hr hr-dotted"></div>
 
 																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right">Subscribe to</label>
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponUseGuide"><?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
-																		<div>
-																			<label>
-																				<input name="subscription" value="1" type="checkbox" class="ace" />
-																				<span class="lbl"> Latest news and announcements</span>
-																			</label>
-																		</div>
-
-																		<div>
-																			<label>
-																				<input name="subscription" value="2" type="checkbox" class="ace" />
-																				<span class="lbl"> Product offers and discounts</span>
-																			</label>
+																		<div class="clearfix">
+																			<textarea class="input-xlarge" name="couponUseGuide" id="couponUseGuide" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"></textarea>
 																		</div>
 																	</div>
 																</div>
 
-																<div class="space-2"></div>
-
 																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right">Gender</label>
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponNotice"><?php echo $this->lang->line('TEXT_COUPON_NOTICE');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
-																		<div>
-																			<label class="blue">
-																				<input name="gender" value="1" type="radio" class="ace" />
-																				<span class="lbl"> Male</span>
-																			</label>
+																		<div class="clearfix">
+																			<textarea class="input-xlarge" name="couponNotice" id="couponNotice" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"></textarea>
 																		</div>
+																	</div>
+																</div>
 
-																		<div>
-																			<label class="blue">
-																				<input name="gender" value="2" type="radio" class="ace" />
-																				<span class="lbl"> Female</span>
-																			</label>
+																<div class="form-group">
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponVerification"><?php echo $this->lang->line('TEXT_COUPON_VERIFICATION');?>:</label>
+
+																	<div class="col-xs-12 col-sm-9">
+																		<div class="clearfix">
+																			<textarea class="input-xlarge" name="couponVerification" id="couponVerification" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"></textarea>
 																		</div>
 																	</div>
 																</div>
 
 																<div class="hr hr-dotted"></div>
 
-																<div class="space-2"></div>
-
 																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="platform">Platform</label>
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_CODE_TYPE');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
-																		<div class="clearfix">
-																			<select class="input-medium" id="platform" name="platform">
-																				<option value="">------------------</option>
-																				<option value="linux">Linux</option>
-																				<option value="windows">Windows</option>
-																				<option value="mac">Mac OS</option>
-																				<option value="ios">iOS</option>
-																				<option value="android">Android</option>
-																			</select>
-																		</div>
-																	</div>
-																</div>
-
-																<div class="space-2"></div>
-
-																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="comment">Comment</label>
-
-																	<div class="col-xs-12 col-sm-9">
-																		<div class="clearfix">
-																			<textarea class="input-xlarge" name="comment" id="comment"></textarea>
+																		<div>
+																			<label>
+																				<input name="couponAutoCode" value="1" type="checkbox" class="ace" id="couponAutoCode"/>
+																				<span class="lbl" for="couponAutoCode"><?php echo $this->lang->line('TEXT_COUPON_AUTO_CODE');?></span>
+																			</label>
 																		</div>
 																	</div>
 																</div>
 
 																<div class="space-8"></div>
-
-																<div class="form-group">
-																	<div class="col-xs-12 col-sm-4 col-sm-offset-3">
-																		<label>
-																			<input name="agree" id="agree" type="checkbox" class="ace" />
-																			<span class="lbl"> I accept the policy</span>
-																		</label>
-																	</div>
-																</div>
+																<button class="btn pull-right" onclick="subAddCouponForm();return false;">
+											提交										</button>
 															</form>
 														</div>
 
@@ -462,6 +436,7 @@
 		<script src="<?php echo config_item('html_url');?>js/date-time/bootstrap-timepicker.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/date-time/moment.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/date-time/daterangepicker.min.js"></script>
+		<script src="<?php echo config_item('html_url');?>js/jquery.inputlimiter.1.3.1.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/fuelux/fuelux.wizard.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/jquery.validate.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/additional-methods.min.js"></script>
@@ -492,8 +467,33 @@
 				});
 
 				// 日期选择
-				$('input[name=date-range-picker]').daterangepicker().prev().on(ace.click_event, function(){
+				$('input[name=couponExpireDate]').daterangepicker().prev().on(ace.click_event, function(){
 					$(this).next().focus();
+				});
+				$('input[name=couponReceiveDate]').daterangepicker().prev().on(ace.click_event, function(){
+					$(this).next().focus();
+				});
+				
+				$('#couponUseTimeStart').timepicker({
+					minuteStep: 1,
+					showSeconds: true,
+					showMeridian: false
+				}).next().on(ace.click_event, function(){
+					$(this).prev().focus();
+				});
+
+				$('#couponUseTimeEnd').timepicker({
+					minuteStep: 1,
+					showSeconds: true,
+					showMeridian: false
+				}).next().on(ace.click_event, function(){
+					$(this).prev().focus();
+				});
+
+				// 字数限制
+				$('#couponTitle').inputlimiter({
+					remText: '<?php echo $this->lang->line("TEXT_COUPON_TITLE_LENGTH")?>',
+					limitText: '<?php echo $this->lang->line("TEXT_COUPON_TITLE_LENGTH_MAX")?>'
 				});
 
 				$('[data-rel=tooltip]').tooltip();
@@ -644,6 +644,21 @@
 				$('#modal-wizard .modal-header').ace_wizard();
 				$('#modal-wizard .wizard-actions .btn[data-dismiss=modal]').removeAttr('disabled');
 			})
+
+			function subAddCouponForm(){
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Coupon/addCoupon');?>",
+					data:$('#validation-form').serialize(),
+					success:function(data){
+						if (data.status) {
+							alert(data.msg);
+						}else{
+							$('#validation-form').reset();
+						}
+					}
+				});
+			}
 		</script>
 	</body>
 </html>

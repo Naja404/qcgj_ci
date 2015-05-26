@@ -95,6 +95,9 @@ class CI_Lang {
 			}
 
 			return;
+		}else{
+			// 添加返回 2015-5-26
+			return;
 		}
 
 		$langfile = str_replace('.php', '', $langfile);

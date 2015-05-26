@@ -145,4 +145,13 @@ function errLog($arr = array(), $path = false){
 	Think\Log::write(var_export($arr, true), $level, '', $path);
 }
 
+/**
+ * json输出
+ * @param $data 输出数据内容
+ * @return json
+ */
+function jsonReturn($data = array()){
+	header('Content-Type:application/json; charset=utf-8');
+	exit(json_encode($data));
+}
 ?>
