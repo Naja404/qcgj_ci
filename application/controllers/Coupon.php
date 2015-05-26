@@ -21,12 +21,11 @@ class Coupon extends WebBase {
 		if ($this->input->is_ajax_request()) {
 
 			$test = $this->form_validation->set_rules($this->lang->line('ADD_COUPON_VALIDATION'));
-			if ($this->form_validation->run()) {
 
+			if (!$this->form_validation->run()) {
+				print_r(validation_errors());exit('===');
 			}
-			validation_errors();
-			
-			print_r(validation_errors());exit;
+
 			jsonReturn($this->ajaxRes);
 		}
 

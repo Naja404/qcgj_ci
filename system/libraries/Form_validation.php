@@ -649,7 +649,8 @@ class CI_Form_validation {
 					// DEPRECATED support for non-prefixed keys
 					&& FALSE === ($line = $this->CI->lang->line($type, FALSE)))
 				{
-					$line = 'The field was not set';
+					// $line = 'The field was not set';
+					$line = $this->CI->lang->line($row['label']);
 				}
 
 				// Build the error message

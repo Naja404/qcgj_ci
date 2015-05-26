@@ -49,32 +49,32 @@ $lang = array(
 		'ADD_COUPON_VALIDATION' => array(
 				array(
 					'field' => 'couponTitle',
-					'label' => 'couponTitle',
-					'rules' => 'required|max_length[1]',
+					'label' => '优惠券标题错误',
+					'rules' => 'required',
 					),
 				array(
 					'field' => 'couponType',
 					'label' => '优惠券类型错误',
-					'rules' => 'required|valid_email',
+					'rules' => 'required',
 					),
 				array(
 					'field' => 'couponeMoney',
-					'label' => '',
+					'label' => '请选择优惠券金额',
 					'rules' => 'required',
 					),
 				array(
 					'field' => 'couponeMoneyNum',
-					'label' => '',
+					'label' => '请设置金额',
 					'rules' => 'required',
 					),
 				array(
 					'field' => 'couponExpireDate',
-					'label' => '',
+					'label' => '请设置有效期',
 					'rules' => 'required',
 					),
 				array(
 					'field' => 'couponReceiveDate',
-					'label' => '',
+					'label' => '请设置领取期',
 					'rules' => 'required',
 					),
 			),
