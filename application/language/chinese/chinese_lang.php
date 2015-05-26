@@ -10,6 +10,8 @@ $lang = array(
 		'TEXT_STATUS_NORMAL' => '正常',
 		'TEXT_STATUS_STOP'   => '停用',
 		
+		'BTN_PREV'            => '上一步',
+		'BTN_NEXT'           => '下一步',
 		'BTN_SUBMIT'         => '提交',
 		'BTN_RESET'          => '重置',
 		'BTN_CLOSE'          => '关闭',

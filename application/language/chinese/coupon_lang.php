@@ -3,6 +3,7 @@
 $lang = array(
 		'TEXT_COUPON_MANAGER'        => '优惠券管理',
 		'TEXT_COUPON_LIST'           => '优惠券列表',
+		'TEXT_COUPON_ADDCOUPON'      => '优惠券添加',
 		'TEXT_COUPON_NAME'           => '优惠券名',
 		'TEXT_COUPON_CODE'           => '券码',
 		'TEXT_COUPON_SHOPCOUNT'      => '参加门店数',
@@ -16,4 +17,21 @@ $lang = array(
 		'TEXT_COUPON_STATUS_2'       => '上架/置顶',
 		'TEXT_COUPON_TITLE_LISTVIEW' => '优惠券列表',
 		'TEXT_COUPON_TITLE_ANALYSIS' => '优惠券报表',
+		'TEXT_TITLE_ADDCOUPON'       => '优惠券添加',
+		
+		
+		'TEXT_COUPON_TITLE'          => '优惠券标题',
+		'TEXT_COUPON_TYPE'           => '优惠券类型',
+		'TEXT_COUPON_MONEY'          => '优惠券金额',
+		'TEXT_COUPON_SUM'        => '优惠券总数',
+		'TEXT_COUPON_EVERYONE_SUM'   => '每人领取上限',
+		'TEXT_COUPON_EXPIRE'         => '有效期',
+		'TEXT_COUPON_RECEIVE'        => '领取期',
+		'TEXT_COUPON_USE_TIME'       => '使用时间',
+		'TEXT_COUPON_USE_GUIDE'      => '使用说明',
+		'TEXT_COUPON_VOUCHERS'       => '代金券',
+		'TEXT_COUPON_DISCOUNT'       => '折扣券',
+		'TEXT_COUPON_DELIVERY'       => '提货券',
+		'TEXT_COUPON_FREE'           => '免费',
+		'TEXT_COUPON_TOLL'           => '收费 - 金额',
 		);

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR xit('No direct script access allowed');
 
-class Role extends WebBase {
+class Coupon extends WebBase {
 	//  视图输出内容
 	public $outData;
 
@@ -10,6 +10,15 @@ class Role extends WebBase {
 		
 		$this->load->model('RoleModel');
 		$this->outData['currentModule'] = __CLASS__;
+	}
+
+	/**
+	 * 新建优惠券
+	 *
+	 */
+	public function addCoupon(){
+		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ADDCOUPON');
+		$this->load->view('Coupon/addCoupon', $this->outData);
 	}
 
 	public function rolelist(){
