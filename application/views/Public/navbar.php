@@ -166,7 +166,7 @@
 
 								<li>
 									<a href="#">
-										<img src="{:C('WEB_HTML_PATH')}avatars/avatar.png" class="msg-photo" alt="Alex's Avatar" />
+										<img src="<?php echo config_item('html_url');?>avatars/avatar.png" class="msg-photo" alt="Alex's Avatar" />
 										<span class="msg-body">
 											<span class="msg-title">
 												<span class="blue">Alex:</span>
@@ -183,7 +183,7 @@
 
 								<li>
 									<a href="#">
-										<img src="{:C('WEB_HTML_PATH')}avatars/avatar3.png" class="msg-photo" alt="Susan's Avatar" />
+										<img src="<?php echo config_item('html_url');?>avatars/avatar3.png" class="msg-photo" alt="Susan's Avatar" />
 										<span class="msg-body">
 											<span class="msg-title">
 												<span class="blue">Susan:</span>
@@ -200,7 +200,7 @@
 
 								<li>
 									<a href="#">
-										<img src="{:C('WEB_HTML_PATH')}avatars/avatar4.png" class="msg-photo" alt="Bob's Avatar" />
+										<img src="<?php echo config_item('html_url');?>avatars/avatar4.png" class="msg-photo" alt="Bob's Avatar" />
 										<span class="msg-body">
 											<span class="msg-title">
 												<span class="blue">Bob:</span>

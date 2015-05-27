@@ -8,7 +8,7 @@ class Coupon extends WebBase {
 	public function __construct(){
 		parent::__construct();
 		
-		$this->load->model('RoleModel');
+		$this->load->model('CouponModel');
 		$this->outData['currentModule'] = __CLASS__;
 	}
 
@@ -20,10 +20,21 @@ class Coupon extends WebBase {
 
 		if ($this->input->is_ajax_request()) {
 
-			$test = $this->form_validation->set_rules($this->lang->line('ADD_COUPON_VALIDATION'));
+			$verlidationRes = $this->_verlidationAddCoupon();
 
-			if (!$this->form_validation->run()) {
-				print_r(validation_errors());exit('===');
+			if ($verlidationRes !== true) {
+				$this->ajaxRes['msg'] = $verlidationRes;
+				jsonReturn($this->ajaxRes);
+			}
+
+			$addCouponRes = $this->CouponModel->addCoupon($this->input->post());
+
+			if ($addCouponRes['error']) {
+				$this->ajaxRes['msg'] = $addCouponRes['msg'];
+			}else{
+				$this->ajaxRes = array(
+						'status' => 0,
+					);
 			}
 
 			jsonReturn($this->ajaxRes);
@@ -40,7 +51,42 @@ class Coupon extends WebBase {
 		$this->load->view('Role/rolelist', $this->outData);
 	}
 
-	public function index(){
+	/**
+	 * 验证优惠券添加
+	 */
+	private function _verlidationAddCoupon(){
 
+		$this->form_validation->set_rules($this->lang->line('ADD_COUPON_VALIDATION'));
+
+		if (!$this->form_validation->run()) {
+			return validation_errors();
+		}
+
+		// 设置优惠券金额
+		if ((int)$this->input->post('couponMoney') === 2) {
+			if ((float)$this->input->post('couponMoneyNum') <= 0) {
+				return $this->lang->line('ERR_COUPON_MONEY_NUM');
+			}
+		}
+
+		// 验证有效期、领取期
+		$couponDate = array(
+				explode(' - ', $this->input->post('couponExpireDate')),
+				explode(' - ', $this->input->post('couponReceiveDate')),
+			);
+
+		foreach ($couponDate as $k => $v) {
+			if (strtotime($v[1]) <= strtotime($v[0])) {
+				$langLine = $k == 0 ? 'ERR_COUPON_EXPIRE_DATE_FORMAT' : 'ERR_COUPON_RECEIVEDATE_FORMAT';
+				return $this->lang->line($langLine);
+			}
+		}
+
+		// 验证使用时间
+		if (strtotime($this->input->post('couponUseTimeStart')) >= strtotime($this->input->post('couponUseTimeEnd'))) {
+			return $this->lang->line('ERR_USETIME');
+		}
+
+		return true;
 	}
 }

@@ -98,7 +98,7 @@
 													<div class="step-content row-fluid position-relative" id="step-container">
 														<div class="step-pane active" id="step1">
 
-															<form class="form-horizontal" id="validation-form" method="post">
+															<form class="form-horizontal" id="validation-form" method="post" enctype="multipart/form-data" >
 																<div class="form-group">
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponTitle"><?php echo $this->lang->line('TEXT_COUPON_TITLE');?>:</label>
 
@@ -116,21 +116,21 @@
 																		<div class="row">
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponeType" value="1" type="radio" class="ace" />
+																				<input name="couponType" value="1" type="radio" class="ace" />
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_VOUCHERS');?></span>
 																			</label>
 																		</div>
 
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponeType" value="2" type="radio" class="ace" />
+																				<input name="couponType" value="2" type="radio" class="ace" />
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_DISCOUNT');?></span>
 																			</label>
 																		</div>
 
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponeType" value="3" type="radio" class="ace" />
+																				<input name="couponType" value="3" type="radio" class="ace" />
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_DELIVERY');?></span>
 																			</label>
 																		</div>
@@ -148,17 +148,17 @@
 																		<div class="row">
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponeMoney" value="1" type="radio" class="ace" />
+																				<input name="couponMoney" value="1" type="radio" class="ace" />
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_FREE');?></span>
 																			</label>
 																		</div>
 
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponeMoney" value="2" type="radio" class="ace" />
+																				<input name="couponMoney" value="2" type="radio" class="ace" />
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_TOLL');?></span>
 																				<div class="form-inline">
-																				<input type="text" name="couponeMoneyNum" class="input-small"/>
+																				<input type="text" name="couponMoneyNum" class="input-small" placeholder="如:50.00" />
 																				</div>
 																			</label>
 
@@ -172,7 +172,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<input type="text" class="input-mini" id="couponSum" />
+																			<input type="text" class="input-mini" id="couponSum" name="couponSum"/>
 																		</div>
 																	</div>
 																</div>
@@ -182,7 +182,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<input type="text" class="input-mini" id="couponEveryoneSum" />
+																			<input type="text" class="input-mini" id="couponEveryoneSum" name="couponEveryoneSum"/>
 																		</div>
 																	</div>
 																</div>
@@ -292,6 +292,15 @@
 																		</div>
 																	</div>
 																</div>
+
+																<div class="form-group">
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_CODE_TYPE');?>:</label>
+																	<div class="col-sm-3">
+																		<input type="file" id="id-input-file-2" name="couponPic" >
+																	</div>
+
+																</div>
+																
 
 																<div class="space-8"></div>
 																<button class="btn pull-right" onclick="subAddCouponForm();return false;">
@@ -494,6 +503,19 @@
 				$('#couponTitle').inputlimiter({
 					remText: '<?php echo $this->lang->line("TEXT_COUPON_TITLE_LENGTH")?>',
 					limitText: '<?php echo $this->lang->line("TEXT_COUPON_TITLE_LENGTH_MAX")?>'
+				});
+
+				$('#id-input-file-2').ace_file_input({
+					no_file:'<?php echo $this->lang->line("TEXT_COUPON_CHOOSEN_FILE");?>',
+					btn_choose:'<?php echo $this->lang->line("BTN_CHOOSE");?>',
+					btn_change:'<?php echo $this->lang->line("BTN_CHANGE");?>',
+					droppable:false,
+					onchange:null,
+					thumbnail:false //| true | large
+					// whitelist:'gif|png|jpg|jpeg'
+					//blacklist:'exe|php'
+					//onchange:''
+					//
 				});
 
 				$('[data-rel=tooltip]').tooltip();

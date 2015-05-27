@@ -5,7 +5,7 @@
 
 /**
  * 缓存,默认Redis缓存
- * @param  mixed $name    缓存名
+ * @param  mixed $name    makeUUID缓存名
  * @param  mixed $value   缓存数据
  * @param  mixed $options 缓存参数
  * @return mixed
@@ -153,5 +153,30 @@ function errLog($arr = array(), $path = false){
 function jsonReturn($data = array()){
 	header('Content-Type:application/json; charset=utf-8');
 	exit(json_encode($data));
+}
+
+/**
+ * 当前时间
+ * @param string $format 时间格式 timestamp＝时间戳, datetime=时间, microtime=毫秒
+ * @param timestamp $timestamp 时间戳
+ */
+function currentTime($format = '', $timestamp = 0){
+	
+	$format = strtoupper($format);
+
+	switch ($format) {
+		case 'TIMESTAMP':
+			$currentTime = time();
+			break;
+		case 'MICROTIME':
+			$currentTime = microtime();
+			break;
+		default:
+			$timestamp = $timestamp > 0 ? $timestamp : time();
+			$currentTime = date('Y-m-d H:i:s', $timestamp);
+			break;
+	}
+
+	return $currentTime;
 }
 ?>

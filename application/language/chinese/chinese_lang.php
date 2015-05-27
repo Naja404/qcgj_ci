@@ -15,6 +15,8 @@ $lang = array(
 		'BTN_SUBMIT'         => '提交',
 		'BTN_RESET'          => '重置',
 		'BTN_CLOSE'          => '关闭',
+		'BTN_CHOOSE'		 => '选择',
+		'BTN_CHANGE'		 => '变更',
 		
 		'ERR_PARAM'          => '参数错误',
 	);

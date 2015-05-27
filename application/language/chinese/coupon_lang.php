@@ -45,36 +45,64 @@ $lang = array(
 		'TEXT_COUPON_DELIVERY'              => '提货券',
 		'TEXT_COUPON_FREE'                  => '免费',
 		'TEXT_COUPON_TOLL'                  => '收费 - 金额',
+		
+		'TEXT_COUPON_CHOOSEN_FILE'          => '选择文件',
+		
+		'ERR_COUPON_MONEY_NUM'              => '请正确填写优惠券金额',
+		'ERR_COUPON_EXPIRE_DATE_FORMAT'     => '有效期开始日期不能大于结束日期',
+		'ERR_COUPON_RECEIVEDATE_FORMAT'     => '领取期开始日期不能大于结束日期',
+		'ERR_COUPON_ADD_FAILURE'            => '优惠券新建失败, 请刷新后重试',
+		'ERR_USETIME'                       => '使用时间:开始时间不能大于结束时间',
 
 		'ADD_COUPON_VALIDATION' => array(
 				array(
 					'field' => 'couponTitle',
-					'label' => '优惠券标题错误',
+					'label' => 'ERR_COUPON_TITLE',
 					'rules' => 'required',
 					),
 				array(
 					'field' => 'couponType',
-					'label' => '优惠券类型错误',
+					'label' => 'ERR_COUPON_TYPE',
 					'rules' => 'required',
 					),
 				array(
-					'field' => 'couponeMoney',
-					'label' => '请选择优惠券金额',
+					'field' => 'couponMoney',
+					'label' => 'ERR_COUPON_MONEY',
 					'rules' => 'required',
 					),
-				array(
-					'field' => 'couponeMoneyNum',
-					'label' => '请设置金额',
-					'rules' => 'required',
-					),
+				// array(
+				// 	'field' => 'couponMoneyNum',
+				// 	'label' => '请设置金额',
+				// 	'rules' => 'required',
+				// 	),
 				array(
 					'field' => 'couponExpireDate',
-					'label' => '请设置有效期',
+					'label' => 'ERR_COUPON_EXPIRE_DATE',
 					'rules' => 'required',
 					),
 				array(
 					'field' => 'couponReceiveDate',
-					'label' => '请设置领取期',
+					'label' => 'ERR_COUPON_RECEIVEDATE',
+					'rules' => 'required',
+					),
+				array(
+					'field' => 'couponUseTimeStart',
+					'label' => 'ERR_COUPON_USETIME_START',
+					'rules' => 'required',
+					),
+				array(
+					'field' => 'couponUseTimeEnd',
+					'label' => 'ERR_COUPON_USETIME_END',
+					'rules' => 'required',
+					),
+				array(
+					'field' => 'couponUseGuide',
+					'label' => 'ERR_COUPON_USEGUIDE',
+					'rules' => 'required',
+					),
+				array(
+					'field' => 'couponVerification',
+					'label' => 'ERR_COUPON_VERIFICATION',
 					'rules' => 'required',
 					),
 			),

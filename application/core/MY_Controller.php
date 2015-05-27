@@ -19,7 +19,7 @@ class WebBase extends MY_Controller {
 
 		$this->ajaxRes = array(
 					'status' => 1,
-					'msg'    => 'ERR_PARAM',
+					'msg'    => $this->lang->line('ERR_PARAM'),
 			);
 
 		$this->load->model('WebBaseModel');
