@@ -294,9 +294,11 @@
 																</div>
 
 																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_CODE_TYPE');?>:</label>
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_CODE_TYPE');?>:<div id="couponTest"></div></label>
 																	<div class="col-sm-3">
 																		<input type="file" id="id-input-file-2" name="couponPic" >
+																		<a class="UploadButton" id="UploadButton">UpladFile</a>
+<div id="InfoBox"></div>
 																	</div>
 
 																</div>
@@ -452,6 +454,7 @@
 		<script src="<?php echo config_item('html_url');?>js/bootbox.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/jquery.maskedinput.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/select2.min.js"></script>
+		<script src="<?php echo config_item('html_url');?>js/ajaxupload-v1.2.js"></script>
 
 		<!-- ace scripts -->
 
@@ -516,6 +519,17 @@
 					//blacklist:'exe|php'
 					//onchange:''
 					//
+				});
+
+				$('#UploadButton').ajaxUpload({
+					url:'<?php echo site_url("Coupon/addCoupon");?>',
+					name:'couponPic',
+					onSubmit:function(){
+						$('#couponTest').html('uploading...');
+					},
+					onComplete:function(data){
+						$('#couponTest').html('done...');
+					}
 				});
 
 				$('[data-rel=tooltip]').tooltip();

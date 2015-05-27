@@ -19,7 +19,10 @@ class Coupon extends WebBase {
 	public function addCoupon(){
 
 		if ($this->input->is_ajax_request()) {
-
+			echo '<pre>';
+			print_r($_FILES['couponPic']);exit('-1-1');
+			$this->_uploadCouponPic();
+			exit('23');
 			$verlidationRes = $this->_verlidationAddCoupon();
 
 			if ($verlidationRes !== true) {
@@ -88,5 +91,20 @@ class Coupon extends WebBase {
 		}
 
 		return true;
+	}
+
+	/**
+	 * 文件上传
+	 */
+	private function _uploadCouponPic(){
+		$this->load->library('upload', config_item('uploadCouponPicConf'));
+
+		if (!$this->upload->do_upload()) {
+			exit('upload failure');
+		}else{
+			echo '<pre>';
+			print_r($this->upload->data());exit;
+		}
+
 	}
 }
