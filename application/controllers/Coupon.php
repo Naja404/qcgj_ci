@@ -19,10 +19,7 @@ class Coupon extends WebBase {
 	public function addCoupon(){
 
 		if ($this->input->is_ajax_request()) {
-			echo '<pre>';
-			print_r($_FILES['couponPic']);exit('-1-1');
-			$this->_uploadCouponPic();
-			exit('23');
+
 			$verlidationRes = $this->_verlidationAddCoupon();
 
 			if ($verlidationRes !== true) {
@@ -47,11 +44,12 @@ class Coupon extends WebBase {
 		$this->load->view('Coupon/addCoupon', $this->outData);
 	}
 
-	public function rolelist(){
-		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ROLELIST');
-		$this->outData['roleList'] = $this->RoleModel->getRoleList();
-		$this->outData['pagination'] = $this->RoleModel->setPagination();
-		$this->load->view('Role/rolelist', $this->outData);
+	public function test(){
+		if ($this->input->method() == 'POST') {
+			exit('-1-1-');
+		}
+		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ADDCOUPON');
+		$this->load->view('Coupon/test', $this->outData);
 	}
 
 	/**

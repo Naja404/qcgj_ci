@@ -98,7 +98,7 @@
 													<div class="step-content row-fluid position-relative" id="step-container">
 														<div class="step-pane active" id="step1">
 
-															<form class="form-horizontal" id="validation-form" method="post" enctype="multipart/form-data" >
+															<form class="form-horizontal" id="addCoupon-form" method="post" enctype="multipart/form-data" >
 																<div class="form-group">
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponTitle"><?php echo $this->lang->line('TEXT_COUPON_TITLE');?>:</label>
 
@@ -229,7 +229,7 @@
 																				<span class="input-group-addon">
 																					<i class="icon-time bigger-110"></i>
 																				</span>
-																				<input id="couponUseTimeStart" type="text" name="couponUseTimeStart" class="col-xs-6 col-sm-3" />
+																				<input id="couponUseTimeStart" type="text" name="couponUseTimeStart" class="col-xs-6 col-sm-4" />
 																			</div>
 																			</div>
 
@@ -238,7 +238,7 @@
 																					<span class="input-group-addon">
 																						<i class="icon-time bigger-110"></i>
 																					</span>
-																					<input id="couponUseTimeEnd" type="text" name="couponUseTimeEnd" class="col-xs-6 col-sm-3" />
+																					<input id="couponUseTimeEnd" type="text" name="couponUseTimeEnd" class="col-xs-6 col-sm-4" />
 																				</div>
 																			</div>
 
@@ -292,73 +292,116 @@
 																		</div>
 																	</div>
 																</div>
-
-																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_CODE_TYPE');?>:<div id="couponTest"></div></label>
-																	<div class="col-sm-3">
-																		<input type="file" id="id-input-file-2" name="couponPic" >
-																		<a class="UploadButton" id="UploadButton">UpladFile</a>
-<div id="InfoBox"></div>
-																	</div>
-
-																</div>
-																
-
 																<div class="space-8"></div>
-																<button class="btn pull-right" onclick="subAddCouponForm();return false;">
-											提交										</button>
 															</form>
 														</div>
 
 														<div class="step-pane" id="step2">
 															<div class="row-fluid">
-																<div class="alert alert-success">
-																	<button type="button" class="close" data-dismiss="alert">
-																		<i class="icon-remove"></i>
+									<div class="col-xs-12">
+										<div class="table-responsive">
+											<table id="rolelist-table" class="table table-striped table-bordered table-hover">
+												<thead>
+													<tr>
+														<th class="center">
+															<label>
+																<input type="checkbox" class="ace" />
+																<span class="lbl"></span>
+															</label>
+														</th>
+														<th><?php echo $this->lang->line('TEXT_ROLE_USERNAME');?></th>
+														<th><?php echo $this->lang->line('TEXT_ROLE_RULE');?></th>
+														<th><?php echo $this->lang->line('TEXT_CREATED_TIME');?></th>
+														<th><?php echo $this->lang->line('TEXT_STATUS');?></th>
+														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
+													</tr>
+												</thead>
+
+												<tbody>
+													<?php foreach ($roleList as $v):?>
+													<tr>
+														<td class="center">
+															<label>
+																<input type="checkbox" class="ace" />
+																<span class="lbl"></span>
+															</label>
+														</td>
+
+														<td>
+															<a href="#"><?php echo $v->name;?></a>
+														</td>
+														<td><?php echo $v->role_name;?></td>
+														<td class="hidden-480"><?php echo date('Y-m-d H:i:s', $v->created_time);?></td>
+
+														<td class="hidden-480">
+															<?php if ($v->status == 1){?>
+																<span class="label label-error"><?php echo $this->lang->line('TEXT_STATUS_NORMAL');?></span>
+															<?php }else{ ?>
+																<span class="label label-success"><?php echo $this->lang->line('TEXT_STATUS_STOP');?></span>
+															<?php }?>
+															
+														</td>
+
+														<td>
+															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
+																<button class="btn btn-xs btn-success">
+																	<i class="icon-ok bigger-120"></i>
+																</button>
+
+																<button class="btn btn-xs btn-info">
+																	<i class="icon-edit bigger-120"></i>
+																</button>
+
+																<button class="btn btn-xs btn-danger">
+																	<i class="icon-trash bigger-120"></i>
+																</button>
+
+																<button class="btn btn-xs btn-warning">
+																	<i class="icon-flag bigger-120"></i>
+																</button>
+															</div>
+
+															<div class="visible-xs visible-sm hidden-md hidden-lg">
+																<div class="inline position-relative">
+																	<button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown">
+																		<i class="icon-cog icon-only bigger-110"></i>
 																	</button>
 
-																	<strong>
-																		<i class="icon-ok"></i>
-																		Well done!
-																	</strong>
+																	<ul class="dropdown-menu dropdown-only-icon dropdown-yellow pull-right dropdown-caret dropdown-close">
+																		<li>
+																			<a href="#" class="tooltip-info" data-rel="tooltip" title="View">
+																				<span class="blue">
+																					<i class="icon-zoom-in bigger-120"></i>
+																				</span>
+																			</a>
+																		</li>
 
-																	You successfully read this important alert message.
-																	<br />
+																		<li>
+																			<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">
+																				<span class="green">
+																					<i class="icon-edit bigger-120"></i>
+																				</span>
+																			</a>
+																		</li>
+
+																		<li>
+																			<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete">
+																				<span class="red">
+																					<i class="icon-trash bigger-120"></i>
+																				</span>
+																			</a>
+																		</li>
+																	</ul>
 																</div>
-
-																<div class="alert alert-danger">
-																	<button type="button" class="close" data-dismiss="alert">
-																		<i class="icon-remove"></i>
-																	</button>
-
-																	<strong>
-																		<i class="icon-remove"></i>
-																		Oh snap!
-																	</strong>
-
-																	Change a few things up and try submitting again.
-																	<br />
-																</div>
-
-																<div class="alert alert-warning">
-																	<button type="button" class="close" data-dismiss="alert">
-																		<i class="icon-remove"></i>
-																	</button>
-																	<strong>Warning!</strong>
-
-																	Best check yo self, you're not looking too good.
-																	<br />
-																</div>
-
-																<div class="alert alert-info">
-																	<button type="button" class="close" data-dismiss="alert">
-																		<i class="icon-remove"></i>
-																	</button>
-																	<strong>Heads up!</strong>
-
-																	This alert needs your attention, but it's not super important.
-																	<br />
-																</div>
+															</div>
+														</td>
+													</tr>
+													<?php endforeach;?>
+												</tbody>
+											</table>
+										</div><!-- /.table-responsive -->
+										<?php echo $pagination;?>
+									</div><!-- /span -->
 															</div>
 														</div>
 
@@ -368,12 +411,6 @@
 															</div>
 														</div>
 
-														<div class="step-pane" id="step4">
-															<div class="center">
-																<h3 class="green">Congrats!</h3>
-																Your product is ready to ship! Click finish to continue!
-															</div>
-														</div>
 													</div>
 
 													<hr />
@@ -454,8 +491,7 @@
 		<script src="<?php echo config_item('html_url');?>js/bootbox.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/jquery.maskedinput.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/select2.min.js"></script>
-		<script src="<?php echo config_item('html_url');?>js/ajaxupload-v1.2.js"></script>
-
+		
 		<!-- ace scripts -->
 
 		<script src="<?php echo config_item('html_url');?>js/ace-elements.min.js"></script>
@@ -521,17 +557,6 @@
 					//
 				});
 
-				$('#UploadButton').ajaxUpload({
-					url:'<?php echo site_url("Coupon/addCoupon");?>',
-					name:'couponPic',
-					onSubmit:function(){
-						$('#couponTest').html('uploading...');
-					},
-					onComplete:function(data){
-						$('#couponTest').html('done...');
-					}
-				});
-
 				$('[data-rel=tooltip]').tooltip();
 			
 				$(".select2").css('width','200px').select2({allowClear:true})
@@ -543,7 +568,11 @@
 				var $validation = true;
 				$('#fuelux-wizard').ace_wizard().on('change' , function(e, info){
 					if(info.step == 1 && $validation) {
-						if(!$('#validation-form').valid()) return false;
+						if(!$('#addCoupon-form').valid()){
+							// return false;
+						}else{
+							// subAddCouponForm();
+						}
 					}
 				}).on('finished', function(e) {
 					bootbox.dialog({
@@ -559,85 +588,60 @@
 					//return false;//prevent clicking on steps
 				});
 			
-			
-				$('#skip-validation').removeAttr('checked').on('click', function(){
-					$validation = this.checked;
-					if(this.checked) {
-						$('#sample-form').hide();
-						$('#validation-form').removeClass('hide');
-					}
-					else {
-						$('#validation-form').addClass('hide');
-						$('#sample-form').show();
-					}
-				});
-			
-			
-			
 				//documentation : http://docs.jquery.com/Plugins/Validation/validate
 			
-			
-				$.mask.definitions['~']='[+-]';
-				$('#phone').mask('(999) 999-9999');
-			
-				jQuery.validator.addMethod("phone", function (value, element) {
-					return this.optional(element) || /^\(\d{3}\) \d{3}\-\d{4}( x\d{1,6})?$/.test(value);
-				}, "Enter a valid phone number.");
-			
-				$('#validation-form').validate({
+				$('#addCoupon-form').validate({
 					errorElement: 'div',
 					errorClass: 'help-block',
 					focusInvalid: false,
 					rules: {
-						email: {
-							required: true,
-							email:true
+						couponTitle: {
+							required:true,
+							maxlength:40,
 						},
-						password: {
-							required: true,
-							minlength: 5
+						couponType: {
+							required:true
 						},
-						password2: {
-							required: true,
-							minlength: 5,
-							equalTo: "#password"
+						couponMoney: {
+							required:true
 						},
-						name: {
-							required: true
+						// couponEveryoneSum: {
+						// 	required:true
+						// },
+						// couponSum: {
+						// 	required:true
+						// },
+						couponExpireDate: {
+							required:true
 						},
-						phone: {
-							required: true,
-							phone: 'required'
-						},
-						url: {
-							required: true,
-							url: true
-						},
-						comment: {
-							required: true
-						},
-						platform: {
-							required: true
-						},
-						subscription: {
-							required: true
-						},
-						gender: 'required',
-						agree: 'required'
+						couponReceiveDate: {
+							required:true
+						}
 					},
 			
 					messages: {
-						email: {
-							required: "Please provide a valid email.",
-							email: "Please provide a valid email."
+						couponTitle: {
+							required:"<?php echo $this->lang->line('ERR_COUPON_TITLE');?>",
+							maxlength:"<?php echo $this->lang->line('ERR_COUPON_TITLE_LENGTH');?>"
 						},
-						password: {
-							required: "Please specify a password.",
-							minlength: "Please specify a secure password."
+						couponType: {
+							required:"<?php echo $this->lang->line('ERR_COUPON_TYPE');?>"
 						},
-						subscription: "Please choose at least one option",
-						gender: "Please choose gender",
-						agree: "Please accept our policy"
+						couponMoney: {
+							required:"<?php echo $this->lang->line('ERR_COUPON_MONEY');?>"
+						},
+						// couponEveryoneSum: {
+						// 	required:"<?php echo $this->lang->line('ERR_COUPON_EXPIRE_DATE');?>"
+						// },
+						// couponSum: {
+						// 	required:"<?php echo $this->lang->line('ERR_COUPON_RECEIVEDATE');?>"
+						// },
+						couponExpireDate: {
+							required:"<?php echo $this->lang->line('ERR_COUPON_EXPIRE_DATE');?>"
+						},
+						couponReceiveDate: {
+							required:"<?php echo $this->lang->line('ERR_COUPON_RECEIVEDATE');?>"
+						}
 					},
 			
 					invalidHandler: function (event, validator) { //display error alert on form submit   
@@ -673,10 +677,7 @@
 					invalidHandler: function (form) {
 					}
 				});
-			
-				
-				
-				
+
 				$('#modal-wizard .modal-header').ace_wizard();
 				$('#modal-wizard .wizard-actions .btn[data-dismiss=modal]').removeAttr('disabled');
 			})
@@ -685,12 +686,13 @@
 				$.ajax({
 					type:"POST",
 					url:"<?php echo site_url('Coupon/addCoupon');?>",
-					data:$('#validation-form').serialize(),
+					data:$('#addCoupon-form').serialize(),
 					success:function(data){
 						if (data.status) {
 							alert(data.msg);
+							return false;
 						}else{
-							$('#validation-form').reset();
+							// $('#addCoupon-form').reset();
 						}
 					}
 				});

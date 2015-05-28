@@ -120,7 +120,7 @@ $autoload['config'] = array();
 |
 */
 
-$autoload['language'] = array('chinese', 'role', 'coupon');
+$autoload['language'] = array('chinese', 'role', 'coupon', 'form_validation');
 
 
 /*

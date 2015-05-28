@@ -41,8 +41,8 @@ class CouponModel extends CI_Model {
 
 		$couponDetailData = array(
 				'coupon_id'          => $couponInsertData['coupon_id'],
-				'sum_count'          => $couponData['couponSum'],
-				'receive_sum'        => $couponData['couponEveryoneSum'],
+				'sum_count'          => intval($couponData['couponSum']),
+				'receive_sum'        => intval($couponData['couponEveryoneSum']),
 				'expire_date_start'  => $expireDate['start'],
 				'expire_date_end'    => $expireDate['end'],
 				'receive_date_start' => $receiveDate['start'],
