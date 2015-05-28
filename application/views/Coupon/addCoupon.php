@@ -197,7 +197,7 @@
 																				<i class="icon-calendar bigger-110"></i>
 																			</span>
 
-																			<input type="text" name="couponExpireDate" id="couponExpireDate" class="col-xs-6 col-sm-3"/>
+																			<input type="text" name="couponExpireDate" id="couponExpireDate" class="col-xs-6 col-sm-4"/>
 																		</div>
 																	</div>
 																</div>
@@ -212,7 +212,7 @@
 																				<i class="icon-calendar bigger-110"></i>
 																			</span>
 
-																			<input type="text" name="couponReceiveDate" id="couponReceiveDate" class="col-xs-6 col-sm-3"/>
+																			<input type="text" name="couponReceiveDate" id="couponReceiveDate" class="col-xs-6 col-sm-4"/>
 																		</div>
 																	</div>
 																</div>

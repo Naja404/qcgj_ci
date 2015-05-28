@@ -9,14 +9,33 @@ $lang = array(
 		'TEXT_OPERATION'     => '操作',
 		'TEXT_STATUS_NORMAL' => '正常',
 		'TEXT_STATUS_STOP'   => '停用',
+		'TEXT_SELECT_CITY'   => '所在城市',
+		'TEXT_SHOP_NAME'     => '门店名称',
+		'TEXT_SHOP_ADDRESS'  => '门店地址',
+
+		'SELECT_CITY_LIST' => array(
+				array(
+					'name'   => '北京',
+					'cityId' => '1',
+					),
+				array(
+					'name'   => '上海',
+					'cityId' => '2',
+					),
+				array(
+					'name'   => '广州',
+					'cityId' => '3',
+					),
+			),
 		
-		'BTN_PREV'            => '上一步',
-		'BTN_NEXT'           => '下一步',
-		'BTN_SUBMIT'         => '提交',
-		'BTN_RESET'          => '重置',
-		'BTN_CLOSE'          => '关闭',
-		'BTN_CHOOSE'		 => '选择',
-		'BTN_CHANGE'		 => '变更',
+		'BTN_PREV'   => '上一步',
+		'BTN_NEXT'   => '下一步',
+		'BTN_SUBMIT' => '提交',
+		'BTN_RESET'  => '重置',
+		'BTN_CLOSE'  => '关闭',
+		'BTN_CHOOSE' => '选择',
+		'BTN_CHANGE' => '变更',
+		'BTN_SEARCH' => '搜索',
 		
 		'ERR_PARAM'          => '参数错误',
 	);

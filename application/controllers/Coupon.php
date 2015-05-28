@@ -1,6 +1,10 @@
 <?php
 defined('BASEPATH') OR xit('No direct script access allowed');
 
+/**
+ * 优惠券管理
+ */
+
 class Coupon extends WebBase {
 	//  视图输出内容
 	public $outData;
