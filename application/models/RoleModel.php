@@ -38,6 +38,24 @@ class RoleModel extends CI_Model {
 	}
 
 	/**
+	 * 更新用户内容
+	 * @param array $updateArr 需要更新的数组
+	 */
+	public function updateUser($updateArr = array()){
+
+		$queryRes = $this->db->where(array('user_id' => $updateArr['user_id']))
+				 ->update(tname('qcgj_role_user'), $updateArr);
+
+		if (!$queryRes) {
+			$this->returnRes['msg'] = $this->lang->line('ERR_UPDATE_FAILURE');
+		}else{
+			$this->returnRes['error'] = false;
+		}
+
+		return $this->returnRes;
+	}
+
+	/**
 	 * 获取权限列表
 	 *
 	 */

@@ -79,9 +79,9 @@ class Role extends WebBase {
 		if ($this->input->post('type') == 'userStatus') {
 			$statusArr = array(
 					'user_id' => $this->input->post('user_id'),
-					'status' => $this->input->post('status'),
+					'status'  => $this->input->post('status'),
 				);
-			$this->_updateUserStatus();
+			$this->RoleModel->updateUser($statusArr);
 		}
 	}
 

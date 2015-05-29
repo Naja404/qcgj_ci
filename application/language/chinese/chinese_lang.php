@@ -39,4 +39,5 @@ $lang = array(
 		
 		'ERR_PARAM'          => '参数错误',
 		'ERR_ADD_FAILURE'    => '数据添加错误,请刷新后重试',
+		'ERR_UPDATE_FAILURE' => '数据更新失败,请刷新后重试',
 	);
