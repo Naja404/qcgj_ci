@@ -38,4 +38,5 @@ $lang = array(
 		'BTN_SEARCH' => '搜索',
 		
 		'ERR_PARAM'          => '参数错误',
+		'ERR_ADD_FAILURE'    => '数据添加错误,请刷新后重试',
 	);

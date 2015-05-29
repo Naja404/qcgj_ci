@@ -106,9 +106,10 @@
 															<a href="#"><?php echo $v->name;?></a>
 														</td>
 														<td><?php echo $v->role_name;?></td>
-														<td class="hidden-480"><?php echo date('Y-m-d H:i:s', $v->created_time);?></td>
+														<td class="hidden-480"><?php echo $v->created_time;?></td>
 
-														<td class="hidden-480">
+														<td class="hidden-480" id="status_<?php echo $v->user_id
+														;?>">
 															<?php if ($v->status == 1){?>
 																<span class="label label-error"><?php echo $this->lang->line('TEXT_STATUS_NORMAL');?></span>
 															<?php }else{ ?>
@@ -119,10 +120,15 @@
 
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-																<button class="btn btn-xs btn-success">
+																<?php if($v->status == 0){?>
+																<button class="btn btn-xs btn-success" onclick="setUserStatus('<?php echo $v->user_id;?>', 1);">
 																	<i class="icon-ok bigger-120"></i>
 																</button>
-
+																<?php }else{ ?>
+																<button class="btn btn-xs btn-danger" onclick="setUserStatus('<?php echo $v->user_id;?>', 0);">
+																	<i class="icon-remove bigger-120"></i>
+																</button>
+																<?php }?>
 																<button class="btn btn-xs btn-info">
 																	<i class="icon-edit bigger-120"></i>
 																</button>
@@ -218,18 +224,22 @@
 													</td>
 													
 												</tr>
-												@foreach($roleRuleList as $rule)
+												<?php foreach($ruleList as $rule){?>
 												<tr>
 													<td class="center">
-														{{$rule['title']}}
+														<?php echo $rule['title'];?>
 													</td>
 													<td>
-														@foreach($rule['list'] as $sub)
-														<input type="checkbox" name="role_rule[]" id="{{$sub['url']}}" value="{{$sub['rule_id']}}"/><label for="{{$sub['url']}}">{{$sub['title']}}</label><br/>
-														@endforeach
+														<?php foreach ($rule['list'] as $sub) {?>
+														<input type="checkbox" name="role_rule[]" id="ruleId_<?php echo $sub['id'];?>" value="<?php echo $sub['id'];?>"/>
+														<label for="ruleId_<?php echo $sub['id'];?>">
+															<?php echo $sub['title'];?>
+														</label>
+														<br/>
+														<?php }?>
 													</td>
 												</tr>
-												@endforeach
+												<?php }?>
 											</tbody>
 										</table>
 									</div>
@@ -401,7 +411,7 @@
 			function subAddRuleForm(){
 				$.ajax({
 					type:"POST",
-					url:"{{url('Role/addrule')}}",
+					url:"<?php echo site_url('Role/addRule');?>",
 					data:$('#addrule_form').serialize(),
 					success:function(data){
 
@@ -420,7 +430,7 @@
 			function subAddRoleForm(){
 				$.ajax({
 					type:"POST",
-					url:"{{url('Role/addrole')}}",
+					url:"<?php echo site_url('Role/addRole');?>",
 					data:$('#addrole_form').serialize(),
 					success:function(data){
 
@@ -428,7 +438,26 @@
 							alert(data.msg);
 						}else{
 							setTimeout('$("#addrole_dismiss").trigger("click");', 1000);
-							$('#addrole_form').reset();
+							$('#addrole_form').each(function(){
+								this.reset();
+							});
+						}
+					}
+				});
+			}
+
+			function setUserStatus(userID, userStatus){
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Role/updateUser');?>",
+					data:{user_id:userID, status:userStatus, type:'userStatus'},
+					success:function(data){
+
+						if (data.status) {
+							alert(data.msg);
+						}else{
+							$('#status_' + userID).html(data.html);
+							console.log(this);
 						}
 					}
 				});

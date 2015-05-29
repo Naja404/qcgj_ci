@@ -12,4 +12,13 @@ $lang = array(
 	'ERR_COUPON_USETIME_END'   => '请正确设置使用时间-结束',
 	'ERR_COUPON_USEGUIDE'      => '请正确填写使用说明',
 	'ERR_COUPON_VERIFICATION'  => '请正确填写验券说明',
+
+	//添加权限规则 Role/addRole
+
+	'ERR_ROLE_MODULE'      => '请正确填写模块',
+	'ERR_ROLE_MODULETITLE' => '请正确填写主菜单标题',
+	'ERR_ROLE_ACTIONTITLE' => '请正确填写操作标题',
+	'ERR_ROLE_ACTIONURL'   => '请正确填写操作URL',
+	'ERR_ROLE_SORT'        => '请正确填写排序',
+	'ERR_ROLE_TYPE'        => '类型错误',
 );

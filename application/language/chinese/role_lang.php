@@ -26,13 +26,37 @@ $lang = array(
 	'TEXT_PLACEHOLDER_RULE_ACTION_TITLE' => '如:优惠券列表',
 	'TEXT_PLACEHOLDER_RULE_ACTION_URL'   => '如:Web/Coupon/listview',
 	'TEXT_PLACEHOLDER_RULE_SORT'         => '数字越大排序越高',
-	
-	'ERR_RULE_MODULE'                    => '模块错误或为空',
-	'ERR_RULE_MODULE_TITLE'              => '模块名错误或为空',
-	'ERR_RULE_ACTION_TITLE'              => '操作标题错误或为空',
-	'ERR_RULE_ACTION_URL'                => '操作URL错误或为空',
-	'ERR_RULE_SORT'                      => '排序错误或为空',
-	'ERR_RULE_TYPE'                      => '类型错误或为空',
 
-
-		);
+	'ADD_RULE_VALIDATION' => array(
+				array(
+					'field' => 'module',
+					'label' => 'ERR_ROLE_MODULE',
+					'rules' => 'required',
+					),
+				array(
+					'field' => 'module_title',
+					'label' => 'ERR_ROLE_MODULETITLE',
+					'rules' => 'required',
+					),
+				array(
+					'field' => 'action_title',
+					'label' => 'ERR_ROLE_ACTIONTITLE',
+					'rules' => 'required',
+					),
+				array(
+					'field' => 'action_url',
+					'label' => 'ERR_ROLE_ACTIONURL',
+					'rules' => 'required',
+					),
+				array(
+					'field' => 'sort',
+					'label' => 'ERR_ROLE_SORT',
+					'rules' => 'required|integer',
+					),
+				array(
+					'field'     => 'type',
+					'label'     => 'ERR_ROLE_TYPE',
+					'rules'     => 'required',
+					),
+		),
+);

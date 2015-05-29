@@ -14,6 +14,9 @@ class WebBase extends MY_Controller {
 	// 菜单数组
 	public $sideBar;
 
+	// 分页参数
+	public $p;
+
 	public function __construct(){
 		parent::__construct();
 
@@ -21,6 +24,10 @@ class WebBase extends MY_Controller {
 					'status' => 1,
 					'msg'    => $this->lang->line('ERR_PARAM'),
 			);
+		
+		$p = (int)$this->input->get('p');
+
+		$this->p = $p <= 0 ? 1 : $p;
 
 		$this->load->model('WebBaseModel');
 
