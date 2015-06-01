@@ -38,6 +38,28 @@ class RoleModel extends CI_Model {
 	}
 
 	/**
+	 * 添加角色
+	 * @param array $addRoleData 角色数组
+	 */
+	public function addRole($addRoleData = array()){
+		$insertData = array(
+				'name'   => $addRoleData['role_name'],
+				'rule'   => implode(',', $addRoleData['role_rule']),
+				'status' => 1,
+			);
+
+		$queryRes = $this->db->insert(tname('qcgj_role'), $insertData);
+
+		if (!$queryRes) {
+			$this->returnRes['msg'] = $this->lang->line('ERR_ADD_FAILURE');
+		}else{
+			$this->returnRes['error'] = false;
+		}
+
+		return $this->returnRes;
+	}
+
+	/**
 	 * 更新用户内容
 	 * @param array $updateArr 需要更新的数组
 	 */
@@ -134,13 +156,55 @@ class RoleModel extends CI_Model {
 
 	/**
 	 * 验证权限添加
-	 *
+	 * @param array $verlidationConf 表单验证配置内容
 	 */
 	public function verlidationAddRule($verlidationConf = array()){
 		$this->form_validation->set_rules($verlidationConf);
 
 		if (!$this->form_validation->run()) {
 			return validation_errors();
+		}
+
+		return true;
+	}
+
+	/**
+	 * 验证角色添加
+	 * @param array $verlidationConf 表单验证配置内容
+	 * @param array $reqData ajax数据内容
+	 */
+	public function verlidationAddRole($verlidationConf = array(), $reqData = array()){
+		$this->form_validation->set_rules($verlidationConf);
+
+		if (!$this->form_validation->run()) {
+			return validation_errors();
+		}
+
+		$queryRes = $this->db->get_where(tname('qcgj_role'), array('name' => $reqData['role_name']))->result();
+
+		if (count($queryRes) > 0) {
+			return $this->lang->line('ERR_ADD_ROLENAME_EXISTS');
+		}
+
+		if (!is_array($reqData['role_rule'])) {
+			return $this->lang->line('ERR_ROLE_RULE');
+		}
+
+		$roleRule = array();
+		foreach ($reqData['role_rule'] as $k => $v) {
+			if (!is_numeric($v) || empty($v)) {
+				return $this->lang->line('ERR_ROLE_RULE');
+			}
+			array_push($roleRule, $v);
+		}
+
+		$queryRes = $this->db->select('SUM(status) AS count')
+							 ->where(array('status' => 1))
+							 ->where_in('id', $roleRule)
+							 ->get(tname('qcgj_role_rule'))
+							 ->first_row();
+		if ($queryRes->count < count($roleRule)) {
+			return $this->lang->line('ERR_ROLE_RULE');
 		}
 
 		return true;

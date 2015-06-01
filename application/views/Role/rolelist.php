@@ -245,12 +245,18 @@
 									</div>
 
 									<div class="modal-footer no-margin-top">
-										<button class="btn btn-sm btn-danger pull-left" data-dismiss="modal">
+										<button class="btn btn-sm btn-danger pull-left" data-dismiss="modal" id="addrule_dismiss">
 											<i class="icon-remove"></i>
-											Close
+											<?php echo $this->lang->line('BTN_CLOSE');?>
 										</button>
 
+										<button class="btn pull-right" onclick="subAddRoleForm();return false;">
+											<?php echo $this->lang->line('BTN_SUBMIT');?>
+										</button>
 
+										<button class="btn btn-info pull-right" type="reset">
+											<?php echo $this->lang->line('BTN_RESET');?>
+										</button>
 									</div>
 								</div><!-- /.modal-content -->
 								</form>

@@ -18,7 +18,7 @@ $lang = array(
 	'TEXT_ROLE_MANAGER'                  => '角色管理',
 	'TEXT_ROLE_LIST'                     => '角色列表',
 	'TEXT_TITLE_ROLELIST'                => '角色列表',
-	'TEXT_ROLE_USERNAME' => '用户名',
+	'TEXT_ROLE_USERNAME'                 => '用户名',
 	
 	'TEXT_PLACEHOLDER_RULE_MODULE'       => '如:Coupon',
 	'TEXT_PLACEHOLDER_RULE_MODULE_TITLE' => '如:优惠券管理',
@@ -26,6 +26,8 @@ $lang = array(
 	'TEXT_PLACEHOLDER_RULE_ACTION_TITLE' => '如:优惠券列表',
 	'TEXT_PLACEHOLDER_RULE_ACTION_URL'   => '如:Web/Coupon/listview',
 	'TEXT_PLACEHOLDER_RULE_SORT'         => '数字越大排序越高',
+	
+	'ERR_ADD_ROLENAME_EXISTS'            => '角色名已存在',
 
 	'ADD_RULE_VALIDATION' => array(
 				array(
@@ -57,6 +59,14 @@ $lang = array(
 					'field'     => 'type',
 					'label'     => 'ERR_ROLE_TYPE',
 					'rules'     => 'required',
+					),
+		),
+
+	'ADD_ROLE_VALIDATION' => array(
+				array(
+					'field' => 'role_name',
+					'label' => 'ERR_ROLE_NAME',
+					'rules' => 'required',
 					),
 		),
 );

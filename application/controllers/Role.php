@@ -68,6 +68,36 @@ class Role extends WebBase {
 	}
 
 	/**
+	 * 添加角色
+	 */
+	public function addRole(){
+		if (!$this->input->is_ajax_request()) {
+			jsonReturn($this->ajaxRes);
+		}
+
+		$verlidationRes = $this->RoleModel->verlidationAddRole($this->lang->line('ADD_ROLE_VALIDATION'), $this->input->post());
+
+		if ($verlidationRes !== true) {
+			$this->ajaxRes['msg'] = $verlidationRes;
+			jsonReturn($this->ajaxRes);
+		}
+
+		$addRoleRes = $this->RoleModel->addRole($this->input->post());
+		
+		if ($addRuleRes['error']) {
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_ADD_FAILURE');
+			jsonReturn($this->ajaxRes);
+		}
+
+		$this->ajaxRes = array(
+					'status' => 0,
+			);
+
+		jsonReturn($this->ajaxRes);
+
+	}
+
+	/**
 	 * 更新用户内容
 	 *
 	 */
