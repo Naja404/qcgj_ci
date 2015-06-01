@@ -68,6 +68,9 @@
 							<button class="btn">
 								<a href="#modal-addrule" role="button" class="white" data-toggle="modal"><i class="icon-pencil bigger-100"><?php echo $this->lang->line('TEXT_ROLE_RULE_ADD');?></i></a>
 							</button>
+							<button class="btn">
+								<a href="#modal-addruleuser" role="button" class="white" data-toggle="modal"><i class="icon-pencil bigger-100"><?php echo $this->lang->line('TEXT_ROLE_RULE_USER_ADD');?></i></a>
+							</button>
 						</div>
 
 						<div class="row">
@@ -359,6 +362,72 @@
 							</div><!-- /.modal-dialog -->
 						</div>
 
+						<div id="modal-addruleuser" class="modal fade" tabindex="-1">
+							<div class="modal-dialog">
+								<form id="addruleuser_form">
+
+								<div class="modal-content">
+									<div class="modal-header no-padding">
+										<div class="table-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+												<span class="white">&times;</span>
+											</button>
+											<?php echo $this->lang->line('TEXT_ROLE_RULE_USER_ADD');?>
+										</div>
+									</div>
+
+									<div class="modal-body no-padding">
+
+										<table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top" >
+											<tbody>
+												<tr>
+													<td>
+														<?php echo $this->lang->line('TEXT_ROLE_USERNAME');?>
+													</td>
+													<td>
+														<input type="text" name="role_username" placeholder=""/>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<?php echo $this->lang->line('TEXT_ROLE_NAME');?>
+													</td>
+													<td>
+														<select name="role_id" id="roleIdSelect">
+															<?php foreach($roleSelect as $v):?>
+															<option value="<?php echo $v->role_id;?>">
+																<?php echo $v->name;?>
+															</option>
+														<?php endforeach;?>
+														</select>
+													</td>
+												</tr>
+
+											</tbody>
+										</table>
+
+									</div>
+
+									<div class="modal-footer no-margin-top">
+										<button class="btn btn-sm btn-danger pull-left" data-dismiss="modal" id="addruleuser_dismiss">
+											<i class="icon-remove"></i>
+											<?php echo $this->lang->line('BTN_CLOSE');?>
+										</button>
+
+										<button class="btn pull-right" onclick="subAddRoleUserForm();return false;">
+											<?php echo $this->lang->line('BTN_SUBMIT');?>
+										</button>
+
+										<button class="btn btn-info pull-right" type="reset">
+											<?php echo $this->lang->line('BTN_RESET');?>
+										</button>
+
+									</div>
+								</form>
+								</div><!-- /.modal-content -->
+							</div><!-- /.modal-dialog -->
+						</div>
+
 					</div><!-- /.page-content -->
 				</div><!-- /.main-content -->
 			</div><!-- /.main-container-inner -->
@@ -414,6 +483,7 @@
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 
 		<script type="text/javascript">
+
 			function subAddRuleForm(){
 				$.ajax({
 					type:"POST",
@@ -426,6 +496,25 @@
 						}else{
 							setTimeout('$("#addrule_dismiss").trigger("click");', 1000);
 							$('#addrule_form').each(function(){
+								this.reset();
+							});
+						}
+					}
+				});
+			}
+
+			function subAddRoleUserForm(){
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Role/addRoleUser');?>",
+					data:$('#addruleuser_form').serialize(),
+					success:function(data){
+
+						if (data.status) {
+							alert(data.msg);
+						}else{
+							setTimeout('$("#addruleuser_dismiss").trigger("click");', 1000);
+							$('#addruleuser_form').each(function(){
 								this.reset();
 							});
 						}

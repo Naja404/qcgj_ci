@@ -23,10 +23,11 @@ class Role extends WebBase {
 		
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ROLELIST');
 
-		$roleRes = $this->RoleModel->getRoleList($this->p);
+		$roleRes = $this->RoleModel->getRoleUserList($this->p);
 
 		$this->outData['roleList'] = $roleRes['data']['result'];
 		$this->outData['ruleList'] = $this->RoleModel->getRuleList();
+		$this->outData['roleSelect'] = $this->RoleModel->getRoleList();
 
 		$this->outData['pagination'] = $this->RoleModel->setPagination(site_url('Role/roleList'), $roleRes['data']['total']);
 
@@ -95,6 +96,36 @@ class Role extends WebBase {
 
 		jsonReturn($this->ajaxRes);
 
+	}
+
+	/**
+	 * 添加角色用户
+	 *
+	 */
+	public function addRoleUser(){
+		if (!$this->input->is_ajax_request()) {
+			jsonReturn($this->ajaxRes);
+		}
+
+		$verlidationRes = $this->RoleModel->verlidationAddRoleUser($this->lang->line('ADD_ROLE_USER_VALIDATION'), $this->input->post());
+
+		if ($verlidationRes !== true) {
+			$this->ajaxRes['msg'] = $verlidationRes;
+			jsonReturn($this->ajaxRes);
+		}
+
+		$addRoleUserRes = $this->RoleModel->addRoleUser($this->input->post());
+		
+		if ($addRoleUserRes['error']) {
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_ADD_FAILURE');
+			jsonReturn($this->ajaxRes);
+		}
+
+		$this->ajaxRes = array(
+					'status' => 0,
+			);
+
+		jsonReturn($this->ajaxRes);
 	}
 
 	/**

@@ -3,7 +3,9 @@
 $lang = array(
 	'TEXT_ROLE_ADD'                      => '角色添加',
 	'TEXT_ROLE_RULE_ADD'                 => '权限添加',
+	'TEXT_ROLE_RULE_USER_ADD'			 => '用户添加',
 	'TEXT_ROLE_NAME'                     => '角色名',
+	'TEXT_ROLE_USERNAME' => '用户名',
 	'TEXT_ROLE_RULE'                     => '权限',
 	'TEXT_RULE_MODULE'                   => '模块',
 	'TEXT_RULE_MODULE_TITLE'             => '主菜单标题',
@@ -28,6 +30,7 @@ $lang = array(
 	'TEXT_PLACEHOLDER_RULE_SORT'         => '数字越大排序越高',
 	
 	'ERR_ADD_ROLENAME_EXISTS'            => '角色名已存在',
+	'ERR_ADDROLE_USERNAME_EXISTS'		 => '用户名已存在',
 
 	'ADD_RULE_VALIDATION' => array(
 				array(
@@ -66,6 +69,14 @@ $lang = array(
 				array(
 					'field' => 'role_name',
 					'label' => 'ERR_ROLE_NAME',
+					'rules' => 'required',
+					),
+		),
+
+	'ADD_ROLE_USER_VALIDATION' => array(
+				array(
+					'field' => 'role_username',
+					'label' => 'ERR_ROLE_USERNAME',
 					'rules' => 'required',
 					),
 		),

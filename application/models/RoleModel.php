@@ -60,6 +60,39 @@ class RoleModel extends CI_Model {
 	}
 
 	/**
+	 * 添加角色用户
+	 * @param array $addRoleUserData 角色用户数组
+	 */
+	public function addRoleUser($addRoleUserData = array()){
+		$insertData = array(
+				'user_id'      => makeUUID(),
+				'role_id'      => $addRoleUserData['role_id'],
+				'name'         => $addRoleUserData['role_username'],
+				'status'       => 1,
+				'created_time' => currentTime(),
+			);
+
+		$queryRes = $this->db->insert(tname('qcgj_role_user'), $insertData);
+		
+		if (!$queryRes) {
+			$this->returnRes['msg'] = $this->lang->line('ERR_ADD_FAILURE');
+		}else{
+			$this->returnRes['error'] = false;
+		}
+
+		return $this->returnRes;
+	}
+
+	/**
+	 * 获取角色列表
+	 */
+	public function getRoleList(){
+		$queryRes = $this->db->select('role_id, name')->get_where(tname('qcgj_role', array('status' => 1)))->result();
+
+		return $queryRes;
+	}
+
+	/**
 	 * 更新用户内容
 	 * @param array $updateArr 需要更新的数组
 	 */
@@ -78,10 +111,10 @@ class RoleModel extends CI_Model {
 	}
 
 	/**
-	 * 获取权限列表
+	 * 获取用户列表
 	 *
 	 */
-	public function getRoleList($pageNum = 1, $pageCount = 10){
+	public function getRoleUserList($pageNum = 1, $pageCount = 10){
 
 		$pageNum = abs(($pageNum - 1) * $pageCount);
 		$limit = ' LIMIT '.$pageNum.','.$pageCount;
@@ -205,6 +238,35 @@ class RoleModel extends CI_Model {
 							 ->first_row();
 		if ($queryRes->count < count($roleRule)) {
 			return $this->lang->line('ERR_ROLE_RULE');
+		}
+
+		return true;
+	}
+
+	/**
+	 * 验证角色用户
+	 * @param array $verlidationConf 表单验证配置内容
+	 * @param array $reqData ajax数据内容
+	 */
+	public function verlidationAddRoleUser($verlidationConf = array(), $reqData = array()){
+		$this->form_validation->set_rules($verlidationConf);
+
+		if (!$this->form_validation->run()) {
+			return validation_errors();
+		}
+
+		$queryRes = $this->db->get_where(tname('qcgj_role_user'), array('name' => $reqData['role_username']))->result();
+
+		if (count($queryRes) > 0) {
+			return $this->lang->line('ERR_ADDROLE_USERNAME_EXISTS');
+		}
+
+		$queryRes = $this->db->select('role_id')
+							 ->get_where(tname('qcgj_role'), array('role_id' => $reqData['role_id'], 'status' => 1))
+							 ->first_row();
+
+		if ($queryRes->role_id != $reqData['role_id']) {
+			return $this->lang->line('ERR_ADD_FAILURE');
 		}
 
 		return true;

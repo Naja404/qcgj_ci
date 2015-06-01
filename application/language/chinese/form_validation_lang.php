@@ -24,4 +24,8 @@ $lang = array(
 	// 添加角色 Role/addRole
 	'ERR_ROLE_NAME' => '请正确填写角色名',
 	'ERR_ROLE_RULE' => '请正确选择权限',
+
+	// 添加角色用户 Role/addRoleUser
+	'ERR_ROLE_USERNAME' => '请正确填写用户名',
+	'ERR_ROLE_RULE_SELECT' => '请正确选择角色',
 );

@@ -17,7 +17,14 @@ class WebBase extends MY_Controller {
 	// 分页参数
 	public $p;
 
-	public function __construct(){
+	// 登录状态
+	public $loginStatus = false;
+
+	/**
+	 * 初始化
+	 * @param array $options 配置参数内容
+	 */
+	public function __construct($options = array()){
 		parent::__construct();
 
 		$this->ajaxRes = array(
@@ -31,7 +38,11 @@ class WebBase extends MY_Controller {
 
 		$this->load->model('WebBaseModel');
 
-		$this->sideBar = $this->setSideBar();
+		if (isset($options['loginStatus']) && $options['loginStatus'] === true) {
+			$this->loginStatus = true;
+			$this->sideBar = $this->setSideBar();
+		}
+		
 	}
 
 	// 设置菜单栏

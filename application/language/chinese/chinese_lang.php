@@ -13,6 +13,7 @@ $lang = array(
 		'TEXT_SHOP_NAME'     => '门店名称',
 		'TEXT_SHOP_ADDRESS'  => '门店地址',
 
+
 		'SELECT_CITY_LIST' => array(
 				array(
 					'name'   => '北京',
