@@ -48,7 +48,7 @@ class User extends WebBase {
 						'status' => 0,
 					);
 			}
-
+			// TODO 登录成功后跳转
 			jsonReturn($this->ajaxRes);
 		}
 
