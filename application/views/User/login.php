@@ -40,18 +40,18 @@
 
 											<div class="space-6"></div>
 
-											<form>
+											<form id="loginForm">
 												<fieldset>
 													<label class="block clearfix">
 														<span class="block input-icon input-icon-right">
-															<input type="text" class="form-control" placeholder="<?php echo $this->lang->line('INPUT_USERNAME');?>" />
+															<input type="text" name="username"class="form-control" placeholder="<?php echo $this->lang->line('INPUT_USERNAME');?>" />
 															<i class="icon-user"></i>
 														</span>
 													</label>
 
 													<label class="block clearfix">
 														<span class="block input-icon input-icon-right">
-															<input type="password" class="form-control" placeholder="<?php echo $this->lang->line('INPUT_PASSWORD');?>" />
+															<input type="password" name="passwd" class="form-control" placeholder="<?php echo $this->lang->line('INPUT_PASSWORD');?>" />
 															<i class="icon-lock"></i>
 														</span>
 													</label>
@@ -60,11 +60,11 @@
 
 													<div class="clearfix">
 														<label class="inline">
-															<input type="checkbox" class="ace" />
+															<input type="checkbox" name="remeberLogin" class="ace" />
 															<span class="lbl"> <?php echo $this->lang->line('TEXT_REMEMBER_ME');?></span>
 														</label>
 
-														<button type="button" class="width-35 pull-right btn btn-sm btn-primary">
+														<button type="button" class="width-35 pull-right btn btn-sm btn-primary" onclick="subLoginForm();">
 															<i class="icon-key"></i>
 															<?php echo $this->lang->line('BTN_LOGIN');?>
 														</button>
@@ -245,6 +245,21 @@
 		<!-- inline scripts related to this page -->
 
 		<script type="text/javascript">
+			function subLoginForm(){
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('User/login');?>",
+					data:$('#loginForm').serialize(),
+					success:function(data){
+						if (data.status) {
+							alert(data.msg);
+						}else{
+
+						}
+					}
+				});
+			}
+
 			function show_box(id) {
 			 jQuery('.widget-box.visible').removeClass('visible');
 			 jQuery('#'+id).addClass('visible');

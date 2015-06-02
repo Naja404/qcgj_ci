@@ -179,4 +179,13 @@ function currentTime($format = '', $timestamp = 0){
 
 	return $currentTime;
 }
+
+/**
+ * 获取session_id
+ *
+ */
+function getSessionId(){
+	session_start();
+	return session_id();
+}
 ?>
