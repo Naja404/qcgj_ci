@@ -47,17 +47,17 @@ class UserModel extends CI_Model {
 
 	/**
 	 * 设置用户登录信息
-	 * @param string $sessionId 会话id
+	 * @param string $sessionSSID 会话id
 	 * @param int $expireTime 过期时间
 	 */
-	public function setSessionInfo($userId = false, $sessionId = false, $expireTime = 28800){
+	public function setSessionInfo($userId = false, $sessionSSID = false, $expireTime = 28800){
 
-		if (!$userId || !$sessionId) {
+		if (!$userId || !$sessionSSID) {
 			return false;
 		}
 
 		$update = array(
-				'session_id' => $sessionId,
+				'session_id' => $sessionSSID,
 				'expireTime' => time() + $expireTime,
 			);
 

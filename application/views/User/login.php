@@ -1,6 +1,6 @@
 <?php $this->load->view('Public/header');?>
 		<!--[if lte IE 8]>
-		  <link rel="stylesheet" href="{:C('WEB_HTML_PATH')}css/ace-ie.min.css" />
+		  <link rel="stylesheet" href="<?php echo config_item('html_url');?>css/ace-ie.min.css" />
 		<![endif]-->
 
 		<!-- inline styles related to this page -->
@@ -8,8 +8,8 @@
 		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 
 		<!--[if lt IE 9]>
-		<script src="{:C('WEB_HTML_PATH')}js/html5shiv.js"></script>
-		<script src="{:C('WEB_HTML_PATH')}js/respond.min.js"></script>
+		<script src="<?php echo config_item('html_url');?>js/html5shiv.js"></script>
+		<script src="<?php echo config_item('html_url');?>js/respond.min.js"></script>
 		<![endif]-->
 	</head>
 	<body class="login-layout">
@@ -220,7 +220,7 @@
 
 		<!--[if !IE]> -->
 
-		<script src="{:C('WEB_HTML_PATH')}js/jquery.min.js"></script>
+		<script src="<?php echo config_item('html_url');?>js/jquery.min.js"></script>
 
 		<!-- <![endif]-->
 

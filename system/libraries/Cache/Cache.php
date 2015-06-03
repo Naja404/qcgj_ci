@@ -74,14 +74,14 @@ class CI_Cache extends CI_Driver_Library {
 	 *
 	 * @var mixed
 	 */
-	protected $_adapter = 'dummy';
+	protected $_adapter = 'redis';
 
 	/**
 	 * Fallback driver
 	 *
 	 * @var string
 	 */
-	protected $_backup_driver = 'dummy';
+	protected $_backup_driver = 'redis';
 
 	/**
 	 * Cache key prefix

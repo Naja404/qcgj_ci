@@ -68,18 +68,19 @@ class User extends WebBase {
 			return false;
 		}
 		
-		$sessionId = getSessionId();
+		$sessionSSID = makeUUID();
 
 		$expireTime = 3600*24;
 		if (isset($loginData->remeberLogin) && $loginData->remeberLogin === true) {
 			$expireTime = 3600*24*7;
 		}
 		
-		$returnRes = $this->UserModel->setSessionInfo($loginData->user_id, $sessionId, $expireTime);
+		$returnRes = $this->UserModel->setSessionInfo($loginData->user_id, $sessionSSID, $expireTime);
 
 		if (!$returnRes) return false;
 
-		$this->input->set_cookie('sessionId', $sessionId, $expireTime);
+		$this->input->set_cookie('sessionSSID', $sessionSSID, $expireTime);
+		$this->input->set_cookie('sessionUse', $loginData->user_id, $expireTime);
 
 		return true;
 
