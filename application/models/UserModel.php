@@ -15,7 +15,11 @@ class UserModel extends CI_Model {
 							'data'  => array()
 							);
 	}
-
+	public function test($arr = array()){
+		$queryRes = $this->db->insert_batch(tname('qcgj_brand_other'), $arr);
+		echo '<pre>';
+		print_r($queryRes);exit;
+	}
 	/**
 	 * 用户登录
 	 * @param array $loginData 登录信息
@@ -29,11 +33,11 @@ class UserModel extends CI_Model {
 		$queryRes = $this->db->get_where(tname('qcgj_role_user'), $login)->first_row();
 
 		if (!isset($queryRes->user_id)) {
-			return $this->returnRes['msg'] = $this->lang->line('ERR_LOGIN_PASSWD');
+			return $this->_return($this->lang->line('ERR_LOGIN_PASSWD'));
 		}
 
 		if ((int)$queryRes->status !== 1) {
-			return $this->returnRes['msg'] = $this->lang->line('ERR_LOGIN_STATUS_'.$queryRes->status);
+			return $this->_return($this->lang->line('ERR_LOGIN_STATUS_'.$queryRes->status));
 		}
 
 		$this->returnRes = array(
@@ -79,6 +83,23 @@ class UserModel extends CI_Model {
 		}
 
 		return true;
+	}
+
+	/**
+	 * model 返回内容
+	 * @param string $msg 返回信息内容
+	 * @param array $data 数据内容
+	 * @param bool $error 返回状态
+	 */
+	private function _return($msg = false, $data = array(), $error = true){
+
+		$this->returnRes = array(
+					'error' => $error,
+					'msg'   => $msg,
+					'data'  => $data,
+			);
+
+		return $this->returnRes;
 	}
 
 }

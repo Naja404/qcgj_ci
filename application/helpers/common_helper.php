@@ -196,7 +196,7 @@ function getSessionId(){
  * @param int $expire  过期时间 (单位:秒)
  * @return string
  */
-function strEncrypt($data, $key, $expire = 0) {
+function strEncrypt($data, $key = '@#qcgj*', $expire = 0) {
 	$key  = md5($key);
 	$data = base64_encode($data);
 	$x    = 0;
@@ -221,7 +221,7 @@ function strEncrypt($data, $key, $expire = 0) {
  * @param string $key  加密密钥
  * @return string
  */
-function strDecrypt($data, $key){
+function strDecrypt($data, $key = '@#qcgj*'){
 	$key    = md5($key);
 	$x      = 0;
 	$data   = base64_decode($data);

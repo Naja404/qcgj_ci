@@ -32,17 +32,40 @@ class WebBase extends MY_Controller {
 					'msg'    => $this->lang->line('ERR_PARAM'),
 			);
 		
+		$this->load->model('WebBaseModel');
+
+		// $this->setBaseInfo($options);
+		
+	}
+
+	/**
+	 * 基础设置
+	 * @param array $options 配置参数内容
+	 */
+	public function setBaseInfo($options = array()){
+
+		if (!isset($options['guest']) || !$options['guest']) {
+			
+			$authInfo = array(
+					'sessionSSID' => $this->input->get_cookie('sessionSSID'),
+					'sessionUser' => $this->input->get_cookie('sessionUser'),
+				);
+
+			$authRes = $this->WebBaseModel->checkAuth($authInfo);
+
+			if ($authRes['error']) {
+				redirect(site_url('User/login'));
+			}
+		}
+
 		$p = (int)$this->input->get('p');
 
 		$this->p = $p <= 0 ? 1 : $p;
-
-		$this->load->model('WebBaseModel');
 
 		if (isset($options['loginStatus']) && $options['loginStatus'] === true) {
 			$this->loginStatus = true;
 			$this->sideBar = $this->setSideBar();
 		}
-		
 	}
 
 	// 设置菜单栏

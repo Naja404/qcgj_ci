@@ -104,7 +104,7 @@ $autoload['helper'] = array('url', 'common', 'cookie');
 |
 */
 
-$autoload['config'] = array();
+$autoload['config'] = array('staticConf');
 
 
 /*

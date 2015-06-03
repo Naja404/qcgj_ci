@@ -32,7 +32,7 @@
 							<div class="position-relative">
 								<div id="login-box" class="login-box visible widget-box no-border">
 									<div class="widget-body">
-										<div class="widget-main">
+										<div class="widget-main ">
 <!-- 											<h4 class="header blue lighter bigger">
 												<i class="icon-coffee green"></i>
 												Please Enter Your Information
@@ -64,8 +64,8 @@
 															<span class="lbl"> <?php echo $this->lang->line('TEXT_REMEMBER_ME');?></span>
 														</label>
 
-														<button type="button" class="width-35 pull-right btn btn-sm btn-primary" onclick="subLoginForm();">
-															<i class="icon-key"></i>
+														<button type="button" class="width-35 pull-right btn btn-sm btn-primary" onclick="subLoginForm();" id="loginBTN">
+															<i class="icon-key" id="loginBTN_i"></i>
 															<?php echo $this->lang->line('BTN_LOGIN');?>
 														</button>
 													</div>
@@ -246,6 +246,7 @@
 
 		<script type="text/javascript">
 			function subLoginForm(){
+				$('#loginBTN_i').toggleClass('icon-spinner icon-spin white bigger-125');
 				$.ajax({
 					type:"POST",
 					url:"<?php echo site_url('User/login');?>",
@@ -253,8 +254,10 @@
 					success:function(data){
 						if (data.status) {
 							alert(data.msg);
+							$('#loginBTN_i').removeClass('icon-spinner icon-spin white bigger-125');
+							$('#loginBTN_i').addClass('icon-key');
 						}else{
-
+							window.href.location = data.href;
 						}
 					}
 				});

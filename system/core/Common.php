@@ -300,6 +300,21 @@ if ( ! function_exists('config_item'))
 			$_config[0] =& get_config();
 		}
 
+		// 自定义二维数组 2015-6-3
+		if (preg_match('/./', $item)) {
+			$itemArr = explode('.', $item);
+			$configItem = NULL;
+			foreach ($itemArr as $k) {
+				if (!$configItem) {
+					$configItem = $_config[0][$k];
+				}else{
+					$configItem = $configItem[$k];
+				}
+			}
+
+			return isset($configItem) ? $configItem : NULL;
+		}
+
 		return isset($_config[0][$item]) ? $_config[0][$item] : NULL;
 	}
 }
