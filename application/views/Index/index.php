@@ -50,11 +50,6 @@
 								<i class="icon-home home-icon"></i>
 								<a href="<?php echo config_item('base_url');?>"><?php echo $this->lang->line('TEXT_HOME_PAGE');?></a>
 							</li>
-
-							<li>
-								<a href="<?php echo site_url('Shop/shopList');?>"><?php echo $this->lang->line('TEXT_SHOP_MANAGER');?></a>
-							</li>
-							<li class="active"><?php echo $this->lang->line('TEXT_SHOP_LIST');?></li>
 						</ul>
 
 					</div>

@@ -13,5 +13,6 @@ $lang = array(
 	'TEXT_AREA_NAME'      => '商圈',
 	'TEXT_CITY_NAME'      => '城市',
 	'TEXT_FLOOR'          => '楼层',
+	'TEXT_SHOPLIST_TOTAL' => '共 %s 条',
 
 );

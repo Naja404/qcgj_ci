@@ -228,8 +228,8 @@
 							<a data-toggle="dropdown" href="#" class="dropdown-toggle">
 								<img class="nav-user-photo" src="<?php echo config_item('base_url');?>html/avatars/user.jpg" alt="Jason's Photo" />
 								<span class="user-info">
-									<small>Welcome,</small>
-									Jason
+									<small><?php echo $this->lang->line('TEXT_WELCOME');?>,</small>
+									<?php echo $this->userInfo->name;?>
 								</span>
 
 								<i class="icon-caret-down"></i>
@@ -253,9 +253,9 @@
 								<li class="divider"></li>
 
 								<li>
-									<a href="#">
+									<a href="<?php echo site_url('User/logout');?>">
 										<i class="icon-off"></i>
-										Logout
+										<?php echo $this->lang->line('TEXT_LOGOUT');?>
 									</a>
 								</li>
 							</ul>

@@ -66,18 +66,20 @@
 
 						<div class="row">
 							<div class="col-xs-12">
+								<form method="get" action="<?php echo site_url('Shop/shopList');?>">
 									<?php echo $this->lang->line('TEXT_SELECT_CITY');?>:
 									<select name="city">
 										<?php foreach($cityList as $city){?>
-										<option value="<?php echo $city['cityId']?>"><?php echo $city['name'];?></option>
+										<option value="<?php echo $city['cityId']?>" <?php echo $this->input->get('city', true) == $city['cityId'] ? 'selected' : '';?>><?php echo $city['name'];?></option>
 										<?php }?>
 									</select>
 
-									<?php echo $this->lang->line('TEXT_SHOP_NAME');?>:<input type="text" name="shopName" />
+									<?php echo $this->lang->line('TEXT_SHOP_NAME');?>:<input type="text" name="shop" value="<?php echo $this->input->get('shop');?>"/>
 
 
-									<?php echo $this->lang->line('TEXT_SHOP_ADDRESS');?>:<input type="text" name="shopAddress" />
-									<button><?php echo $this->lang->line('BTN_SEARCH');?></button>
+									<?php echo $this->lang->line('TEXT_SHOP_ADDRESS');?>:<input type="text" name="address" value="<?php echo $this->input->get('address');?>"/>
+									<button type="submit"><?php echo $this->lang->line('BTN_SEARCH');?></button><?php echo $shopListTotalLang;?>
+								</form>
 							</div>
 
 							<div class="col-xs-12">

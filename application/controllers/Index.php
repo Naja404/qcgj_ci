@@ -20,6 +20,7 @@ class Index extends WebBase {
 	 *
 	 */
 	public function index(){
+
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_INDEX_TITLE');
 		$this->load->view('Index/index', $this->outData);
 	}

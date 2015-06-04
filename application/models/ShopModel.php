@@ -17,8 +17,12 @@ class ShopModel extends CI_Model {
 
 	/**
 	 * 获取门店列表
+	 * @param string $where 查询条件
+	 * @param string $order 排序条件
+	 * @param int $pageNum 页码
+	 * @param int $pageCount 条数
 	 */
-	public function getShopList($where = NULL, $order = NULL, $pageCount = 25, $pageNum = 1){
+	public function getShopList($where = NULL, $order = NULL, $pageNum = 1, $pageCount = 25){
 
 		$pageNum = ($pageNum - 1) * $pageCount;
 
@@ -44,18 +48,23 @@ class ShopModel extends CI_Model {
 					%s 
 					%s 
 					%s ";
-					echo sprintf($sql, $totalField, $where, $order, '');exit;
-		$queryTotal = $this->db->query(sprintf($sql, $totalField, $where, $order, ''))->result();
-		echo '<pre>';
-		print_r($queryTotal);exit;
-		$queryRes = $this->db->query(sprintf($sql, $field, $where, $order, $limit))->result();
 
+		$where = $this->_checkUserBrand($where);
+
+		if (empty($where)) {
+			return $this->_return(null, array('list' => array(), 'total' => 0), false);
+		}
+
+		$queryTotal = $this->db->query(sprintf($sql, $totalField, $where, $order, ''))->result_array();
+
+		$queryRes = $this->db->query(sprintf($sql, $field, $where, $order, $limit))->result();
+		// echo $this->db->last_query();exit;
 		$this->returnRes = array(
 				'error' => false,
 				'msg'   => false,
 				'data'  => array(
 					'list'  => $queryRes,
-					'total' => $queryTotal,
+					'total' => $queryTotal[0]['total'],
 				),
 			);
 
@@ -98,5 +107,50 @@ class ShopModel extends CI_Model {
 		$this->pagination->initialize($pageConfig);
 
 		return $this->pagination->create_links();
+	}
+
+	/**
+	 * 设置店铺查询条件
+	 * @param string $where 查询条件
+	 */
+	private function _checkUserBrand($where = null){
+		// 判断超级管理员
+		$ruleArr = array(1);
+		if (in_array($this->userInfo->role_id, $ruleArr)) {
+			return $where;
+		}
+
+		if (isset($this->userInfo->brand_id) && !empty($this->userInfo->brand_id)) {
+			$brandEmpty = true;
+			$where .= " AND b.id = '".$this->userInfo->brand_id."' ";
+		}
+
+		if (isset($this->userInfo->mall_id) && !empty($this->userInfo->mall_id)) {
+			$mallEmpty = true;
+			$where .= " AND c.id = '".$this->userInfo->mall_id."' ";
+		}
+
+		if (!isset($mallEmpty) && !isset($brandEmpty)) {
+			return null;
+		}
+
+		return $where;
+	}
+
+	/**
+	 * model 返回内容
+	 * @param string $msg 返回信息内容
+	 * @param array $data 数据内容
+	 * @param bool $error 返回状态
+	 */
+	private function _return($msg = false, $data = array(), $error = true){
+
+		$this->returnRes = array(
+					'error' => $error,
+					'msg'   => $msg,
+					'data'  => $data,
+			);
+
+		return $this->returnRes;
 	}
 }

@@ -245,6 +245,14 @@
 		<!-- inline scripts related to this page -->
 
 		<script type="text/javascript">
+		    $(function(){
+		        $(document).keydown(function(event){
+		            if (event.keyCode == 13) {
+		                subLoginForm();
+		            }
+		        });
+		    });
+		    
 			function subLoginForm(){
 				$('#loginBTN_i').toggleClass('icon-spinner icon-spin white bigger-125');
 				$.ajax({

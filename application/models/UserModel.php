@@ -36,6 +36,13 @@ class UserModel extends CI_Model {
 			return $this->_return($this->lang->line('ERR_LOGIN_STATUS_'.$queryRes->status));
 		}
 
+		$brandRes = $this->db->get_where(tname('qcgj_role_brand_mall'), array('user_id' => $queryRes->user_id))->first_row();
+
+		if (isset($brandRes) && !empty($brandRes)) {
+			$queryRes->brand_id = $brandRes->brand_id;
+			$queryRes->mall_id = $brandRes->mall_id;
+		}
+
 		$this->returnRes = array(
 				'error' => false,
 				'data'  => $queryRes,

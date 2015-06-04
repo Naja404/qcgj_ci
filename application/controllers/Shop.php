@@ -9,6 +9,9 @@ class Shop extends WebBase {
 	//  视图输出内容
 	public $outData;
 
+	// 城市列表
+	public $cityList = array('上海', '北京', '上海', '广州');
+
 	public function __construct(){
 		parent::__construct();
 		
@@ -21,15 +24,48 @@ class Shop extends WebBase {
 	 * 门店列表
 	 */
 	public function shopList(){
-		// TODO 数据总数和数据数组
-		$shopList = $this->ShopModel->getShopList();
-		echo '<pre>';
-		print_r($shopList);exit;
-		$this->outData['shopList'] = $shopList['list'];
+
+		$where = $this->shopListWhere();
+
+		$shopList = $this->ShopModel->getShopList($where, '', $this->p);
+
+		$this->outData['shopList'] = $shopList['data']['list'];
+		$this->outData['shopListTotal'] = $shopList['data']['total'];
+		$this->outData['shopListTotalLang'] = sprintf($this->lang->line('TEXT_SHOPLIST_TOTAL'), $shopList['data']['total']);
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_SHOPLIST');
 		$this->outData['cityList'] = $this->lang->line('SELECT_CITY_LIST');
+		
 		$this->_shopListPage();
 		$this->load->view('Shop/shoplist', $this->outData);
+	}
+
+	/**
+	 * 门店查询条件
+	 *
+	 */
+	public function shopListWhere(){
+		$cityID = (int)$this->input->get('city', true);
+		$shopName = $this->input->get('shop', true);
+		$address = $this->input->get('address', true);
+
+		if (!in_array($this->cityList[$cityID], $this->cityList)) {
+			$cityName = $this->cityList[0];
+		}else{
+			$cityName = $this->cityList[$cityID];
+		}
+
+		$where = " WHERE c.city_name = '".$cityName."' ";
+
+		if (!empty($shopName)) {
+			$where .= " AND c.name_zh LIKE '%".$shopName."%' ";
+		}
+
+		if (!empty($address)) {
+			$where .= " AND (c.address LIKE '%".$address."%' OR c.trade_area_name LIKE '%".$address."%')";
+		}
+
+		return $where;
+
 	}
 
 	/**

@@ -44,6 +44,8 @@ class WebBaseModel extends CI_Model {
 
 		// 验证用户权限
 		$this->checkUserAuth();
+
+		return $this->_return(NULL, $this->userInfo, FALSE);
 	}
 
 	/**
@@ -84,12 +86,10 @@ class WebBaseModel extends CI_Model {
 		$ruleURI = $this->router->class.'/'.$this->router->method;
 
 		if (!in_array($ruleURI, $ruleArr)) {
-
+			return $this->_return($this->lang->line('ERR_NOT_ALLOW'));
 		}
 
 		$this->cache->save(config_item('USER_CACHE.RULE').$this->userID, $ruleArr);
-
-		// todo 用户权限
 
 	}
 

@@ -20,6 +20,9 @@ class WebBase extends MY_Controller {
 	// 登录状态
 	public $loginStatus = false;
 
+	// 用户信息
+	public $userInfo;
+
 	/**
 	 * 初始化
 	 * @param array $options 配置参数内容
@@ -56,20 +59,23 @@ class WebBase extends MY_Controller {
 			if ($authRes['error']) {
 				redirect(site_url('User/login'));
 			}
+
+			$this->userInfo = $authRes['data'];
+			$this->userID = $this->userInfo->user_id;
+			$this->loginStatus = true;
 		}
 
 		$p = (int)$this->input->get('p');
 
 		$this->p = $p <= 0 ? 1 : $p;
 
-		if (isset($options['loginStatus']) && $options['loginStatus'] === true) {
-			$this->loginStatus = true;
+		if (isset($this->loginStatus) && $this->loginStatus === true) {
 			$this->sideBar = $this->setSideBar();
 		}
 	}
 
 	// 设置菜单栏
 	public function setSideBar(){
-		return $this->WebBaseModel->getSideBar('838ad7c331df1d06b7cf584385d7fcc7');
+		return $this->WebBaseModel->getSideBar($this->userID);
 	}
 }

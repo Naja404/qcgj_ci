@@ -8,6 +8,7 @@
 			'num_links'            => 2,
 			'use_page_numbers'     => true,
 			'page_query_string'    => true,
+			'reuse_query_string'   => true,
 			'query_string_segment' => 'p',
 			'full_tag_open'        => '<div class="col-sm-12" style="text-align:right;"><ul class="pagination" >',
 			'full_tag_close'       => '</ul></div>',

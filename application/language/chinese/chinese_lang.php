@@ -12,6 +12,8 @@ $lang = array(
 		'TEXT_SELECT_CITY'   => '所在城市',
 		'TEXT_SHOP_NAME'     => '门店名称',
 		'TEXT_SHOP_ADDRESS'  => '门店地址',
+		'TEXT_LOGOUT'		 => '注销',
+		'TEXT_WELCOME'       => '欢迎',
 
 
 		'SELECT_CITY_LIST' => array(
@@ -43,4 +45,5 @@ $lang = array(
 		'ERR_UPDATE_FAILURE' => '数据更新失败,请刷新后重试',
 		'ERR_PLEASE_LOGIN'   => '未登录,请先登录',
 		'ERR_TIMEOUT_LOGIN'  => '登录超时,请重新登录',
+		'ERR_NOT_ALLOW'      => '您无权限浏览该页面',
 	);

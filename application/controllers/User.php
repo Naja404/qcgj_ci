@@ -52,7 +52,7 @@ class User extends WebBase {
 						'href' => site_url('Index'),
 					);
 			}
-			// TODO 登录成功后跳转
+
 			jsonReturn($this->ajaxRes);
 		}
 
@@ -60,6 +60,23 @@ class User extends WebBase {
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_USERLOGIN');
 		$this->load->view('User/login', $this->outData);
 
+	}
+
+	/**
+	 * 注销
+	 *
+	 */
+	public function logout(){
+		
+		$userID = strDecrypt($this->input->cookie('sessionUser'));
+
+		$this->input->clearCookie();
+
+		$this->cache->delete(config_item('USER_CACHE.LOGIN').$userID);
+		$this->cache->delete(config_item('USER_CACHE.MENU').$userID);
+		$this->cache->delete(config_item('USER_CACHE.RULE').$userID);
+
+		redirect(site_url('User/login'));
 	}
 
 	/**

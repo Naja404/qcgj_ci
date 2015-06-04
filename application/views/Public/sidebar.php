@@ -11,7 +11,7 @@
 							</a>
 						</li>
 						<?php foreach ($this->sideBar as $v){?>
-						<li class="<?php if($currentModule == $v['module']){?>active open<?php }?>">
+						<li class="<?php if($this->router->class == $v['module']){?>active open<?php }?>">
 							<a href="#" class="dropdown-toggle">
 								<i class="icon-list"></i>
 								<span class="menu-text"> <?php echo $v['title'];?> </span>
