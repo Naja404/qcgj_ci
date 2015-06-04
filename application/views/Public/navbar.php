@@ -8,7 +8,7 @@
 					<a href="#" class="navbar-brand">
 						<small>
 							<i class="icon-leaf"></i>
-							<?php echo $this->lang->line('TEXT_TITLE');?>
+							<?php echo $this->lang->line('TEXT_TITLE');?>=<strong>{elapsed_time}</strong> seconds
 						</small>
 					</a><!-- /.brand -->
 				</div><!-- /.navbar-header -->

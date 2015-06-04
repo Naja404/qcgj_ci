@@ -296,6 +296,23 @@ class CI_Input {
 		return $this->_fetch_from_array($_COOKIE, $index, $xss_clean);
 	}
 
+	/**
+	 * 清空所有cookie 
+	 * 2015-6-4
+	 */
+	public function clearCookie()
+	{
+		if (count($_COOKIE) <= 0) {
+			return true;
+		}
+
+		foreach ($_COOKIE as $k => $v) {
+			$this->set_cookie($k, NULL);
+		}
+
+		return true;
+	}
+
 	// --------------------------------------------------------------------
 
 	/**

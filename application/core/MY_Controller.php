@@ -31,10 +31,10 @@ class WebBase extends MY_Controller {
 					'status' => 1,
 					'msg'    => $this->lang->line('ERR_PARAM'),
 			);
-		
+
 		$this->load->model('WebBaseModel');
 
-		// $this->setBaseInfo($options);
+		$this->setBaseInfo($options);
 		
 	}
 
@@ -45,10 +45,10 @@ class WebBase extends MY_Controller {
 	public function setBaseInfo($options = array()){
 
 		if (!isset($options['guest']) || !$options['guest']) {
-			
+
 			$authInfo = array(
-					'sessionSSID' => $this->input->get_cookie('sessionSSID'),
-					'sessionUser' => $this->input->get_cookie('sessionUser'),
+					'sessionSSID' => strDecrypt($this->input->cookie('sessionSSID')),
+					'sessionUser' => strDecrypt($this->input->cookie('sessionUser')),
 				);
 
 			$authRes = $this->WebBaseModel->checkAuth($authInfo);

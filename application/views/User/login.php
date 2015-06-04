@@ -257,7 +257,7 @@
 							$('#loginBTN_i').removeClass('icon-spinner icon-spin white bigger-125');
 							$('#loginBTN_i').addClass('icon-key');
 						}else{
-							window.href.location = data.href;
+							window.location.href = data.href;
 						}
 					}
 				});

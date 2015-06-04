@@ -10,6 +10,7 @@ $config = array(
 		'USER_CACHE' => array(
 				'LOGIN' => 'User:Login:',
 				'MENU'  => 'User:Menu:',
+				'RULE'  => 'User:Rule:',
 		),
 	);
 

@@ -13,13 +13,9 @@ class UserModel extends CI_Model {
 							'error' => true, // true=有错误, false=正确
 							'msg'   => false, 
 							'data'  => array()
-							);
+						);
 	}
-	public function test($arr = array()){
-		$queryRes = $this->db->insert_batch(tname('qcgj_brand_other'), $arr);
-		echo '<pre>';
-		print_r($queryRes);exit;
-	}
+
 	/**
 	 * 用户登录
 	 * @param array $loginData 登录信息
