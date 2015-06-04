@@ -89,7 +89,7 @@ class WebBaseModel extends CI_Model {
 			return $this->_return($this->lang->line('ERR_NOT_ALLOW'));
 		}
 
-		$this->cache->save(config_item('USER_CACHE.RULE').$this->userID, $ruleArr);
+		$this->cache->save(config_item('USER_CACHE.RULE').$this->userID, $ruleArr, config_item('USER_CACHE.DEFAULT_EXPIRETIME'));
 
 	}
 
@@ -136,7 +136,7 @@ class WebBaseModel extends CI_Model {
 				);
 		}
 
-		$this->cache->save(config_item('USER_CACHE.MENU').$userID, $sideBarArr);
+		$this->cache->save(config_item('USER_CACHE.MENU').$userID, $sideBarArr, config_item('USER_CACHE.DEFAULT_EXPIRETIME'));
 
 		return $sideBarArr;
 	}

@@ -11,6 +11,7 @@ $config = array(
 				'LOGIN' => 'User:Login:',
 				'MENU'  => 'User:Menu:',
 				'RULE'  => 'User:Rule:',
+				'DEFAULT_EXPIRETIME' => '3600',
 		),
 	);
 
