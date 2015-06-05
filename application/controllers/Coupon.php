@@ -17,6 +17,14 @@ class Coupon extends WebBase {
 	}
 
 	/**
+	 * 优惠券列表
+	 *
+	 */
+	public function couponList(){
+
+	}
+
+	/**
 	 * 新建优惠券
 	 *
 	 */
@@ -46,14 +54,6 @@ class Coupon extends WebBase {
 
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ADDCOUPON');
 		$this->load->view('Coupon/addCoupon', $this->outData);
-	}
-
-	public function test(){
-		if ($this->input->method() == 'POST') {
-			exit('-1-1-');
-		}
-		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ADDCOUPON');
-		$this->load->view('Coupon/test', $this->outData);
 	}
 
 	/**
