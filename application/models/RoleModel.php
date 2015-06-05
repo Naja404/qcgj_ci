@@ -68,6 +68,7 @@ class RoleModel extends CI_Model {
 				'user_id'      => makeUUID(),
 				'role_id'      => $addRoleUserData['role_id'],
 				'name'         => $addRoleUserData['role_username'],
+				'passwd'	   => md5($addRoleUserData['passwd']),
 				'status'       => 1,
 				'created_time' => currentTime(),
 			);

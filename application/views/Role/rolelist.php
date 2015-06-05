@@ -248,7 +248,7 @@
 									</div>
 
 									<div class="modal-footer no-margin-top">
-										<button class="btn btn-sm btn-danger pull-left" data-dismiss="modal" id="addrule_dismiss">
+										<button class="btn btn-sm btn-danger pull-left" data-dismiss="modal" id="addrole_dismiss">
 											<i class="icon-remove"></i>
 											<?php echo $this->lang->line('BTN_CLOSE');?>
 										</button>
@@ -385,7 +385,23 @@
 														<?php echo $this->lang->line('TEXT_ROLE_USERNAME');?>
 													</td>
 													<td>
-														<input type="text" name="role_username" placeholder=""/>
+														<input type="text" name="role_username" placeholder="<?php echo $this->lang->line('PLACEHOLDER_USERNAME');?>"/>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<?php echo $this->lang->line('TEXT_ROLE_USERNAME');?>
+													</td>
+													<td>
+														<input type="password" name="passwd" placeholder="<?php echo $this->lang->line('PLACEHOLDER_PASSWORD');?>"/>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<?php echo $this->lang->line('TEXT_ROLE_USERNAME');?>
+													</td>
+													<td>
+														<input type="password" name="confirm_passwd" placeholder="<?php echo $this->lang->line('PLACEHOLDER_CONFIRM_PASSWORD');?>"/>
 													</td>
 												</tr>
 												<tr>

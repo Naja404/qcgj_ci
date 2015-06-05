@@ -40,10 +40,18 @@ class WebBaseModel extends CI_Model {
 
 		$this->userInfo = $this->cache->get(config_item('USER_CACHE.LOGIN').$this->userID);
 		// 验证用户登录状态
-		$this->checkLogin();
+		$checkLoginRes = $this->checkLogin();
+
+		if (is_string($checkLoginRes) || $checkLoginRes !== true) {
+			return $this->_return($checkLoginRes);
+		}
 
 		// 验证用户权限
-		$this->checkUserAuth();
+		$checkUserAuthRes = $this->checkUserAuth();
+
+		if (is_string($checkUserAuthRes) || $checkUserAuthRes !== true) {
+			return $this->_return($checkUserAuthRes, array('url' => site_url()));
+		}
 
 		return $this->_return(NULL, $this->userInfo, FALSE);
 	}
@@ -54,12 +62,14 @@ class WebBaseModel extends CI_Model {
 	public function checkLogin(){
 
 		if (isset($this->userInfo->user_id) && $this->userInfo->user_id != $this->userID) {
-			return $this->_return($this->lang->line('ERR_TIMEOUT_LOGIN'));
+			return $this->lang->line('ERR_TIMEOUT_LOGIN');
 		}
 
 		if (isset($this->userInfo->sessionSSID) && $this->userInfo->sessionSSID != $this->sessionSSID) {
-			return $this->_return($this->lang->line('ERR_TIMEOUT_LOGIN'));
+			return $this->lang->line('ERR_TIMEOUT_LOGIN');
 		}
+
+		return true;
 	}
 
 	/**
@@ -86,10 +96,12 @@ class WebBaseModel extends CI_Model {
 		$ruleURI = $this->router->class.'/'.$this->router->method;
 
 		if (!in_array($ruleURI, $ruleArr)) {
-			return $this->_return($this->lang->line('ERR_NOT_ALLOW'));
+			return $this->lang->line('ERR_NOT_ALLOW');
 		}
 
 		$this->cache->save(config_item('USER_CACHE.RULE').$this->userID, $ruleArr, config_item('USER_CACHE.DEFAULT_EXPIRETIME'));
+
+		return true;
 
 	}
 

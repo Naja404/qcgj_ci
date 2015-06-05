@@ -57,6 +57,15 @@ class WebBase extends MY_Controller {
 			$authRes = $this->WebBaseModel->checkAuth($authInfo);
 
 			if ($authRes['error']) {
+				
+				if ($authRes['data']['url']) {
+					$outData = array(
+							'errLang' => $authRes['msg'],
+							'url'     => $authRes['data']['url'],
+						);
+					$this->load->view('Public/error', $outData);
+				}
+
 				redirect(site_url('User/login'));
 			}
 

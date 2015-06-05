@@ -36,7 +36,7 @@ class Shop extends WebBase {
 		$this->outData['cityList'] = $this->lang->line('SELECT_CITY_LIST');
 		
 		$this->_shopListPage();
-		$this->load->view('Shop/shoplist', $this->outData);
+		$this->load->view('Shop/shopList', $this->outData);
 	}
 
 	/**
@@ -66,6 +66,14 @@ class Shop extends WebBase {
 
 		return $where;
 
+	}
+
+	/**
+	 * 店长列表
+	 *
+	 */
+	public function managerList(){
+		$this->load->view('Shop/managerList');
 	}
 
 	/**

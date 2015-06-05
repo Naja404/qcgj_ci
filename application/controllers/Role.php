@@ -85,7 +85,7 @@ class Role extends WebBase {
 
 		$addRoleRes = $this->RoleModel->addRole($this->input->post());
 		
-		if ($addRuleRes['error']) {
+		if ($addRoleRes['error']) {
 			$this->ajaxRes['msg'] = $this->lang->line('ERR_ADD_FAILURE');
 			jsonReturn($this->ajaxRes);
 		}

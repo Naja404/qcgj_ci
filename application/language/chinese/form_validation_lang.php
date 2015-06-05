@@ -28,6 +28,8 @@ $lang = array(
 	// 添加角色用户 Role/addRoleUser
 	'ERR_ROLE_USERNAME'        => '请正确填写用户名',
 	'ERR_ROLE_RULE_SELECT'     => '请正确选择角色',
+	'ERR_ROLE_CONFIRM_PASSWD'  => '密码不一致',
+	'ERR_ROLE_PASSWD'  		   => '请正确输入密码',
 	
 	// 用户登录 User/login
 	'ERR_LOGIN_USERNAME_EMPTY' => '用户名不能为空',

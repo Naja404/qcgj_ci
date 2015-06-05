@@ -79,5 +79,15 @@ $lang = array(
 					'label' => 'ERR_ROLE_USERNAME',
 					'rules' => 'required',
 					),
+				array(
+					'field' => 'passwd',
+					'label' => 'ERR_ROLE_PASSWD',
+					'rules' => 'required',
+					),
+				array(
+					'field' => 'confirm_passwd',
+					'label' => 'ERR_ROLE_CONFIRM_PASSWD',
+					'rules' => 'required|matches[passwd]',
+					),
 		),
 );

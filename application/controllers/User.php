@@ -49,7 +49,7 @@ class User extends WebBase {
 
 				$this->ajaxRes = array(
 						'status' => 0,
-						'href' => site_url('Index'),
+						'href' => site_url(),
 					);
 			}
 

@@ -14,6 +14,9 @@ $lang = array(
 		'TEXT_SHOP_ADDRESS'  => '门店地址',
 		'TEXT_LOGOUT'		 => '注销',
 		'TEXT_WELCOME'       => '欢迎',
+		'PLACEHOLDER_USERNAME' => '请输入用户名',
+		'PLACEHOLDER_PASSWORD' => '请输入密码',
+		'PLACEHOLDER_CONFIRM_PASSWORD' => '请再次输入密码',
 
 
 		'SELECT_CITY_LIST' => array(
@@ -40,10 +43,12 @@ $lang = array(
 		'BTN_CHANGE' => '变更',
 		'BTN_SEARCH' => '搜索',
 		
+		'ERR_TEXT'           => '错误信息',
 		'ERR_PARAM'          => '参数错误',
 		'ERR_ADD_FAILURE'    => '数据添加错误,请刷新后重试',
 		'ERR_UPDATE_FAILURE' => '数据更新失败,请刷新后重试',
 		'ERR_PLEASE_LOGIN'   => '未登录,请先登录',
 		'ERR_TIMEOUT_LOGIN'  => '登录超时,请重新登录',
 		'ERR_NOT_ALLOW'      => '您无权限浏览该页面',
+		'ERR_AUTO_REDIRECT'  => '秒后将自动跳转',
 	);
