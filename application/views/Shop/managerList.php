@@ -78,19 +78,17 @@
 																<span class="lbl"></span>
 															</label>
 														</th>
-														<th><?php echo $this->lang->line('TEXT_BRAND_NAME');?></th>
-														<th><?php echo $this->lang->line('TEXT_CATEGORY_NAME');?></th>
+														<th><?php echo $this->lang->line('TEXT_MANAGER_NAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_MALL_NAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_ADDRESS');?></th>
 														<th><?php echo $this->lang->line('TEXT_AREA_NAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_CITY_NAME');?></th>
-														<th><?php echo $this->lang->line('TEXT_FLOOR');?></th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
 												</thead>
 
 												<tbody>
-													<?php foreach ($shopList as $v):?>
+													<?php foreach ($managerList as $v):?>
 													<tr>
 														<td class="center">
 															<label>
@@ -100,65 +98,21 @@
 														</td>
 
 														<td>
-															<a href="#"><?php echo $v->brandName;?></a>
+															<a href="#"><?php echo $v->userName;?></a>
 														</td>
-														<td><?php echo $v->categoryName;?></td>
 														<td><?php echo $v->mallName;?></td>
 														<td><?php echo $v->address;?></td>
 														<td><?php echo $v->areaName;?></td>
 														<td><?php echo $v->cityName;?></td>
-														<td><?php echo $v->floor;?></td>
 														<td>
-															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
+															<div class="btn-group">
 																<button class="btn btn-xs btn-success">
 																	<i class="icon-ok bigger-120"></i>
-																</button>
-
-																<button class="btn btn-xs btn-info">
-																	<i class="icon-edit bigger-120"></i>
 																</button>
 
 																<button class="btn btn-xs btn-danger">
 																	<i class="icon-trash bigger-120"></i>
 																</button>
-
-																<button class="btn btn-xs btn-warning">
-																	<i class="icon-flag bigger-120"></i>
-																</button>
-															</div>
-
-															<div class="visible-xs visible-sm hidden-md hidden-lg">
-																<div class="inline position-relative">
-																	<button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown">
-																		<i class="icon-cog icon-only bigger-110"></i>
-																	</button>
-
-																	<ul class="dropdown-menu dropdown-only-icon dropdown-yellow pull-right dropdown-caret dropdown-close">
-																		<li>
-																			<a href="#" class="tooltip-info" data-rel="tooltip" title="View">
-																				<span class="blue">
-																					<i class="icon-zoom-in bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-
-																		<li>
-																			<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">
-																				<span class="green">
-																					<i class="icon-edit bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-
-																		<li>
-																			<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete">
-																				<span class="red">
-																					<i class="icon-trash bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-																	</ul>
-																</div>
 															</div>
 														</td>
 													</tr>
@@ -170,7 +124,7 @@
 									</div><!-- /span -->
 								</div>
 							</div><!-- /.col -->
-							<?php echo $pagination;?>
+							<?php echo $managerListPage;?>
 						</div><!-- /.row -->
 
 					</div><!-- /.page-content -->

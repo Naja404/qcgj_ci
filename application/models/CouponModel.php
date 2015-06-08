@@ -69,6 +69,45 @@ class CouponModel extends CI_Model {
 	}
 
 	/**
+	 * 获取店铺列表
+	 *
+	 */
+	public function getShopList(){
+
+		if (!empty($this->userInfo->mall_id) && !empty($this->userInfo->brand_id)) {
+			$fields = "id AS mallID, 
+						address, 
+						name_zh AS mallName, 
+						trade_area_name AS areaName, 
+						city_name AS cityName";
+			$where = array('id' => $this->userInfo->mall_id);
+			$queryRes = $this->db->select($fields)->get_where(tname('qcgj_mall'), $where)->result();
+
+		}
+
+		if (empty($this->userInfo->mall_id) && !empty($this->userInfo->brand_id)) {
+			$sql = "SELECT 
+						b.id AS mallID,
+						b.address,
+						b.name_zh AS mallName,
+						b.trade_area_name AS areaName,
+						b.city_name AS cityName
+						 FROM ".tname('qcgj_brand_mall')." AS a 
+						LEFT JOIN ".tname('qcgj_mall')." AS b ON b.id = a.tb_mall_id 
+						WHERE a.tb_brand_id = '".$this->userInfo->brand_id."' ORDER BY b.city_name ";
+			$queryRes = $this->db->query($sql)->result();
+		}
+
+		$this->returnRes = array(
+				'error' => false,
+				'data' => $queryRes,
+			);
+
+		return $this->returnRes;
+
+	}
+
+	/**
 	 * 格式化有效期、领取期
 	 * @param string $dateTime 2015/05/27 - 2015/05/28
 	 */

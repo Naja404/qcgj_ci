@@ -73,7 +73,21 @@ class Shop extends WebBase {
 	 *
 	 */
 	public function managerList(){
-		$this->load->view('Shop/managerList');
+		
+		$managerList = $this->ShopModel->getManagerList($this->p);
+		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_MANAGERLIST');
+		$this->outData['managerList'] = $managerList['data']['list'];
+		$this->outData['managerListPage'] = $managerList['data']['page'];
+
+		$this->load->view('Shop/managerList', $this->outData);
+	}
+
+	/**
+	 * 添加店长
+	 *
+	 */
+	public function addShopManager(){
+		
 	}
 
 	/**

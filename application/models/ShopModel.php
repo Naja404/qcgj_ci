@@ -55,7 +55,7 @@ class ShopModel extends CI_Model {
 			return $this->_return(null, array('list' => array(), 'total' => 0), false);
 		}
 
-		$queryTotal = $this->db->query(sprintf($sql, $totalField, $where, $order, ''))->result_array();
+		$queryTotal = $this->db->query(sprintf($sql, $totalField, $where, $order, ''))->first_row();
 
 		$queryRes = $this->db->query(sprintf($sql, $field, $where, $order, $limit))->result();
 		// echo $this->db->last_query();exit;
@@ -64,7 +64,7 @@ class ShopModel extends CI_Model {
 				'msg'   => false,
 				'data'  => array(
 					'list'  => $queryRes,
-					'total' => $queryTotal[0]['total'],
+					'total' => $queryTotal->total,
 				),
 			);
 
@@ -95,13 +95,53 @@ class ShopModel extends CI_Model {
 	}
 
 	/**
+	 * 获取店长列表
+	 * @param int $pageNum 页数
+	 * @param int $pageCount 条数
+	 */
+	public function getManagerList($pageNum = 1, $pageCount = 15){
+		$pageNum = ($pageNum - 1) * $pageCount;
+
+		$limit = " LIMIT ".$pageNum.",".$pageCount;
+		$field = "	a.user_id,
+					b.name AS userName,
+					c.name_zh AS mallName,
+					c.address,
+					c.trade_area_name AS areaName,
+					c.city_name AS cityName ";
+
+		$sql = "SELECT %s
+					 FROM ".tname('qcgj_role_brand_mall')." AS a 
+					LEFT JOIN ".tname('qcgj_role_user')." AS b ON b.user_id = a.user_id 
+					LEFT JOIN ".tname('qcgj_mall')." AS c ON c.id = a.mall_id 
+					WHERE a.brand_id = '".$this->userInfo->brand_id."' 
+					AND a.user_id != '".$this->userInfo->user_id."' 
+					AND a.mall_id != '' ";
+		$queryRes = $this->db->query(sprintf($sql, $field).$limit)->result();
+
+		$queryTotal = $this->db->query(sprintf($sql, " COUNT(*) AS total "))->first_row();
+
+		$this->returnRes = array(
+				'error' => false,
+				'msg'   => false,
+				'data'  => array(
+					'list'  => $queryRes,
+					'page' => $this->setPagination(site_url('Shop/managerList'), $queryTotal->total),
+				),
+			);
+
+		return $this->returnRes;
+
+	}
+
+	/**
 	 * 设置分页
 	 */
-	public function setPagination($url = false, $total = 1){
+	public function setPagination($url = false, $total = 1, $prePage = 15){
 		$pageConfig = array(
-				'base_url'   => site_url('Role/rolelist'),
-				'total_rows' => 2,
-				'pre_page'   => 1,
+				'base_url'   => $url,
+				'total_rows' => $total,
+				'pre_page'   => $prePage,
 			);
 
 		$this->pagination->initialize($pageConfig);

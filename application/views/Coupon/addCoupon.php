@@ -300,7 +300,8 @@
 															<div class="row-fluid">
 									<div class="col-xs-12">
 										<div class="table-responsive">
-											<table id="rolelist-table" class="table table-striped table-bordered table-hover">
+											<form id="mallForm">
+											<table class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
 														<th class="center">
@@ -309,98 +310,37 @@
 																<span class="lbl"></span>
 															</label>
 														</th>
-														<th><?php echo $this->lang->line('TEXT_ROLE_USERNAME');?></th>
-														<th><?php echo $this->lang->line('TEXT_ROLE_RULE');?></th>
-														<th><?php echo $this->lang->line('TEXT_CREATED_TIME');?></th>
-														<th><?php echo $this->lang->line('TEXT_STATUS');?></th>
-														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
+														<th><?php echo $this->lang->line('TEXT_CITY_NAME');?></th>
+														<th><?php echo $this->lang->line('TEXT_AREA_NAME');?></th>
+														<th><?php echo $this->lang->line('TEXT_MALL_NAME');?></th>
+														<th><?php echo $this->lang->line('TEXT_ADDRESS');?></th>
 													</tr>
 												</thead>
 
 												<tbody>
-													<?php foreach ($roleList as $v):?>
+													<?php foreach ($shopList as $v):?>
 													<tr>
 														<td class="center">
 															<label>
-																<input type="checkbox" class="ace" />
+																<input type="checkbox" class="ace" name="mallID[]"/>
 																<span class="lbl"></span>
 															</label>
 														</td>
-
+														<td><?php echo $v->cityName;?></td>
+														<td><?php echo $v->areaName;?></td>
 														<td>
-															<a href="#"><?php echo $v->name;?></a>
+															<a href="#"><?php echo $v->mallName;?></a>
 														</td>
-														<td><?php echo $v->role_name;?></td>
-														<td class="hidden-480"><?php echo date('Y-m-d H:i:s', $v->created_time);?></td>
-
-														<td class="hidden-480">
-															<?php if ($v->status == 1){?>
-																<span class="label label-error"><?php echo $this->lang->line('TEXT_STATUS_NORMAL');?></span>
-															<?php }else{ ?>
-																<span class="label label-success"><?php echo $this->lang->line('TEXT_STATUS_STOP');?></span>
-															<?php }?>
-															
-														</td>
-
 														<td>
-															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-																<button class="btn btn-xs btn-success">
-																	<i class="icon-ok bigger-120"></i>
-																</button>
-
-																<button class="btn btn-xs btn-info">
-																	<i class="icon-edit bigger-120"></i>
-																</button>
-
-																<button class="btn btn-xs btn-danger">
-																	<i class="icon-trash bigger-120"></i>
-																</button>
-
-																<button class="btn btn-xs btn-warning">
-																	<i class="icon-flag bigger-120"></i>
-																</button>
-															</div>
-
-															<div class="visible-xs visible-sm hidden-md hidden-lg">
-																<div class="inline position-relative">
-																	<button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown">
-																		<i class="icon-cog icon-only bigger-110"></i>
-																	</button>
-
-																	<ul class="dropdown-menu dropdown-only-icon dropdown-yellow pull-right dropdown-caret dropdown-close">
-																		<li>
-																			<a href="#" class="tooltip-info" data-rel="tooltip" title="View">
-																				<span class="blue">
-																					<i class="icon-zoom-in bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-
-																		<li>
-																			<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">
-																				<span class="green">
-																					<i class="icon-edit bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-
-																		<li>
-																			<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete">
-																				<span class="red">
-																					<i class="icon-trash bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-																	</ul>
-																</div>
-															</div>
+															<a href="#"><?php echo $v->address;?></a>
 														</td>
 													</tr>
 													<?php endforeach;?>
 												</tbody>
 											</table>
+											</form>
 										</div><!-- /.table-responsive -->
-										<?php echo $pagination;?>
+
 									</div><!-- /span -->
 															</div>
 														</div>
@@ -544,6 +484,16 @@
 					limitText: '<?php echo $this->lang->line("TEXT_COUPON_TITLE_LENGTH_MAX")?>'
 				});
 
+				$('table th input:checkbox').on('click' , function(){
+					var that = this;
+					$(this).closest('table').find('tr > td:first-child input:checkbox')
+					.each(function(){
+						this.checked = that.checked;
+						$(this).closest('tr').toggleClass('selected');
+					});
+
+				});
+
 				$('#id-input-file-2').ace_file_input({
 					no_file:'<?php echo $this->lang->line("TEXT_COUPON_CHOOSEN_FILE");?>',
 					btn_choose:'<?php echo $this->lang->line("BTN_CHOOSE");?>',
@@ -567,16 +517,31 @@
 			
 				var $validation = true;
 				$('#fuelux-wizard').ace_wizard().on('change' , function(e, info){
+					console.log(info);
 					if(info.step == 1 && $validation) {
 						if(!$('#addCoupon-form').valid()){
-							// return false;
+							return false;
 						}else{
-							// subAddCouponForm();
+							var addStatus = subAddCouponForm();
+							if (!addStatus) {
+								alert(1);
+								return false;
+							}
+							alert(2);
 						}
 					}
+
+					if (info.step == 2) {
+						subMallForm();
+					}
+
+					if (info.step == 3) {
+
+					}
+
 				}).on('finished', function(e) {
 					bootbox.dialog({
-						message: "Thank you! Your information was successfully saved!", 
+						message: "<?php echo $this->lang->line('TEXT_ADDCOUPON_SUCCESS');?>!", 
 						buttons: {
 							"success" : {
 								"label" : "OK",
@@ -692,7 +657,24 @@
 							alert(data.msg);
 							return false;
 						}else{
-							// $('#addCoupon-form').reset();
+							alert('111');
+							return true;
+						}
+					}
+				});
+			}
+
+			function subMallForm(){
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Coupon/addCouponMall');?>",
+					data:$('#mallForm').serialize(),
+					success:function(data){
+						if (data.status) {
+							alert(data.msg);
+							return false;
+						}else{
+							return true;
 						}
 					}
 				});

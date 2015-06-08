@@ -61,11 +61,11 @@ class WebBaseModel extends CI_Model {
 	 */
 	public function checkLogin(){
 
-		if (isset($this->userInfo->user_id) && $this->userInfo->user_id != $this->userID) {
+		if (!isset($this->userInfo->user_id) || $this->userInfo->user_id != $this->userID) {
 			return $this->lang->line('ERR_TIMEOUT_LOGIN');
 		}
 
-		if (isset($this->userInfo->sessionSSID) && $this->userInfo->sessionSSID != $this->sessionSSID) {
+		if (!isset($this->userInfo->sessionSSID) || $this->userInfo->sessionSSID != $this->sessionSSID) {
 			return $this->lang->line('ERR_TIMEOUT_LOGIN');
 		}
 

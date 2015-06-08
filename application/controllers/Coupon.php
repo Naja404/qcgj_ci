@@ -53,6 +53,8 @@ class Coupon extends WebBase {
 		}
 
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ADDCOUPON');
+		$shopList = $this->CouponModel->getShopList();
+		$this->outData['shopList'] = $shopList['data'];
 		$this->load->view('Coupon/addCoupon', $this->outData);
 	}
 

@@ -13,6 +13,10 @@ $config = array(
 				'RULE'  => 'User:Rule:',
 				'DEFAULT_EXPIRETIME' => '3600',
 		),
+		// 分页设置
+		'PAGINATION' => array(
+				'COUNT' => 15,
+			),
 	);
 
 
