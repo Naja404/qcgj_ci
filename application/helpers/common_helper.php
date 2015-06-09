@@ -169,7 +169,9 @@ function currentTime($format = '', $timestamp = 0){
 			$currentTime = time();
 			break;
 		case 'MICROTIME':
-			$currentTime = microtime();
+			$microtime = explode(' ', microtime());
+
+			$currentTime = $microtime[1]+$microtime[0];
 			break;
 		default:
 			$timestamp = $timestamp > 0 ? $timestamp : time();
@@ -247,4 +249,5 @@ function strDecrypt($data, $key = '@#qcgj*'){
 	}
 	return base64_decode($str);
 }
+
 ?>

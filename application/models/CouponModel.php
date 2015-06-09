@@ -10,7 +10,7 @@ class CouponModel extends CI_Model {
 	public function __construct(){
 		$this->returnRes = array(
 							'error' => true, // true=有错误, false=正确
-							'msg'   => false, 
+							'msg'   => false,
 							'data'  => array()
 							);
 	}
@@ -75,32 +75,64 @@ class CouponModel extends CI_Model {
 	public function getShopList(){
 
 		if (!empty($this->userInfo->mall_id) && !empty($this->userInfo->brand_id)) {
-			$fields = "id AS mallID, 
-						address, 
-						name_zh AS mallName, 
-						trade_area_name AS areaName, 
+			$fields = "id AS mallID,
+						address,
+						name_zh AS mallName,
+						trade_area_name AS areaName,
 						city_name AS cityName";
 			$where = array('id' => $this->userInfo->mall_id);
-			$queryRes = $this->db->select($fields)->get_where(tname('qcgj_mall'), $where)->result();
+			$queryRes = $this->db->select($fields)->get_where(tname('qcgj_mall'), $where)->result_array();
 
 		}
 
 		if (empty($this->userInfo->mall_id) && !empty($this->userInfo->brand_id)) {
-			$sql = "SELECT 
+			$sql = "SELECT
 						b.id AS mallID,
 						b.address,
 						b.name_zh AS mallName,
 						b.trade_area_name AS areaName,
 						b.city_name AS cityName
-						 FROM ".tname('qcgj_brand_mall')." AS a 
-						LEFT JOIN ".tname('qcgj_mall')." AS b ON b.id = a.tb_mall_id 
+						 FROM ".tname('qcgj_brand_mall')." AS a
+						LEFT JOIN ".tname('qcgj_mall')." AS b ON b.id = a.tb_mall_id
 						WHERE a.tb_brand_id = '".$this->userInfo->brand_id."' ORDER BY b.city_name ";
-			$queryRes = $this->db->query($sql)->result();
+			$queryRes = $this->db->query($sql)->result_array();
+		}
+		
+		$areaName = array();
+		$bjAreaList = $shAreaList = $gzAreaList = '';
+
+		foreach ($queryRes as $k) {
+			if (!in_array($k['areaName'], $areaName)) {
+				array_push($areaName, $k['areaName']);
+			}
+			
+			$optionHTML = '<option value="'.$k['areaName'].'">'.$k['areaName'].'</option>';
+
+			switch ($k['cityName']) {
+				case '北京':
+					$bjAreaList .= $optionHTML;
+					break;
+				case '上海':
+					$shAreaList .= $optionHTML;
+					break;
+				case '广州':
+					$gzAreaList .= $optionHTML;
+					break;
+				default:
+					break;
+			}
+
 		}
 
 		$this->returnRes = array(
 				'error' => false,
-				'data' => $queryRes,
+				'data'  => array(
+						'list'       => $queryRes,
+						'areaList'   => $areaName,
+						'bjAreaList' => $bjAreaList,
+						'shAreaList' => $shAreaList,
+						'gzAreaList' => $gzAreaList,
+					),
 			);
 
 		return $this->returnRes;
@@ -112,7 +144,7 @@ class CouponModel extends CI_Model {
 	 * @param string $dateTime 2015/05/27 - 2015/05/28
 	 */
 	private function _formatExpireDate($dateTime = false){
-		
+
 		$date = explode(' - ', $dateTime);
 
 		$date = array(

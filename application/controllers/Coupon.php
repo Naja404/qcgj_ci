@@ -22,6 +22,23 @@ class Coupon extends WebBase {
 	 */
 	public function couponList(){
 
+		if ($this->input->method() == 'post') {
+			echo '<pre>';
+			print_r(currentTime('MICROTIME'));exit;
+			$uploadConf = config_item('FILE_UPLOAD');
+			// TODO 新建优惠券 加ajax文件上传
+			$this->load->library('upload');
+			$this->upload->initialize($uploadConf);
+			if (!$this->upload->do_upload('image')) {
+				echo $this->upload->display_errors();exit;
+			}else{
+				echo '<pre>';
+				print_r($this->upload->data());exit;
+			}
+			
+		}
+
+		$this->load->view('Coupon/couponList');
 	}
 
 	/**
@@ -54,7 +71,13 @@ class Coupon extends WebBase {
 
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ADDCOUPON');
 		$shopList = $this->CouponModel->getShopList();
-		$this->outData['shopList'] = $shopList['data'];
+		
+		$this->outData['shopList'] = $shopList['data']['list'];
+		$this->outData['areaList'] = $shopList['data']['areaList'];
+		$this->outData['bjAreaList'] = $shopList['data']['bjAreaList'];
+		$this->outData['shAreaList'] = $shopList['data']['shAreaList'];
+		$this->outData['gzAreaList'] = $shopList['data']['gzAreaList'];
+
 		$this->load->view('Coupon/addCoupon', $this->outData);
 	}
 

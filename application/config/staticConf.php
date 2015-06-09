@@ -17,6 +17,15 @@ $config = array(
 		'PAGINATION' => array(
 				'COUNT' => 15,
 			),
+		// 文件上传
+		'FILE_UPLOAD' => array(
+				'upload_path'   => './uploads/',
+				'allowed_types' => 'gif|jpg|png',
+				'file_name'     => time(),
+				'max_size'      => 100,
+				'max_width'     => 1024,
+				'max_height'    => 768,
+			),
 	);
 
 
