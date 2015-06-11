@@ -20,13 +20,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $config['base_url'] = 'http://ci.qcgj.com/';
 $config['html_url'] = $config['base_url'].'html/';
 $config['db_prefix'] = 'tb_';
-$config['uploadCouponPicConf'] = array(
-			'upload_path'   => './uploads/Coupon/',
-			'allowed_types' => 'gif|jpg|png',
-			'max_size'      => '100',
-			'max_width'     => '1024',
-			'max_height'    => '768',
-	); 
 
 /*
 |--------------------------------------------------------------------------

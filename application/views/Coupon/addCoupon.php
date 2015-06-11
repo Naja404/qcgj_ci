@@ -273,6 +273,18 @@
 																		</div>
 																	</div>
 																</div>
+																<!-- 图片上传 -->
+																<div class="form-group">
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_IMAGE');?>:</label>
+
+																	<div class="col-xs-12 col-sm-9">
+																		<div>
+																			<label>
+																				<input type="file" name="image" class="ace" id="demo1"/>
+																			</label>
+																		</div>
+																	</div>
+																</div>
 																
 																<div class="hr hr-dotted"></div>
 																<div class="form-group">
@@ -323,7 +335,7 @@
 																							<td>
 																								<a href="#"><?php echo $v['mallName'];?></a>
 																							</td>
-																							<td>s
+																							<td>
 																								<a href="#"><?php echo $v['address'];?></a>
 																							</td>
 																						</tr>
@@ -456,8 +468,97 @@
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 
 		<!-- inline scripts related to this page -->
-
+		<script type="text/javascript" src="<?php echo config_item('html_url');?>js/jquery.ajaxfileupload.js"></script>
 		<script type="text/javascript">
+
+		$(document).ready(function() {
+			var interval;
+
+			function applyAjaxFileUpload(element) {
+				$(element).AjaxFileUpload({
+					action: "<?php echo site_url('Coupon/uploadCouponPic');?>",
+					onChange: function(filename) {
+						// Create a span element to notify the user of an upload in progress
+						var $span = $("<span />")
+							.attr("class", $(this).attr("id"))
+							.text("Uploading")
+							.insertAfter($(this));
+
+						$(this).remove();
+
+						interval = window.setInterval(function() {
+							var text = $span.text();
+							if (text.length < 13) {
+								$span.text(text + ".");
+							} else {
+								$span.text("Uploading");
+							}
+						}, 200);
+					},
+					onSubmit: function(filename) {
+						// Return false here to cancel the upload
+						/*var $fileInput = $("<input />")
+							.attr({
+								type: "file",
+								name: $(this).attr("name"),
+								id: $(this).attr("id")
+							});
+
+						$("span." + $(this).attr("id")).replaceWith($fileInput);
+
+						applyAjaxFileUpload($fileInput);
+
+						return false;*/
+
+						// Return key-value pair to be sent along with the file
+						return true;
+					},
+					onComplete: function(filename, response) {
+						window.clearInterval(interval);
+						var $span = $("span." + $(this).attr("id")).text(filename + " "),
+							$fileInput = $("<input />")
+								.attr({
+									type: "file",
+									name: $(this).attr("name"),
+									id: $(this).attr("id")
+								});
+
+						if (response.status) {
+							$span.replaceWith($fileInput);
+
+							applyAjaxFileUpload($fileInput);
+
+							alert(response.msg);
+
+							return;
+						}else{
+								$("<a />")
+									.attr("href", "#")
+									.text("x")
+									.bind("click", function(e) {
+										$span.replaceWith($fileInput);
+
+										applyAjaxFileUpload($fileInput);
+									})
+									.appendTo($span);
+							}
+						}
+				});
+			}
+
+			applyAjaxFileUpload("#demo1");
+		});
+
+			// $(document).ready(function() {
+			// 	$("#demo1").AjaxFileUpload({
+			// 		onComplete: function(filename, response) {
+			// 			$("#uploads").append(
+			// 				$("<img />").attr("src", filename).attr("width", 200)
+			// 			);
+			// 		}
+			// 	});
+			// });
+
 			jQuery(function($) {
 				$('#citySelect').on('change', function(){
 					var areaHTML_1 = '<?php echo $bjAreaList;?>';

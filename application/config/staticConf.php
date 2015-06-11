@@ -22,9 +22,10 @@ $config = array(
 				'upload_path'   => './uploads/',
 				'allowed_types' => 'gif|jpg|png',
 				'file_name'     => time(),
-				'max_size'      => 100,
+				'max_size'      => 1024*8,
 				'max_width'     => 1024,
 				'max_height'    => 768,
+				'sub_dir'		=> true,
 			),
 	);
 

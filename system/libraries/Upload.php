@@ -258,6 +258,13 @@ class CI_Upload {
 	 */
 	public $client_name = '';
 
+	/**
+	 * File sub dir
+	 *
+	 * @var	bool
+	 */
+	public $sub_dir = FALSE;
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -596,6 +603,8 @@ class CI_Upload {
 	 */
 	public function data($index = NULL)
 	{
+		echo '<pre>';
+		print_r($this);exit;
 		$data = array(
 				'file_name'		=> $this->file_name,
 				'file_type'		=> $this->file_type,
@@ -996,8 +1005,39 @@ class CI_Upload {
 		}
 
 		$this->upload_path = preg_replace('/(.+?)\/*$/', '\\1/',  $this->upload_path);
+
+		// add sub dir function 
+		if ($this->sub_dir) {
+			return $this->mkSubDir();
+		}
+
 		return TRUE;
 	}
+
+    /**
+     * make sub dir 
+     * @return boolean created status
+     * @author Anonymous
+     */
+    public function mkSubDir(){
+
+		$date =  date('Y-m-d');
+
+		$sub_dir = implode('/', explode('-', $date));
+
+		$this->upload_path .= $sub_dir.'/';
+        
+        if(is_dir($this->upload_path)){
+            return TRUE;
+        }
+
+        if(mkdir($this->upload_path, 0777, true)){
+            return TRUE;
+        } else {
+			$this->set_error('upload_no_filepath');
+			return FALSE;
+        }
+    }
 
 	// --------------------------------------------------------------------
 
@@ -1146,7 +1186,7 @@ class CI_Upload {
 	 * @param	string	$close
 	 * @return	string
 	 */
-	public function display_errors($open = '<p>', $close = '</p>')
+	public function display_errors($open = '', $close = '')
 	{
 		return (count($this->error_msg) > 0) ? $open.implode($close.$open, $this->error_msg).$close : '';
 	}

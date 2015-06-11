@@ -53,4 +53,8 @@ $lang = array(
 		'ERR_TIMEOUT_LOGIN'  => '登录超时,请重新登录',
 		'ERR_NOT_ALLOW'      => '您无权限浏览该页面',
 		'ERR_AUTO_REDIRECT'  => '秒后将自动跳转',
+
+		// 文件上传错误提示
+		'upload_file_exceeds_limit' => '文件尺寸过大',
+		'upload_file_exceeds_form_limit' => '文件尺寸过大',
 	);

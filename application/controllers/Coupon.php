@@ -82,6 +82,40 @@ class Coupon extends WebBase {
 	}
 
 	/**
+	 * ajax上传优惠券图片
+	 *
+	 */
+	public function uploadCouponPic(){
+
+
+
+		if ($this->input->method() == 'post') {
+		$uploadConf = config_item('FILE_UPLOAD');
+
+		$uploadConf['upload_path'] = './uploads/Coupon/';
+	
+		$this->load->library('upload');
+		
+		$this->upload->initialize($uploadConf);
+
+		if (!$this->upload->do_upload('image')){
+			$this->ajaxRes['msg'] = $this->upload->display_errors();
+		}else{
+			$this->ajaxRes = array(
+					'status' => 0,
+					'url'    => config_item('base_url').$this->upload->data('full_path'),
+				);
+		} 
+		echo '<pre>';
+		print_r($this->upload->data());exit;
+		jsonReturn($this->ajaxRes);
+
+		}
+			$this->load->view('Coupon/couponList');
+
+	}
+
+	/**
 	 * 验证优惠券添加
 	 */
 	private function _verlidationAddCoupon(){
@@ -118,20 +152,5 @@ class Coupon extends WebBase {
 		}
 
 		return true;
-	}
-
-	/**
-	 * 文件上传
-	 */
-	private function _uploadCouponPic(){
-		$this->load->library('upload', config_item('uploadCouponPicConf'));
-
-		if (!$this->upload->do_upload()) {
-			exit('upload failure');
-		}else{
-			echo '<pre>';
-			print_r($this->upload->data());exit;
-		}
-
 	}
 }

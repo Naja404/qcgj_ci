@@ -20,6 +20,7 @@ class CouponModel extends CI_Model {
 	 * @param array $couponData 优惠券数组数据
 	 */
 	public function addCoupon($couponData = array()){
+		
 		$couponInsertData = array(
 				'coupon_id'   => makeUUID(),
 				'name'        => $couponData['couponTitle'],
