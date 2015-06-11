@@ -21,24 +21,9 @@ class Coupon extends WebBase {
 	 *
 	 */
 	public function couponList(){
-
-		if ($this->input->method() == 'post') {
-			echo '<pre>';
-			print_r(currentTime('MICROTIME'));exit;
-			$uploadConf = config_item('FILE_UPLOAD');
-			// TODO 新建优惠券 加ajax文件上传
-			$this->load->library('upload');
-			$this->upload->initialize($uploadConf);
-			if (!$this->upload->do_upload('image')) {
-				echo $this->upload->display_errors();exit;
-			}else{
-				echo '<pre>';
-				print_r($this->upload->data());exit;
-			}
-			
-		}
-
-		$this->load->view('Coupon/couponList');
+		$this->outData['pageTitle'] = $this->lang->line('TEXT_COUPON_LIST');
+		$this->CouponModel->getCouponList($this->p);
+		$this->load->view('Coupon/couponList', $this->outData);
 	}
 
 	/**
@@ -87,12 +72,15 @@ class Coupon extends WebBase {
 	 */
 	public function uploadCouponPic(){
 
+		if ($this->input->method() != 'post') {
+			// jsonReturn($this->ajaxRes);
+			echo json_encode($this->ajaxRes);exit;
+		}
 
-
-		if ($this->input->method() == 'post') {
 		$uploadConf = config_item('FILE_UPLOAD');
 
 		$uploadConf['upload_path'] = './uploads/Coupon/';
+		$uploadConf['file_name'] =  implode('_', explode('.', currentTime('MICROTIME')));
 	
 		$this->load->library('upload');
 		
@@ -103,15 +91,12 @@ class Coupon extends WebBase {
 		}else{
 			$this->ajaxRes = array(
 					'status' => 0,
-					'url'    => config_item('base_url').$this->upload->data('full_path'),
+					'url'    => config_item('base_url').$this->upload->data('relative_path'),
+					'path'   => $this->upload->data('relative_path'),
 				);
 		} 
-		echo '<pre>';
-		print_r($this->upload->data());exit;
-		jsonReturn($this->ajaxRes);
 
-		}
-			$this->load->view('Coupon/couponList');
+		echo json_encode($this->ajaxRes);exit;
 
 	}
 
@@ -140,6 +125,9 @@ class Coupon extends WebBase {
 			);
 
 		foreach ($couponDate as $k => $v) {
+			
+			if ($k == 0) $couponExpireDate = strtotime($v[1]);
+
 			if (strtotime($v[1]) <= strtotime($v[0])) {
 				$langLine = $k == 0 ? 'ERR_COUPON_EXPIRE_DATE_FORMAT' : 'ERR_COUPON_RECEIVEDATE_FORMAT';
 				return $this->lang->line($langLine);
@@ -149,6 +137,17 @@ class Coupon extends WebBase {
 		// 验证使用时间
 		if (strtotime($this->input->post('couponUseTimeStart')) >= strtotime($this->input->post('couponUseTimeEnd'))) {
 			return $this->lang->line('ERR_USETIME');
+		}
+
+		// 验证审核
+		if (in_array($this->input->post('reviewPass'), config_item('COUPON_REVIEWPASS'))) {
+			if ($this->input->post('reviewPass') == 2) {
+				$today = strtotime($this->input->post('reviewPassDate')) <= time() ? false : true;
+				$expireDay = strtotime($this->input->post('reviewPassDate')) >= $couponExpireDate ? false : true;
+				if (!$today || !$expireDay) return $this->lang->line('ERR_REVIEWPASS_DATE');
+			}
+		}else{
+			return $this->lang->line('ERR_REVIEW_PASS');
 		}
 
 		return true;

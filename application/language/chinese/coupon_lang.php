@@ -50,17 +50,21 @@ $lang = array(
 		'TEXT_ADDRESS'                      => '地址',
 		'TEXT_AREA_NAME'                    => '商圈',
 		'TEXT_CITY_NAME'                    => '城市',
+		'TEXT_SELECT_CITY_NAME'             => '请选择城市',
 		'TEXT_COUPON_CHOOSEN_FILE'          => '选择文件',
 		'TEXT_ADDCOUPON_SUCCESS'            => '添加优惠券成功,请耐心等待审核',
 		'TEXT_REVIEW_AUTOPASS'              => '提交审核通过后,自动上架',
 		'TEXT_REVIEW_MANUALPASS'            => '手动上架',
 		'TEXT_REVIEW_PASSTIME'              => '设置上架时间',
+		'TEXT_GO_COUPONLIST'				=> '优惠券列表',
+		'TEXT_CONTINUE_ADDCOUPON'			=> '继续添加',
 		
 		'ERR_COUPON_MONEY_NUM'              => '请正确填写优惠券金额',
 		'ERR_COUPON_EXPIRE_DATE_FORMAT'     => '有效期开始日期不能大于结束日期',
 		'ERR_COUPON_RECEIVEDATE_FORMAT'     => '领取期开始日期不能大于结束日期',
 		'ERR_COUPON_ADD_FAILURE'            => '优惠券新建失败, 请刷新后重试',
 		'ERR_USETIME'                       => '使用时间:开始时间不能大于结束时间',
+		'ERR_REVIEWPASS_DATE'				=> '上架时间不能小于当前时间或大于有效期',
 
 		'ADD_COUPON_VALIDATION' => array(
 				array(

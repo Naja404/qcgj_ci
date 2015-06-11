@@ -265,6 +265,13 @@ class CI_Upload {
 	 */
 	public $sub_dir = FALSE;
 
+	/**
+	 * File relative path
+	 *
+	 * @var	string
+	 */
+	public $upload_relative_path = '';
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -603,12 +610,11 @@ class CI_Upload {
 	 */
 	public function data($index = NULL)
 	{
-		echo '<pre>';
-		print_r($this);exit;
 		$data = array(
 				'file_name'		=> $this->file_name,
 				'file_type'		=> $this->file_type,
 				'file_path'		=> $this->upload_path,
+				'relative_path' => $this->upload_relative_path.$this->file_name,
 				'full_path'		=> $this->upload_path.$this->file_name,
 				'raw_name'		=> str_replace($this->file_ext, '', $this->file_name),
 				'orig_name'		=> $this->orig_name,
@@ -989,6 +995,9 @@ class CI_Upload {
 
 		if (realpath($this->upload_path) !== FALSE)
 		{
+			//set relative path
+			$this->upload_relative_path = str_replace('./', '', $this->upload_path);
+
 			$this->upload_path = str_replace('\\', '/', realpath($this->upload_path));
 		}
 
@@ -1026,6 +1035,7 @@ class CI_Upload {
 		$sub_dir = implode('/', explode('-', $date));
 
 		$this->upload_path .= $sub_dir.'/';
+		$this->upload_relative_path .= $sub_dir.'/';
         
         if(is_dir($this->upload_path)){
             return TRUE;

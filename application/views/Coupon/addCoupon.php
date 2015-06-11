@@ -97,7 +97,7 @@
 																		<div class="row">
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponType" value="1" type="radio" class="ace" />
+																				<input name="couponType" value="1" type="radio" class="ace" checked />
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_VOUCHERS');?></span>
 																			</label>
 																		</div>
@@ -129,7 +129,7 @@
 																		<div class="row">
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponMoney" value="1" type="radio" class="ace" />
+																				<input name="couponMoney" value="1" type="radio" class="ace" checked/>
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_FREE');?></span>
 																			</label>
 																		</div>
@@ -280,7 +280,8 @@
 																	<div class="col-xs-12 col-sm-9">
 																		<div>
 																			<label>
-																				<input type="file" name="image" class="ace" id="demo1"/>
+																				<input type="file" name="image" class="ace" id="fileImage"/>
+																				<input type="hidden" name="couponPic" />
 																			</label>
 																		</div>
 																	</div>
@@ -310,7 +311,7 @@
 																						<tr>
 																							<th class="center">
 																								<label>
-																									<input type="checkbox" class="ace" />
+																									<input type="checkbox" class="ace" id="cityListCheck"/>
 																									<span class="lbl"></span>
 																								</label>
 																							</th>
@@ -356,7 +357,7 @@
 																	<div class="col-xs-12 col-sm-9">
 																		<div>
 																			<label class="blue">
-																				<input name="reviewPass" value="1" type="radio" class="ace" />
+																				<input name="reviewPass" value="1" type="radio" class="ace" checked/>
 																				<span class="lbl"> <?php echo $this->lang->line('TEXT_REVIEW_AUTOPASS');?></span>
 																			</label>
 																		</div>
@@ -367,7 +368,7 @@
 																				<span class="lbl"> <?php echo $this->lang->line('TEXT_REVIEW_PASSTIME');?></span>
 																			</label>
 																			<div class="input-group col-xs-12 col-sm-3" style="float:right;">
-																				<input class="form-control date-picker" id="id-date-picker-1" type="text" data-date-format="yyyy-mm-dd" />
+																				<input class="form-control date-picker" type="text" name="reviewPassDate" data-date-format="yyyy-mm-dd" />
 																				<span class="input-group-addon">
 																					<i class="icon-calendar bigger-110"></i>
 																				</span>
@@ -390,8 +391,8 @@
 
 													<hr />
 													<div class="row-fluid wizard-actions">
-														<button class="btn btn-success" data-last="Finish " onclick="subAddCouponForm();">
-															<?php echo $this->lang->line('BTN_NEXT');?>
+														<button class="btn btn-success" onclick="subAddCouponForm();">
+															<?php echo $this->lang->line('BTN_SUBMIT');?>
 															<i class="icon-arrow-right icon-on-right"></i>
 														</button>
 													</div>
@@ -496,25 +497,11 @@
 						}, 200);
 					},
 					onSubmit: function(filename) {
-						// Return false here to cancel the upload
-						/*var $fileInput = $("<input />")
-							.attr({
-								type: "file",
-								name: $(this).attr("name"),
-								id: $(this).attr("id")
-							});
-
-						$("span." + $(this).attr("id")).replaceWith($fileInput);
-
-						applyAjaxFileUpload($fileInput);
-
-						return false;*/
-
-						// Return key-value pair to be sent along with the file
 						return true;
 					},
 					onComplete: function(filename, response) {
 						window.clearInterval(interval);
+						console.log(response);
 						var $span = $("span." + $(this).attr("id")).text(filename + " "),
 							$fileInput = $("<input />")
 								.attr({
@@ -532,34 +519,25 @@
 
 							return;
 						}else{
-								$("<a />")
-									.attr("href", "#")
-									.text("x")
-									.bind("click", function(e) {
-										$span.replaceWith($fileInput);
-
-										applyAjaxFileUpload($fileInput);
-									})
-									.appendTo($span);
-							}
+							$("<img />").attr("src", response.url).css("width", 200).appendTo($span);
+							$("<a />").attr("href", "#").text("<?php echo $this->lang->line('BTN_RESET');?>").bind("click", function(e) {
+									$span.replaceWith($fileInput);
+									applyAjaxFileUpload($fileInput);
+									$("input[name=couponPic]").val('');
+								}).appendTo($span);
+							$("input[name=couponPic]").val(response.path);
 						}
+					}
 				});
 			}
 
-			applyAjaxFileUpload("#demo1");
+			applyAjaxFileUpload("#fileImage");
 		});
 
-			// $(document).ready(function() {
-			// 	$("#demo1").AjaxFileUpload({
-			// 		onComplete: function(filename, response) {
-			// 			$("#uploads").append(
-			// 				$("<img />").attr("src", filename).attr("width", 200)
-			// 			);
-			// 		}
-			// 	});
-			// });
-
 			jQuery(function($) {
+				var areaSelect = '<?php echo json_encode($shopList);?>';
+					areaSelectValue = this.value;
+
 				$('#citySelect').on('change', function(){
 					var areaHTML_1 = '<?php echo $bjAreaList;?>';
 						areaHTML_2 = '<?php echo $shAreaList?>';
@@ -577,7 +555,17 @@
 						areaHTML = areaHTML_3;
 						break;
 						default:
-						areaHTML = areaHTML_2;
+						areaHTML = "<option><?php echo $this->lang->line('TEXT_SELECT_CITY_NAME');?></option>";
+						$.each($.parseJSON(areaSelect), function(k, v){
+							shopListHTML += '<tr><td class="center"><label><input type="checkbox" class="ace" name="mallID[]" value="'+v.mallID+'"><span class="lbl"></span></label><\/td>';
+							shopListHTML += '<td>'+v.cityName+'<\/td>';
+							shopListHTML += '<td>'+v.areaName+'</td>';
+							shopListHTML += '<td><a href="#">'+v.mallName+'</a></td>';
+							shopListHTML += '<td><a href="#">'+v.address+'</a></td>';
+							shopListHTML += '<\/tr>';
+						});
+
+						$('#shopListHTML').html(shopListHTML);
 						break;
 					}
 
@@ -585,15 +573,10 @@
 				});
 
 				$('#areaSelect').on('change', function(){
-					var areaSelect = '<?php echo json_encode($shopList);?>';
+					var areaSelectValue = this.value;
 						shopListHTML = '';
-						areaSelectValue = this.value;
-
+					$('#cityListCheck').attr("checked",false);
 					$.each($.parseJSON(areaSelect), function(k, v){
-						// if (!$('#citySelect').val() || !this.value) {
-						// 	return false;
-						// }
-
 						if (v.areaName == areaSelectValue) {
 							shopListHTML += '<tr><td class="center"><label><input type="checkbox" class="ace" name="mallID[]" value="'+v.mallID+'"><span class="lbl"></span></label><\/td>';
 							shopListHTML += '<td>'+v.cityName+'<\/td>';
@@ -778,27 +761,31 @@
 							alert(data.msg);
 							return false;
 						}else{
+							bootbox.dialog({
+								message: "<?php echo $this->lang->line('TEXT_ADDCOUPON_SUCCESS');?>", 
+								buttons: {
+									"goList" : {
+										"label" : "<?php echo $this->lang->line('TEXT_GO_COUPONLIST');?>",
+										"className" : "btn-sm btn-primary",
+										callback: function(){
+											window.location.href = "<?php echo site_url('Coupon/couponList');?>";
+										}
+									},
+									"continue" : {
+										"label" : "<?php echo $this->lang->line('TEXT_CONTINUE_ADDCOUPON');?>",
+										"className" : "btn-sm btn-primary",
+										callback: function(){
+											window.location.reload();
+										}
+									}
+								}
+							});
 							return true;
 						}
 					}
 				});
 			}
 
-			function subMallForm(){
-				$.ajax({
-					type:"POST",
-					url:"<?php echo site_url('Coupon/addCouponMall');?>",
-					data:$('#mallForm').serialize(),
-					success:function(data){
-						if (data.status) {
-							alert(data.msg);
-							return false;
-						}
-
-						return true;
-					}
-				});
-			}
 		</script>
 	</body>
 </html>

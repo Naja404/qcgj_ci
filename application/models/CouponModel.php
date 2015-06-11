@@ -16,18 +16,37 @@ class CouponModel extends CI_Model {
 	}
 
 	/**
+	 * 获取优惠券列表
+	 * @param string $where 查询条件
+	 * @param string $order 排序条件
+	 * @param int $pageNum 页码
+	 * @param int $pageCount 条数
+	 */
+	public function getCouponList($where = NULL, $order = NULL, $pageNum = 1, $pageCount = 25){
+		$pageNum = ($pageNum - 1) * $pageCount;
+
+		$limit = ' LIMIT '.$pageNum.','.$pageCount;
+
+		$sql = "SELECT * FROM";
+	}
+
+	/**
 	 * 新建优惠券
 	 * @param array $couponData 优惠券数组数据
 	 */
 	public function addCoupon($couponData = array()){
-		
+
 		$couponInsertData = array(
 				'coupon_id'   => makeUUID(),
+				'brand_id'    => $this->userInfo->brand_id,
 				'name'        => $couponData['couponTitle'],
 				'type'        => $couponData['couponType'],
 				'price'       => $couponData['couponMoney'] == 2 ? floatval($couponData['couponMoneyNum']) : 0,
+				'sale_time'   => $couponData['reviewPassDate'],
 				'create_time' => currentTime(),
 				'update_time' => currentTime(),
+				'operator'    => $this->userInfo->user_id,
+				'status'      => 0,
 			);
 		// 创建优惠券
 		$couponRes = $this->db->insert(tname('qcgj_coupon'), $couponInsertData);
@@ -62,7 +81,29 @@ class CouponModel extends CI_Model {
 			return $this->returnRes;
 		}
 
-		// TODO 创建优惠券图片
+		// 优惠券使用门店
+		if (is_array($couponData['mallID']) && count($couponData['mallID'])) {
+
+			$couponInsertMall = array();
+
+			foreach ($couponData['mallID'] as $k => $v) {
+				$couponInsertMall[] = array(
+						'coupon_id' => $couponInsertData['coupon_id'],
+						'shop_id'   => $v,
+					);
+			}
+
+			$this->db->insert_batch(tname('qcgj_coupon_shop'), $couponInsertMall);
+		}
+
+		// 创建优惠券图片
+		if ($couponData['couponPic']) {
+			$couponPic = array(
+					'coupon_id' => $couponInsertData['coupon_id'],
+					'path'      => $couponData['couponPic'],
+				);
+			$this->db->insert(tname('qcgj_coupon_pic'), $couponPic);
+		}
 
 		// TODO 创建优惠券代码
 		$this->returnRes['error'] = false;
@@ -98,7 +139,7 @@ class CouponModel extends CI_Model {
 						WHERE a.tb_brand_id = '".$this->userInfo->brand_id."' ORDER BY b.city_name ";
 			$queryRes = $this->db->query($sql)->result_array();
 		}
-		
+
 		$areaName = array();
 		$bjAreaList = $shAreaList = $gzAreaList = '';
 
@@ -106,7 +147,7 @@ class CouponModel extends CI_Model {
 			if (!in_array($k['areaName'], $areaName)) {
 				array_push($areaName, $k['areaName']);
 			}
-			
+
 			$optionHTML = '<option value="'.$k['areaName'].'">'.$k['areaName'].'</option>';
 
 			switch ($k['cityName']) {

@@ -54,7 +54,7 @@
 							<li>
 								<a href="{:U('Coupon/rolelist')}"><?php echo $this->lang->line('TEXT_COUPON_MANAGER');?></a>
 							</li>
-							<li class="active"><?php echo $this->lang->line('TEXT_COUPON_ADDCOUPON');?></li>
+							<li class="active"><?php echo $this->lang->line('TEXT_COUPON_LIST');?></li>
 						</ul>
 
 					</div>
@@ -68,32 +68,104 @@
 
 								<div class="row-fluid">
 									<div class="span12">
-										<div class="widget-box">
-											<div class="widget-header widget-header-blue widget-header-flat">
-												<h4 class="lighter"><?php echo $this->lang->line('TEXT_COUPON_ADDCOUPON');?></h4>
-											</div>
+										<div class="table-responsive">
+											<table id="rolelist-table" class="table table-striped table-bordered table-hover">
+												<thead>
+													<tr>
+														<th class="center">
+															<label>
+																<input type="checkbox" class="ace" />
+																<span class="lbl"></span>
+															</label>
+														</th>
+														<th><?php echo $this->lang->line('TEXT_BRAND_NAME');?></th>
+														<th><?php echo $this->lang->line('TEXT_CATEGORY_NAME');?></th>
+														<th><?php echo $this->lang->line('TEXT_MALL_NAME');?></th>
+														<th><?php echo $this->lang->line('TEXT_ADDRESS');?></th>
+														<th><?php echo $this->lang->line('TEXT_AREA_NAME');?></th>
+														<th><?php echo $this->lang->line('TEXT_CITY_NAME');?></th>
+														<th><?php echo $this->lang->line('TEXT_FLOOR');?></th>
+														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
+													</tr>
+												</thead>
 
-											<div class="widget-body">
-												<div class="widget-main">
-													<hr />
-													<div class="step-content row-fluid position-relative" id="step-container">
-														<form action="" method="post" enctype="multipart/form-data">
-															<input type="file" name="image" value="" />
-															<input type="submit" />
-														</form>
+												<tbody>
+													<?php foreach ($shopList as $v):?>
+													<tr>
+														<td class="center">
+															<label>
+																<input type="checkbox" class="ace" />
+																<span class="lbl"></span>
+															</label>
+														</td>
 
-													</div>
+														<td>
+															<a href="#"><?php echo $v->brandName;?></a>
+														</td>
+														<td><?php echo $v->categoryName;?></td>
+														<td><?php echo $v->mallName;?></td>
+														<td><?php echo $v->address;?></td>
+														<td><?php echo $v->areaName;?></td>
+														<td><?php echo $v->cityName;?></td>
+														<td><?php echo $v->floor;?></td>
+														<td>
+															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
+																<button class="btn btn-xs btn-success">
+																	<i class="icon-ok bigger-120"></i>
+																</button>
 
-													<hr />
-													<div class="row-fluid wizard-actions">
-														<button class="btn btn-success" data-last="Finish " onclick="subAddCouponForm();">
-															<?php echo $this->lang->line('BTN_NEXT');?>
-															<i class="icon-arrow-right icon-on-right"></i>
-														</button>
-													</div>
-												</div><!-- /widget-main -->
-											</div><!-- /widget-body -->
-										</div>
+																<button class="btn btn-xs btn-info">
+																	<i class="icon-edit bigger-120"></i>
+																</button>
+
+																<button class="btn btn-xs btn-danger">
+																	<i class="icon-trash bigger-120"></i>
+																</button>
+
+																<button class="btn btn-xs btn-warning">
+																	<i class="icon-flag bigger-120"></i>
+																</button>
+															</div>
+
+															<div class="visible-xs visible-sm hidden-md hidden-lg">
+																<div class="inline position-relative">
+																	<button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown">
+																		<i class="icon-cog icon-only bigger-110"></i>
+																	</button>
+
+																	<ul class="dropdown-menu dropdown-only-icon dropdown-yellow pull-right dropdown-caret dropdown-close">
+																		<li>
+																			<a href="#" class="tooltip-info" data-rel="tooltip" title="View">
+																				<span class="blue">
+																					<i class="icon-zoom-in bigger-120"></i>
+																				</span>
+																			</a>
+																		</li>
+
+																		<li>
+																			<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">
+																				<span class="green">
+																					<i class="icon-edit bigger-120"></i>
+																				</span>
+																			</a>
+																		</li>
+
+																		<li>
+																			<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete">
+																				<span class="red">
+																					<i class="icon-trash bigger-120"></i>
+																				</span>
+																			</a>
+																		</li>
+																	</ul>
+																</div>
+															</div>
+														</td>
+													</tr>
+													<?php endforeach;?>
+												</tbody>
+											</table>
+										</div><!-- /.table-responsive -->
 									</div>
 								</div>
 
