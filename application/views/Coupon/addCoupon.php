@@ -104,14 +104,14 @@
 
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponType" value="2" type="radio" class="ace" />
+																				<input name="couponType" value="102" type="radio" class="ace" />
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_DISCOUNT');?></span>
 																			</label>
 																		</div>
 
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponType" value="3" type="radio" class="ace" />
+																				<input name="couponType" value="103" type="radio" class="ace" />
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_DELIVERY');?></span>
 																			</label>
 																		</div>
@@ -291,7 +291,7 @@
 																<div class="form-group">
 																	<select name="cityName" id="citySelect">
 																		<option value=""><?php echo $this->lang->line('TEXT_CITY');?></option>
-																		<?php foreach ($this->lang->line('SELECT_CITY_LIST') as $k => $v) {?>
+																		<?php foreach ($cityList as $k => $v) {?>
 																		<option value="<?php echo $v['cityId'];?>"><?php echo $v['name'];?></option>
 																		<?php }?>
 																	</select>
@@ -556,6 +556,7 @@
 						break;
 						default:
 						areaHTML = "<option><?php echo $this->lang->line('TEXT_SELECT_CITY_NAME');?></option>";
+						shopListHTML = '';
 						$.each($.parseJSON(areaSelect), function(k, v){
 							shopListHTML += '<tr><td class="center"><label><input type="checkbox" class="ace" name="mallID[]" value="'+v.mallID+'"><span class="lbl"></span></label><\/td>';
 							shopListHTML += '<td>'+v.cityName+'<\/td>';

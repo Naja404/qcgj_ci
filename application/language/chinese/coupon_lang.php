@@ -58,6 +58,7 @@ $lang = array(
 		'TEXT_REVIEW_PASSTIME'              => '设置上架时间',
 		'TEXT_GO_COUPONLIST'				=> '优惠券列表',
 		'TEXT_CONTINUE_ADDCOUPON'			=> '继续添加',
+
 		
 		'ERR_COUPON_MONEY_NUM'              => '请正确填写优惠券金额',
 		'ERR_COUPON_EXPIRE_DATE_FORMAT'     => '有效期开始日期不能大于结束日期',

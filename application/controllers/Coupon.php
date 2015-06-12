@@ -21,8 +21,17 @@ class Coupon extends WebBase {
 	 *
 	 */
 	public function couponList(){
+		
+		$where = $order = '';
+
+		$order = ' ORDER BY a.create_time DESC ';
+
+
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_COUPON_LIST');
-		$this->CouponModel->getCouponList($this->p);
+		$couponList = $this->CouponModel->getCouponList($where, $order, $this->p);
+		$this->outData['couponList'] = $couponList['data']['list'];
+		$this->outData['couponListPage'] = $couponList['data']['page'];
+
 		$this->load->view('Coupon/couponList', $this->outData);
 	}
 
@@ -59,6 +68,7 @@ class Coupon extends WebBase {
 		
 		$this->outData['shopList'] = $shopList['data']['list'];
 		$this->outData['areaList'] = $shopList['data']['areaList'];
+		$this->outData['cityList'] = $shopList['data']['cityList'];
 		$this->outData['bjAreaList'] = $shopList['data']['bjAreaList'];
 		$this->outData['shAreaList'] = $shopList['data']['shAreaList'];
 		$this->outData['gzAreaList'] = $shopList['data']['gzAreaList'];

@@ -78,19 +78,19 @@
 																<span class="lbl"></span>
 															</label>
 														</th>
-														<th><?php echo $this->lang->line('TEXT_BRAND_NAME');?></th>
-														<th><?php echo $this->lang->line('TEXT_CATEGORY_NAME');?></th>
-														<th><?php echo $this->lang->line('TEXT_MALL_NAME');?></th>
-														<th><?php echo $this->lang->line('TEXT_ADDRESS');?></th>
-														<th><?php echo $this->lang->line('TEXT_AREA_NAME');?></th>
+														<th><?php echo $this->lang->line('TEXT_COUPON_TITLE');?></th>
+														<th><?php echo $this->lang->line('TEXT_COUPON_EXPIRE');?></th>
+														<th><?php echo $this->lang->line('TEXT_COUPON_STATUS');?></th>
 														<th><?php echo $this->lang->line('TEXT_CITY_NAME');?></th>
-														<th><?php echo $this->lang->line('TEXT_FLOOR');?></th>
+														<th><?php echo $this->lang->line('TEXT_COUPON_RECEIVECOUNT');?></th>
+														<th><?php echo $this->lang->line('TEXT_COUPON_USECOUNT');?></th>
+														<th><?php echo $this->lang->line('TEXT_COUPON_SHOPCOUNT');?></th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
 												</thead>
 
 												<tbody>
-													<?php foreach ($shopList as $v):?>
+													<?php foreach ($couponList as $v):?>
 													<tr>
 														<td class="center">
 															<label>
@@ -100,14 +100,14 @@
 														</td>
 
 														<td>
-															<a href="#"><?php echo $v->brandName;?></a>
+															<a href="#"><?php echo $v->title;?></a>
 														</td>
-														<td><?php echo $v->categoryName;?></td>
-														<td><?php echo $v->mallName;?></td>
-														<td><?php echo $v->address;?></td>
-														<td><?php echo $v->areaName;?></td>
+														<td><?php echo $v->expire;?></td>
+														<td><?php echo $v->status;?></td>
 														<td><?php echo $v->cityName;?></td>
-														<td><?php echo $v->floor;?></td>
+														<td><?php echo $v->received;?></td>
+														<td><?php echo $v->used;?></td>
+														<td><?php echo $v->mallCount;?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 																<button class="btn btn-xs btn-success">
@@ -171,6 +171,7 @@
 
 									</div><!-- /span -->
 								</div>
+								<?php echo $couponListPage;?>
 							</div><!-- /.col -->
 
 						</div><!-- /.row -->

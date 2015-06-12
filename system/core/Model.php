@@ -47,7 +47,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @link		http://codeigniter.com/user_guide/libraries/config.html
  */
 class CI_Model {
-
+	// 返回数据 
+	public $returnRes;
 	/**
 	 * Class constructor
 	 *
@@ -56,6 +57,12 @@ class CI_Model {
 	public function __construct()
 	{
 		log_message('info', 'Model Class Initialized');
+		
+		$this->returnRes = array(
+							'error' => true, // true=有错误, false=正确
+							'msg'   => false,
+							'data'  => array()
+							);
 	}
 
 	// --------------------------------------------------------------------
@@ -75,6 +82,85 @@ class CI_Model {
 		//	saying 'Undefined Property: system/core/Model.php', it's
 		//	most likely a typo in your model code.
 		return get_instance()->$key;
+	}
+
+	/**
+	 * 设置分页
+	 * @param string $url 
+	 * @param int $total 总数
+	 * @param int $prePage 每页条数
+	 */
+	public function setPagination($url = false, $total = 1, $prePage = 15){
+		$pageConfig = array(
+				'base_url'   => $url,
+				'total_rows' => $total,
+				'pre_page'   => $prePage,
+			);
+
+		$this->pagination->initialize($pageConfig);
+
+		return $this->pagination->create_links();
+	}
+
+	/**
+	 * model 返回内容
+	 * @param string $msg 返回信息内容
+	 * @param array $data 数据内容
+	 * @param bool $error 返回状态
+	 */
+	public function returnRes($msg = false, $data = array(), $error = true){
+
+		$this->returnRes = array(
+					'error' => $error,
+					'msg'   => $msg,
+					'data'  => $data,
+			);
+
+		return $this->returnRes;
+	}
+
+	/**
+	 * 获取品牌信息
+	 * @param string $brandId 品牌id
+	 */
+	public function getBrandInfoById($brandId = false){
+		
+		if (!$brandId) {
+			return false;
+		}
+
+		$sql = "SELECT 	 a.id,
+						 a.name_en,
+						 a.name_zh,
+						 b.tb_category_id,
+						 c.name AS category_name
+				 FROM ".tname('brand')." AS a 
+				LEFT JOIN ".tname('brand_category')." AS b ON b.tb_brand_id = a.id
+				LEFT JOIN ".tname('category')." AS c ON c.id = b.tb_category_id
+				WHERE a.id = '".$brandId."'";
+
+		$brandInfo = $this->db->query($sql)->first_row();
+
+		return $brandInfo;
+	}
+
+	/**
+	 * 获取mall楼层
+	 * @param string $mallId 商户id
+	 */
+	public function getMallFloorById($mallId = false, $brandId = false){
+		if (!$mallId || !$brandId) {
+			return false;
+		}
+
+		$where = array(
+				'tb_brand_id' => $brandId,
+				'tb_mall_id'  => $mallId,
+			);
+
+		$floor = $this->db->select('address')->get_where(tname('brand_mall'), $where)->first_row();
+
+		return isset($floor->address) ? $floor->address : false;
 	}
 
 }

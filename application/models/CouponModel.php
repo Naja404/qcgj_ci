@@ -4,15 +4,9 @@
  */
 
 class CouponModel extends CI_Model {
-	// 返回数据
-	public $returnRes;
 
 	public function __construct(){
-		$this->returnRes = array(
-							'error' => true, // true=有错误, false=正确
-							'msg'   => false,
-							'data'  => array()
-							);
+		parent::__construct();
 	}
 
 	/**
@@ -27,14 +21,48 @@ class CouponModel extends CI_Model {
 
 		$limit = ' LIMIT '.$pageNum.','.$pageCount;
 
-		$sql = "SELECT * FROM";
+		$field = " a.id,
+					a.name AS title,
+					CONCAT(a.begin_date, '<br/>~<br/>', a.end_date) AS expire,
+					a.status,
+					d.city_name AS cityName,
+					(SELECT COUNT(*) FROM ".tname('coupon_individual')." WHERE tb_coupon_id = a.id AND status > 0) AS received,
+					(SELECT COUNT(*) FROM ".tname('coupon_individual')." WHERE tb_coupon_id = a.id AND status = 2) AS used,
+					count(c.tb_coupon_id) AS mallCount ";
+
+		$totalField = ' COUNT(*) AS total ';
+
+		$sql = "SELECT
+					%s
+				 FROM ".tname('coupon')." AS a
+				LEFT JOIN ".tname('coupon_mall')." AS c ON c.tb_coupon_id = a.id
+				LEFT JOIN ".tname('mall')." AS d ON d.id = c.tb_mall_id
+				%s GROUP BY a.id %s ";
+
+		$where = $this->_checkUserWhere($where);
+
+		if (!$where) {
+			return $this->returnRes(null, array('list' => array(), 'page' => false), false);
+		}
+
+		$queryTotal = $this->db->query(sprintf($sql, $totalField, $where, $order))->result();
+
+		$queryRes = $this->db->query(sprintf($sql, $field, $where, $order).$limit)->result();
+
+		$returnData = array(
+						'list'  => $queryRes,
+						'page' => $this->setPagination(site_url('Coupon/couponList'), count($queryTotal)),
+					);
+
+
+		return $this->returnRes(null, $returnData, false);
 	}
 
 	/**
 	 * 新建优惠券
 	 * @param array $couponData 优惠券数组数据
 	 */
-	public function addCoupon($couponData = array()){
+	public function addCoupon_bak($couponData = array()){
 
 		$couponInsertData = array(
 				'coupon_id'   => makeUUID(),
@@ -111,6 +139,83 @@ class CouponModel extends CI_Model {
 	}
 
 	/**
+	 * 新建优惠券
+	 * @param array $couponData 优惠券数组数据
+	 */
+	public function addCoupon($couponData = array()){
+
+		$brandInfo = $this->getBrandInfoById($this->userInfo->brand_id);
+
+		$expireDate = $this->_formatExpireDate($couponData['couponExpireDate']);
+		$receiveDate = $this->_formatExpireDate($couponData['couponReceiveDate']);
+
+		$couponInsertData = array(
+				'id'                     => makeUUID(),
+				'name'                   => $couponData['couponTitle'],
+				'brand_pic_url'          => $couponData['couponPic'],
+				'status'                 => 0,
+				'gene_type'              => $couponData['couponAutoCode'] ? 1 : 0,	//生成类型 0.无须生成 1.自动生成 2.手动
+				'coupon_type'            => $couponData['couponType'],				// 1.代金券 102.折扣劵 103.提货券
+				'create_time'            => currentTime(),
+				'update_time'            => currentTime(),
+				'tb_category_id'         => $brandInfo->tb_category_id,
+				'category_name'			 => $brandInfo->category_name,
+				'tb_brand_id'            => $brandInfo->id,
+				'brand_name_en'          => $brandInfo->name_en,
+				'brand_name_zh'          => $brandInfo->name_zh,
+				'coupon_desc'            => $couponData['couponUseGuide'],			//使用说明
+				'recommend_desc'         => $couponData['couponVerification'],		//验劵说明
+				'total_count'            => $couponData['couponSum'],				//总数
+				'limit_count_used'       => $couponData['couponSum'],				//使用总数
+				'limit_count_per_person' => $couponData['couponEveryoneSum'],		//每人限领数
+				'cost_price'             => $couponData['couponMoney'] == 2 ? floatval($couponData['couponMoneyNum']) : 0.00,//收费优惠券
+				'begin_date'             => $expireDate['start'],					//有效期开始
+				'end_date'               => $expireDate['end'],						//有效期结束
+				'receive_begin_date'     => $receiveDate['start'],					//领取开始
+				'receive_end_date'       => $receiveDate['end'],					//领取结束
+				'is_delete'              => 0,
+				'on_sale_time'           => $couponData['reviewPass'] == 2 ? $couponData['reviewPassDate'] : '', //上架时间
+				'oper'                   => $this->userInfo->user_id,
+			);
+	
+		// 创建优惠券
+		$couponRes = $this->db->insert(tname('coupon'), $couponInsertData);
+
+		if (!$couponRes) {
+			$this->returnRes['msg'] = $this->lang->line('ERR_COUPON_ADD_FAILURE');
+			return $this->returnRes;
+		}
+
+		// 优惠券适用门店
+		if (is_array($couponData['mallID']) && count($couponData['mallID'])) {
+
+			$couponInsertMall = $tmpMallArr = array();
+
+			foreach ($couponData['mallID'] as $k => $v) {
+
+				if (in_array($v, $tmpMallArr)) {
+					continue;
+				}
+
+				$couponInsertMall[] = array(
+						'id'           => makeUUID(),
+						'tb_coupon_id' => $couponInsertData['id'],
+						'tb_mall_id'   => $v,
+						'address'	   => $this->getMallFloorById($v, $this->userInfo->brand_id),
+						'create_time'  => currentTime(),
+						'update_time'  => currentTime(),
+					);
+			}
+
+			$this->db->insert_batch(tname('coupon_mall'), $couponInsertMall);
+		}
+
+		$this->returnRes['error'] = false;
+
+		return $this->returnRes;
+	}
+
+	/**
 	 * 获取店铺列表
 	 *
 	 */
@@ -123,7 +228,7 @@ class CouponModel extends CI_Model {
 						trade_area_name AS areaName,
 						city_name AS cityName";
 			$where = array('id' => $this->userInfo->mall_id);
-			$queryRes = $this->db->select($fields)->get_where(tname('qcgj_mall'), $where)->result_array();
+			$queryRes = $this->db->select($fields)->get_where(tname('mall'), $where)->result_array();
 
 		}
 
@@ -134,18 +239,22 @@ class CouponModel extends CI_Model {
 						b.name_zh AS mallName,
 						b.trade_area_name AS areaName,
 						b.city_name AS cityName
-						 FROM ".tname('qcgj_brand_mall')." AS a
-						LEFT JOIN ".tname('qcgj_mall')." AS b ON b.id = a.tb_mall_id
+						 FROM ".tname('brand_mall')." AS a
+						LEFT JOIN ".tname('mall')." AS b ON b.id = a.tb_mall_id
 						WHERE a.tb_brand_id = '".$this->userInfo->brand_id."' ORDER BY b.city_name ";
 			$queryRes = $this->db->query($sql)->result_array();
 		}
 
-		$areaName = array();
+		$cityList = $cityName = $areaName = array();
 		$bjAreaList = $shAreaList = $gzAreaList = '';
 
 		foreach ($queryRes as $k) {
 			if (!in_array($k['areaName'], $areaName)) {
 				array_push($areaName, $k['areaName']);
+			}
+
+			if (!in_array($k['cityName'], $cityName)) {
+				array_push($cityName, $k['cityName']);
 			}
 
 			$optionHTML = '<option value="'.$k['areaName'].'">'.$k['areaName'].'</option>';
@@ -166,10 +275,17 @@ class CouponModel extends CI_Model {
 
 		}
 
+		foreach ($this->lang->line('SELECT_CITY_LIST') as $k => $v) {
+			if (in_array($v['name'], $cityName)) {
+				array_push($cityList, $v);
+			}
+		}
+
 		$this->returnRes = array(
 				'error' => false,
 				'data'  => array(
 						'list'       => $queryRes,
+						'cityList'	 => $cityList,
 						'areaList'   => $areaName,
 						'bjAreaList' => $bjAreaList,
 						'shAreaList' => $shAreaList,
@@ -229,4 +345,24 @@ class CouponModel extends CI_Model {
 
 		return json_encode($returnText);
 	}
+
+	/**
+	 * 优惠券查询条件
+	 * @param string $where 查询条件
+	 */
+	private function _checkUserWhere($where = false){
+
+		if (empty($this->userInfo->brand_id)) {
+			return false;
+		}
+
+		$whereBrand = "a.tb_brand_id = '".$this->userInfo->brand_id."' ";
+
+		if ($where) {
+			return " WHERE ".$whereBrand;
+		}
+
+		return $where .= " AND ".$whereBrand;
+	}
+
 }
