@@ -11,6 +11,7 @@ $config = array(
 				'LOGIN' => 'User:Login:',
 				'MENU'  => 'User:Menu:',
 				'RULE'  => 'User:Rule:',
+				'SHOPLIST' => 'User:Shop:ShopList:',
 				'DEFAULT_EXPIRETIME' => '3600',
 		),
 		// 分页设置
@@ -29,6 +30,8 @@ $config = array(
 			),
 		// 审核内容
 		'COUPON_REVIEWPASS' => array(1, 2, 3), // 1.审核通过后自动上架 2.设置上架时间 3.手动上架
+		// 店长Roleid
+		'SHOPMANAGER_ROLEID' => 3,
 	);
 
 

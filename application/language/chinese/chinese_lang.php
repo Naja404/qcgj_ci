@@ -55,6 +55,6 @@ $lang = array(
 		'ERR_AUTO_REDIRECT'  => '秒后将自动跳转',
 
 		// 文件上传错误提示
-		'upload_file_exceeds_limit' => '文件尺寸过大',
+		'upload_file_exceeds_limit'      => '文件尺寸过大',
 		'upload_file_exceeds_form_limit' => '文件尺寸过大',
 	);

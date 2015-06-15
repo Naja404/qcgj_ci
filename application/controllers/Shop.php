@@ -87,7 +87,65 @@ class Shop extends WebBase {
 	 *
 	 */
 	public function addShopManager(){
+
+		if ($this->input->method() === 'post') {
+			$verlidationRes = $this->_verlidationAddShopManager();
+			
+			if ($verlidationRes !== true) {
+				$this->ajaxRes['msg'] = $verlidationRes;
+				jsonReturn($this->ajaxRes);
+			}
+
+			$addManagerRes = $this->ShopModel->addShopManager($this->input->post());
+
+			if ($addManagerRes['error']) {
+				$this->ajaxRes['msg'] = $addManagerRes['msg'];
+			}else{
+				$this->ajaxRes = array(
+						'status' => 0,
+					);
+			}
+
+			jsonReturn($this->ajaxRes);
+
+		}
+
+		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ADD_SHOPMANAGER');
+		$this->outData['shopList'] = $this->ShopModel->getShopListWithForm();
+
+		$this->load->view('Shop/addShopManager', $this->outData);
+	}
+
+	/**
+	 * 添加店长表单验证
+	 *
+	 */
+	private function _verlidationAddShopManager(){
+		$this->form_validation->set_rules($this->lang->line('ADD_SHOPMANAGER_VALIDATION'));
+
+		if (!$this->form_validation->run()) {
+			return validation_errors();
+		}
+
+		if ($this->ShopModel->existsManagerName($this->input->post('managerName'))) return $this->lang->line('ERR_MANAGERNAME_EXISTS');
+
+
+		if ($this->input->post('passwd') != $this->input->post('confirmPasswd')) {
+			return $this->lang->line('ERR_CONFIRM_PASSWD_NOTSAME');
+		}
 		
+		$shopList = $this->ShopModel->getShopListWithForm();
+		$shopListArr = array();
+
+		foreach ($shopList as $k => $v) {
+			$shopListArr[] = $v->mallID;
+		}
+
+		if (!in_array($this->input->post('mallID'), $shopListArr)) {
+			return $this->lang->line('ERR_MALLID');
+		}
+
+		return true;
 	}
 
 	/**

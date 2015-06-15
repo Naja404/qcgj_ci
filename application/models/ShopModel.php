@@ -40,11 +40,11 @@ class ShopModel extends CI_Model {
 		$totalField = ' COUNT(*) AS total ';
 
 		$sql = "SELECT %s
-					FROM ".tname('qcgj_brand_mall')." AS a 
-					LEFT JOIN ".tname('qcgj_brand')." AS b ON b.id = a.tb_brand_id
-					LEFT JOIN ".tname('qcgj_mall')." AS c ON c.id  = a.tb_mall_id
-					LEFT JOIN ".tname('qcgj_brand_category')." AS d ON d.tb_brand_id = a.tb_brand_id
-					LEFT JOIN ".tname('qcgj_category')." AS e ON e.id = d.tb_category_id 
+					FROM ".tname('brand_mall')." AS a 
+					LEFT JOIN ".tname('brand')." AS b ON b.id = a.tb_brand_id
+					LEFT JOIN ".tname('mall')." AS c ON c.id  = a.tb_mall_id
+					LEFT JOIN ".tname('brand_category')." AS d ON d.tb_brand_id = a.tb_brand_id
+					LEFT JOIN ".tname('category')." AS e ON e.id = d.tb_category_id 
 					%s 
 					%s 
 					%s ";
@@ -71,27 +71,89 @@ class ShopModel extends CI_Model {
 		return $this->returnRes;
 	}
 
-	// 获取权限列表
-	public function getRoleList($pageCount = 10, $pageNum = 1){
+	/**
+	 * 获取门店列表格式化为表单
+	 *
+	 */
+	public function getShopListWithForm(){
+		$shopList = $this->cache->get(config_item('USER_CACHE.SHOPLIST').$this->userInfo->user_id);
+		if ($shopList) return $shopList;
 
-		$pageNum = ($pageNum - 1) * $pageCount;
+		$sql = "SELECT 
+					c.id AS mallID,
+					CONCAT(c.city_name, c.trade_area_name, c.name_zh, c.address) AS shopName 
+				 FROM ".tname('brand')." AS a 
+				LEFT JOIN ".tname('brand_mall')." AS b ON b.tb_brand_id = a.id
+				LEFT JOIN ".tname('mall')." AS c ON c.id = b.tb_mall_id
+				WHERE a.id = '".$this->userInfo->brand_id."'";
 
-		$queryRes = $this->db
-						 ->select('qcgj_role_user.user_id, qcgj_role_user.name, qcgj_role.name AS role_name, qcgj_role_user.created_time, qcgj_role_user.status')
-						 ->join('qcgj_role', 'qcgj_role.role_id = qcgj_role_user.role_id')
-						 ->get_where('qcgj_role_user', array('qcgj_role_user.status' => 1))
-						 ->result();
-		// $totalCount = $this->db
-		// 				 ->select('qcgj_role_user.user_id, qcgj_role_user.name, qcgj_role.name AS role_name, qcgj_role_user.created_time')
-		// 				 ->join('qcgj_role', 'qcgj_role.role_id = qcgj_role_user.role_id')
-		// 				 ->get_where('qcgj_role_user', array('qcgj_role_user.status' => 1))
-		// 				 ->count_all_results();
-		return $queryRes;
-		echo '<pre>';
-		print_r($queryRes);exit;
-		foreach ($queryRes as $k => $v) {
+		$queryRes = $this->db->query($sql)->result();
 
+		if (count($queryRes)) {
+			$this->cache->save(config_item('USER_CACHE.SHOPLIST').$this->userInfo->user_id, $queryRes, config_item('USER_CACHE.DEFAULT_EXPIRETIME'));
 		}
+
+		return $queryRes;
+	}
+
+	/**
+	 * 添加店长
+	 * @param array $managerData 店长信息
+	 */
+	public function addShopManager($managerData = array()){
+		if (count($managerData) <= 0) {
+			return $this->_return($this->lang->line('ERR_ADD_MANAGER_FAIL'));
+		}
+
+		$insert = array(
+				'user_id'      => makeUUID(),
+				'role_id'      => config_item('SHOPMANAGER_ROLEID'),
+				'name'         => $managerData['managerName'],
+				'passwd'       => md5($managerData['passwd']),
+				'status'       => 1,
+				'created_time' => currentTime(),
+			);
+
+		$roleUserRes = $this->db->insert(tname('qcgj_role_user'), $insert);
+
+		if (!$roleUserRes) return $this->_return($this->lang->line('ERR_ADD_MANAGER_FAIL'));
+
+		$insertMall = array(
+				'user_id'  => $insert['user_id'],
+				'brand_id' => $this->userInfo->brand_id,
+				'mall_id'  => $managerData['mallID'],
+			);
+
+		$mallRes = $this->db->insert(tname('qcgj_role_brand_mall'), $insertMall);
+
+		if (!$mallRes) {
+			
+			$where = array(
+					'user_id' => $insert['user_id'],
+				);
+			$this->db->delete(tname('qcgj_role_user'), $where);
+
+			return $this->_return($this->lang->line('ERR_ADD_MANAGER_FAIL'));
+		}
+
+		return $this->_return(NULL, array(), false);
+	}
+
+
+	/**
+	 * 检测店长名是否存在
+	 * @param string $managerName 店长名
+	 */
+	public function existsManagerName($managerName = false){
+
+		$where = array(
+				'name' => $managerName,
+			);
+
+		$queryRes = $this->db->get_where(tname('qcgj_role_user'), $where)->result_array();
+
+		return count($queryRes) > 0 ? true : false;
+
 	}
 
 	/**
@@ -113,10 +175,11 @@ class ShopModel extends CI_Model {
 		$sql = "SELECT %s
 					 FROM ".tname('qcgj_role_brand_mall')." AS a 
 					LEFT JOIN ".tname('qcgj_role_user')." AS b ON b.user_id = a.user_id 
-					LEFT JOIN ".tname('qcgj_mall')." AS c ON c.id = a.mall_id 
+					LEFT JOIN ".tname('mall')." AS c ON c.id = a.mall_id 
 					WHERE a.brand_id = '".$this->userInfo->brand_id."' 
 					AND a.user_id != '".$this->userInfo->user_id."' 
 					AND a.mall_id != '' ";
+					
 		$queryRes = $this->db->query(sprintf($sql, $field).$limit)->result();
 
 		$queryTotal = $this->db->query(sprintf($sql, " COUNT(*) AS total "))->first_row();

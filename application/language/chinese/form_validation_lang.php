@@ -35,4 +35,10 @@ $lang = array(
 	'ERR_LOGIN_USERNAME_EMPTY' => '用户名不能为空',
 	'ERR_LOGIN_PASSWD_EMPTY'   => '密码不能为空',
 
+	// 添加店长 Shop/addShopManager
+	'ERR_ENTER_MANAGER_NAME'     => '请输入正确的店长名',
+	'ERR_ENTER_PASSWD'           => '请输入正确的登陆密码',
+	'ERR_ENTER_CONFIRM_PASSWD'   => '请输入正确的确认密码',
+	'ERR_MALLID'				 => '请选择正确的地址',
+
 );

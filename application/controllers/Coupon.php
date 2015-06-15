@@ -77,6 +77,27 @@ class Coupon extends WebBase {
 	}
 
 	/**
+	 * 优惠券报表
+	 *
+	 */
+	public function analysis(){
+		
+		$this->outData['pageTitle'] = $this->lang->line('TEXT_COUPON_TITLE_ANALYSIS');
+
+		$this->load->view('Coupon/analysis', $this->outData);
+	}
+
+	/**
+	 * 优惠券使用状态
+	 *
+	 */
+	public function statelist(){
+		$this->outData['pageTitle'] = $this->lang->line('TEXT_STATELIST');
+
+		$this->load->view('Coupon/statelist', $this->outData);
+	}
+
+	/**
 	 * ajax上传优惠券图片
 	 *
 	 */
