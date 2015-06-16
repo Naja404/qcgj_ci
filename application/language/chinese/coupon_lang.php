@@ -58,6 +58,12 @@ $lang = array(
 		'TEXT_REVIEW_PASSTIME'              => '设置上架时间',
 		'TEXT_GO_COUPONLIST'				=> '优惠券列表',
 		'TEXT_CONTINUE_ADDCOUPON'			=> '继续添加',
+		'TEXT_USED'							=> '使用',
+		'TEXT_RECEIVED'						=> '领取',
+		'TEXT_STATUS_0'						=> '<span class="label">审核中</span>',
+		'TEXT_STATUS_1'						=> '<span class="label label-info" >上架</span>',
+		'TEXT_STATUS_2'						=> '<span class="label label-danger" >下架</span>',
+		'TEXT_CONFIRM_DEL_COUPON'			=> '是否确认删除该优惠券?',
 
 		
 		'ERR_COUPON_MONEY_NUM'              => '请正确填写优惠券金额',

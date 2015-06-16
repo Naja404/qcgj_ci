@@ -63,22 +63,50 @@
 
 						<div class="page-header">
 						</div>
-
 						<div class="row">
 							<div class="col-sm-8">
-								<h4><?php echo $this->lang->line('TEXT_COUPON_TITLE');?>: </h4>
-								<h4><?php echo $this->lang->line('TEXT_COUPON_RECEIVECOUNT');?>: </h4>
-								<h4><?php echo $this->lang->line('TEXT_COUPON_USECOUNT');?>: </h4><a onclick="changeChart();">what</a>
+								<form class="form-horizontal" action="<?php echo site_url('Coupon/statelist');?>" method="post" id="couponForm">
+									<div class="form-group">
+										<label class="col-sm-3 control-label"><?php echo $this->lang->line('TEXT_COUPON_TITLE');?>: </label>
+										<div class="col-sm-3">
+											<select name="couponId" id="couponIdSelect">
+												<?php foreach ($couponData['couponList'] as $k => $v) {?>
+												<option value="<?php echo $v['couponId'];?>" <?php echo $v['couponId'] == $selectCouponId ? 'selected' : '';?>><?php echo $v['title'];?></option>
+												<?php }?>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label"><?php echo $this->lang->line('TEXT_COUPON_RECEIVECOUNT');?>: </label>
+										<div class="col-sm-3">
+											<?php echo $couponData['receivedCoupon']['total'];?>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label"><?php echo $this->lang->line('TEXT_COUPON_USECOUNT');?>: </label>
+										<div class="col-sm-3">
+											<?php echo $couponData['usedCoupon']['total'];?>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="radio">
+													<label>
+														<input name="useState" type="radio" class="ace" onclick="" checked>
+														<span class="lbl"><?php echo $this->lang->line('TEXT_RECEIVED');?></span>
+													</label>
+													&nbsp;&nbsp;&nbsp;&nbsp;
+													<label>
+														<input name="useState" type="radio" class="ace" onclick="">
+														<span class="lbl"><?php echo $this->lang->line('TEXT_USED');?></span>
+													</label>
+										</div>
+									</div>
+								</form>
 							</div>
-						</div><!-- /.row -->
-
-						<div class="hr hr32 hr-dotted"></div>
-
-						<div class="row">
 							<div class="col-sm-8">
 							<canvas id="canvas"></canvas>
 							</div>
-						</div>
+						</div><!-- /.row -->
 
 					</div><!-- /.page-content -->
 				</div><!-- /.main-content -->
@@ -128,9 +156,8 @@
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/Chart.min.js"></script>
 		<script type="text/javascript">
-			var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
 			var lineChartData = {
-				labels : ["January","February","March","April","May","June","July"],
+				labels : <?php echo json_encode($couponData['receivedCoupon']['labels']);?>,
 				datasets : [
 					{
 						label: "My First dataset",
@@ -140,17 +167,7 @@
 						pointStrokeColor : "#fff",
 						pointHighlightFill : "#fff",
 						pointHighlightStroke : "rgba(220,220,220,1)",
-						data : [30,10,30,10,15,20,15,30]
-					},
-					{
-						label: "My Second dataset",
-						fillColor : "rgba(151,187,205,0.2)",
-						strokeColor : "rgba(151,187,205,1)",
-						pointColor : "rgba(151,187,205,1)",
-						pointStrokeColor : "#fff",
-						pointHighlightFill : "#fff",
-						pointHighlightStroke : "rgba(151,187,205,1)",
-						data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
+						data : <?php echo json_encode($couponData['receivedCoupon']['data']);?>
 					}
 				]
 
@@ -160,43 +177,15 @@
 				window.myLine = new Chart(ctx).Line(lineChartData, {
 					responsive: true
 				});
+
+				$("#couponIdSelect").on('change', function(){
+					$("#couponForm").submit();
+				})
 			})
 
 			function changeChart(){
-				$('#canvas').html('');
-			var lineChartDatas = {
-				labels : ["January","February","March","April","May","June","July"],
-				datasets : [
-					{
-						label: "My First dataset",
-						fillColor : "rgba(220,220,220,0.2)",
-						strokeColor : "rgba(220,220,220,1)",
-						pointColor : "rgba(220,220,220,1)",
-						pointStrokeColor : "#fff",
-						pointHighlightFill : "#fff",
-						pointHighlightStroke : "rgba(220,220,220,1)",
-						data : [30,10,30,10,15,20,15,30]
-					},
-					{
-						label: "My Second dataset",
-						fillColor : "rgba(151,187,205,0.2)",
-						strokeColor : "rgba(151,187,205,1)",
-						pointColor : "rgba(151,187,205,1)",
-						pointStrokeColor : "#fff",
-						pointHighlightFill : "#fff",
-						pointHighlightStroke : "rgba(151,187,205,1)",
-						data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
-					}
-				]
-
-			};
-			var ctx = document.getElementById("canvas").getContext("2d");
-				window.myLine = new Chart(ctx).Line(lineChartDatas, {
-					responsive: true
-				});
-
+				// console.log(window.myLine);
 			}
-
 		</script>
 
 	</body>

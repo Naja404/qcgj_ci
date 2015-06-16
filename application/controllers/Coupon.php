@@ -29,6 +29,7 @@ class Coupon extends WebBase {
 
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_COUPON_LIST');
 		$couponList = $this->CouponModel->getCouponList($where, $order, $this->p);
+
 		$this->outData['couponList'] = $couponList['data']['list'];
 		$this->outData['couponListPage'] = $couponList['data']['page'];
 
@@ -77,6 +78,26 @@ class Coupon extends WebBase {
 	}
 
 	/**
+	 * 删除优惠券
+	 *
+	 */
+	public function delCoupon(){
+		if (!$this->input->is_ajax_request()) {
+			jsonReturn($this->ajaxRes);
+		}
+
+		$updateRes = $this->CouponModel->delCouponById($this->input->post('couponId'));
+
+		if (!$updateRes) {
+			$this->ajaxRes['msg'] = $this->lang->line('TEXT_COUPON_DELETE_FAIL');
+		}else{
+			$this->ajaxRes = array('status' => 0);
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
 	 * 优惠券报表
 	 *
 	 */
@@ -93,6 +114,12 @@ class Coupon extends WebBase {
 	 */
 	public function statelist(){
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_STATELIST');
+		
+		$couponId = $this->input->post('couponId');
+
+		$this->outData['couponData'] = $this->CouponModel->getStateList($couponId);
+		
+		$this->outData['selectCouponId'] = $couponId;
 
 		$this->load->view('Coupon/statelist', $this->outData);
 	}

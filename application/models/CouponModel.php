@@ -24,7 +24,7 @@ class CouponModel extends CI_Model {
 		$field = " a.id,
 					a.name AS title,
 					CONCAT(a.begin_date, '<br/>~<br/>', a.end_date) AS expire,
-					a.status,
+					a.on_sale AS status,
 					d.city_name AS cityName,
 					(SELECT COUNT(*) FROM ".tname('coupon_individual')." WHERE tb_coupon_id = a.id AND status > 0) AS received,
 					(SELECT COUNT(*) FROM ".tname('coupon_individual')." WHERE tb_coupon_id = a.id AND status = 2) AS used,
@@ -36,8 +36,8 @@ class CouponModel extends CI_Model {
 					%s
 				 FROM ".tname('coupon')." AS a
 				LEFT JOIN ".tname('coupon_mall')." AS c ON c.tb_coupon_id = a.id
-				LEFT JOIN ".tname('mall')." AS d ON d.id = c.tb_mall_id
-				%s GROUP BY a.id %s ";
+				LEFT JOIN ".tname('mall')." AS d ON d.id = c.tb_mall_id 
+				WHERE a.is_delete != 1 %s GROUP BY a.id %s ";
 
 		$where = $this->_checkUserWhere($where);
 
@@ -56,6 +56,36 @@ class CouponModel extends CI_Model {
 
 
 		return $this->returnRes(null, $returnData, false);
+	}
+
+	/**
+	 * 获取优惠券使用状态
+	 * @param string $couponId 优惠券id
+	 */
+	public function getStateList($couponId = false){
+
+		$couponList = $this->_getCouponListWithState();
+
+		if (!in_array($couponId, $couponList['couponId'])) {
+			if (count($couponList['couponId']) <= 0) return false;
+			$couponId = $couponList['couponId'][0];
+		}
+
+		$usedSql = "SELECT COUNT(*) AS total, SUBSTRING(used_time, 6, 5) AS time FROM ".tname('coupon_individual')." WHERE tb_coupon_id = '".$couponId."' AND status = 2 GROUP BY LEFT(used_time, 10) ASC";
+		$receivedSql = "SELECT COUNT(*) AS total, SUBSTRING(update_time, 6, 5) AS time FROM ".tname('coupon_individual')." WHERE tb_coupon_id = '".$couponId."'  AND status > 0 GROUP BY LEFT(update_time, 10) ASC";
+
+		$usedRes = $this->db->query($usedSql)->result_array();
+		$receivedRes = $this->db->query($receivedSql)->result_array();
+
+		$returnRes = array(
+				'usedCoupon'     => $this->_formatCouponStateList($usedRes),
+				'receivedCoupon' => $this->_formatCouponStateList($receivedRes),
+				'usedCount'		 => count($usedRes),
+				'receivedCount'  => count($receivedRes),
+				'couponList'     => $couponList['list'],
+			);
+
+		return $returnRes;
 	}
 
 	/**
@@ -174,6 +204,7 @@ class CouponModel extends CI_Model {
 				'receive_begin_date'     => $receiveDate['start'],					//领取开始
 				'receive_end_date'       => $receiveDate['end'],					//领取结束
 				'is_delete'              => 0,
+				'on_sale'				 => 0,
 				'on_sale_time'           => $couponData['reviewPass'] == 2 ? $couponData['reviewPassDate'] : '', //上架时间
 				'oper'                   => $this->userInfo->user_id,
 			);
@@ -213,6 +244,28 @@ class CouponModel extends CI_Model {
 		$this->returnRes['error'] = false;
 
 		return $this->returnRes;
+	}
+
+	/**
+	 * 删除优惠券
+	 * @param string $couponId 优惠券id
+	 */
+	public function delCouponById($couponId = false){
+		if(empty($couponId) || !$couponId){
+			return false;
+		}
+		
+		$where = array(
+				'tb_brand_id' => $this->userInfo->brand_id,
+				'id'          => $couponId,
+			);
+		$update = array(
+				'is_delete' => 1,
+			);
+
+		$queryRes = $this->db->where($where)->update(tname('coupon'), $update);
+
+		return $queryRes ? true : false;
 	}
 
 	/**
@@ -298,6 +351,66 @@ class CouponModel extends CI_Model {
 	}
 
 	/**
+	 * 格式化优惠券数据
+	 * @param array $couponData 优惠券内容
+	 */
+	private function _formatCouponStateList($couponData = array()){
+		$date = $row = $jsonData = array();
+		$total = 0;
+		foreach ($couponData as $k => $v) {
+			array_push($date, $v['time']);
+			array_push($row, $v['total']);
+			$total += $v['total'];
+
+			$tmpData = array(
+					'name'  => $v['time'],
+					'value' => $v['total'],
+					'color' => '#f6f9fa',
+				);
+			array_push($jsonData, $tmpData);
+		}
+
+		return array('labels' => $date, 'data' => $row, 'total' => $total, 'json' => $jsonData);
+	}
+
+	/**
+	 * 获取优惠券状态
+	 *
+	 */
+	private function _getCouponListWithState(){
+		$cacheRes = $this->cache->get(config_item('USER_CACHE.COUPON_ID_LIST').$this->userInfo->user_id);
+		if ($cacheRes) {
+			return $cacheRes;
+		}
+
+		$where = array(
+				'tb_brand_id' => $this->userInfo->brand_id,
+			);
+		
+		$select = "id AS couponId, name AS title";
+
+		$queryRes = $this->db->select($select)->order_by('begin_date', 'DESC')->get_where(tname('coupon'), $where)->result_array();
+
+		if (count($queryRes)) {
+			$couponIdArr = array();
+			foreach ($queryRes as $k => $v) {
+				if (!in_array($v['couponId'], $couponIdArr)) {
+					array_push($couponIdArr, $v['couponId']);
+				}
+			}
+
+			$cacheRes = array(
+					'list'     => $queryRes,
+					'couponId' => $couponIdArr,
+				);
+
+			$this->cache->save(config_item('USER_CACHE.SHOPLIST').$this->userInfo->user_id, $cacheRes);
+		}
+
+		return isset($cacheRes) ? $cacheRes : array();
+	}
+
+	/**
 	 * 格式化有效期、领取期
 	 * @param string $dateTime 2015/05/27 - 2015/05/28
 	 */
@@ -352,14 +465,18 @@ class CouponModel extends CI_Model {
 	 */
 	private function _checkUserWhere($where = false){
 
+		if ($this->userInfo->role_id == 1) {
+			return ' ';
+		}
+
 		if (empty($this->userInfo->brand_id)) {
 			return false;
 		}
 
 		$whereBrand = "a.tb_brand_id = '".$this->userInfo->brand_id."' ";
 
-		if ($where) {
-			return " WHERE ".$whereBrand;
+		if (empty($where)) {
+			return " AND ".$whereBrand;
 		}
 
 		return $where .= " AND ".$whereBrand;

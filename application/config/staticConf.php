@@ -8,10 +8,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $config = array(
 		// 用户缓存
 		'USER_CACHE' => array(
-				'LOGIN' => 'User:Login:',
-				'MENU'  => 'User:Menu:',
-				'RULE'  => 'User:Rule:',
-				'SHOPLIST' => 'User:Shop:ShopList:',
+				'LOGIN'              => 'User:Login:',
+				'MENU'               => 'User:Menu:',
+				'RULE'               => 'User:Rule:',
+				'SHOPLIST'           => 'User:Shop:ShopList:',
+				'COUPON_ID_LIST'     => 'User:Coupon:CouponId:',
 				'DEFAULT_EXPIRETIME' => '3600',
 		),
 		// 分页设置

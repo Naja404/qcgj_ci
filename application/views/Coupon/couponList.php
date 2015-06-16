@@ -103,63 +103,23 @@
 															<a href="#"><?php echo $v->title;?></a>
 														</td>
 														<td><?php echo $v->expire;?></td>
-														<td><?php echo $v->status;?></td>
+														<td><?php echo $this->lang->line('TEXT_STATUS_'.$v->status);?></td>
 														<td><?php echo $v->cityName;?></td>
 														<td><?php echo $v->received;?></td>
 														<td><?php echo $v->used;?></td>
 														<td><?php echo $v->mallCount;?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-																<button class="btn btn-xs btn-success">
-																	<i class="icon-ok bigger-120"></i>
-																</button>
-
-																<button class="btn btn-xs btn-info">
+																<?php if($v->status != 2){?>
+																<button class="btn btn-xs btn-info" onclick="editCoupon('<?php echo $v->id;?>');">
 																	<i class="icon-edit bigger-120"></i>
 																</button>
-
-																<button class="btn btn-xs btn-danger">
+																<?php } ?>
+																<button class="btn btn-xs btn-danger" onclick="delCoupon('<?php echo $v->id;?>');">
 																	<i class="icon-trash bigger-120"></i>
 																</button>
-
-																<button class="btn btn-xs btn-warning">
-																	<i class="icon-flag bigger-120"></i>
-																</button>
 															</div>
 
-															<div class="visible-xs visible-sm hidden-md hidden-lg">
-																<div class="inline position-relative">
-																	<button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown">
-																		<i class="icon-cog icon-only bigger-110"></i>
-																	</button>
-
-																	<ul class="dropdown-menu dropdown-only-icon dropdown-yellow pull-right dropdown-caret dropdown-close">
-																		<li>
-																			<a href="#" class="tooltip-info" data-rel="tooltip" title="View">
-																				<span class="blue">
-																					<i class="icon-zoom-in bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-
-																		<li>
-																			<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">
-																				<span class="green">
-																					<i class="icon-edit bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-
-																		<li>
-																			<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete">
-																				<span class="red">
-																					<i class="icon-trash bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-																	</ul>
-																</div>
-															</div>
 														</td>
 													</tr>
 													<?php endforeach;?>
@@ -218,18 +178,6 @@
 		<script src="<?php echo config_item('html_url');?>js/typeahead-bs2.min.js"></script>
 
 		<!-- page specific plugin scripts -->
-		<script src="<?php echo config_item('html_url');?>js/fuelux/fuelux.spinner.min.js"></script>
-		<script src="<?php echo config_item('html_url');?>js/date-time/bootstrap-datepicker.min.js"></script>
-		<script src="<?php echo config_item('html_url');?>js/date-time/bootstrap-timepicker.min.js"></script>
-		<script src="<?php echo config_item('html_url');?>js/date-time/moment.min.js"></script>
-		<script src="<?php echo config_item('html_url');?>js/date-time/daterangepicker.min.js"></script>
-		<script src="<?php echo config_item('html_url');?>js/jquery.inputlimiter.1.3.1.min.js"></script>
-		<script src="<?php echo config_item('html_url');?>js/fuelux/fuelux.wizard.min.js"></script>
-		<script src="<?php echo config_item('html_url');?>js/jquery.validate.min.js"></script>
-		<script src="<?php echo config_item('html_url');?>js/additional-methods.min.js"></script>
-		<script src="<?php echo config_item('html_url');?>js/bootbox.min.js"></script>
-		<script src="<?php echo config_item('html_url');?>js/jquery.maskedinput.min.js"></script>
-		<script src="<?php echo config_item('html_url');?>js/select2.min.js"></script>
 		
 		<!-- ace scripts -->
 
@@ -237,245 +185,23 @@
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 
 		<!-- inline scripts related to this page -->
-
 		<script type="text/javascript">
-			jQuery(function($) {
-				$('#citySelect').on('change', function(){
-					var areaHTML_1 = '<?php echo $bjAreaList;?>';
-						areaHTML_2 = '<?php echo $shAreaList?>';
-						areaHTML_3 = '<?php echo $gzAreaList;?>';
-						areaHTML = '';
-
-					switch(this.value){
-						case ('1'):
-						areaHTML = areaHTML_1;
-						break;
-						case ('2'):
-						areaHTML = areaHTML_2;
-						break;
-						case ('3'):
-						areaHTML = areaHTML_3;
-						break;
-						default:
-						areaHTML = areaHTML_2;
-						break;
-					}
-
-					$('#areaSelect').html(areaHTML);
-				});
-
-				$('#areaSelect').on('change', function(){
-					var areaSelect = '<?php echo json_encode($shopList);?>';
-						shopListHTML = '';
-						areaSelectValue = this.value;
-
-					$.each($.parseJSON(areaSelect), function(k, v){
-						// if (!$('#citySelect').val() || !this.value) {
-						// 	return false;
-						// }
-
-						if (v.areaName == areaSelectValue) {
-							shopListHTML += '<tr><td class="center"><label><input type="checkbox" class="ace" name="mallID[]" value="'+v.mallID+'"><span class="lbl"></span></label><\/td>';
-							shopListHTML += '<td>'+v.cityName+'<\/td>';
-							shopListHTML += '<td>'+v.areaName+'</td>';
-							shopListHTML += '<td><a href="#">'+v.mallName+'</a></td>';
-							shopListHTML += '<td><a href="#">'+v.address+'</a></td>';
-							shopListHTML += '<\/tr>';
-						}
-					});
-
-					$('#shopListHTML').html(shopListHTML);
-				});
-
-				// 数字选择
-				$('#couponSum').ace_spinner({value:0,min:0,max:9999,step:10, btn_up_class:'btn-info' , btn_down_class:'btn-info'})
-				.on('change', function(){
-					//alert(this.value)
-				});
-
-				$('#couponEveryoneSum').ace_spinner({value:0,min:0,max:9999,step:1, btn_up_class:'btn-info' , btn_down_class:'btn-info'})
-				.on('change', function(){
-					//alert(this.value)
-				});
-
-				// 日期选择
-				$('input[name=couponExpireDate]').daterangepicker().prev().on(ace.click_event, function(){
-					$(this).next().focus();
-				});
-				$('input[name=couponReceiveDate]').daterangepicker().prev().on(ace.click_event, function(){
-					$(this).next().focus();
-				});
-
-				$('.date-picker').datepicker({autoclose:true}).next().on(ace.click_event, function(){
-					$(this).prev().focus();
-				});
-
-				
-				$('#couponUseTimeStart').timepicker({
-					minuteStep: 1,
-					showSeconds: true,
-					showMeridian: false
-				}).next().on(ace.click_event, function(){
-					$(this).prev().focus();
-				});
-
-				$('#couponUseTimeEnd').timepicker({
-					minuteStep: 1,
-					showSeconds: true,
-					showMeridian: false
-				}).next().on(ace.click_event, function(){
-					$(this).prev().focus();
-				});
-
-				// 字数限制
-				$('#couponTitle').inputlimiter({
-					remText: '<?php echo $this->lang->line("TEXT_COUPON_TITLE_LENGTH")?>',
-					limitText: '<?php echo $this->lang->line("TEXT_COUPON_TITLE_LENGTH_MAX")?>'
-				});
-
-				$('table th input:checkbox').on('click' , function(){
-					var that = this;
-					$(this).closest('table').find('tr > td:first-child input:checkbox')
-					.each(function(){
-						this.checked = that.checked;
-						$(this).closest('tr').toggleClass('selected');
-					});
-
-				});
-
-				$('[data-rel=tooltip]').tooltip();
-			
-				$(".select2").css('width','200px').select2({allowClear:true})
-				.on('change', function(){
-					$(this).closest('form').validate().element($(this));
-				}); 
-			
-				//documentation : http://docs.jquery.com/Plugins/Validation/validate
-			
-				$('#addCoupon-form').validate({
-					errorElement: 'div',
-					errorClass: 'help-block',
-					focusInvalid: false,
-					rules: {
-						couponTitle: {
-							required:true,
-							maxlength:40,
-						},
-						couponType: {
-							required:true
-						},
-						couponMoney: {
-							required:true
-						},
-						// couponEveryoneSum: {
-						// 	required:true
-						// },
-						// couponSum: {
-						// 	required:true
-						// },
-						couponExpireDate: {
-							required:true
-						},
-						couponReceiveDate: {
-							required:true
-						}
-					},
-			
-					messages: {
-						couponTitle: {
-							required:"<?php echo $this->lang->line('ERR_COUPON_TITLE');?>",
-							maxlength:"<?php echo $this->lang->line('ERR_COUPON_TITLE_LENGTH');?>"
-						},
-						couponType: {
-							required:"<?php echo $this->lang->line('ERR_COUPON_TYPE');?>"
-						},
-						couponMoney: {
-							required:"<?php echo $this->lang->line('ERR_COUPON_MONEY');?>"
-						},
-						// couponEveryoneSum: {
-						// 	required:"<?php echo $this->lang->line('ERR_COUPON_EXPIRE_DATE');?>"
-						// },
-						// couponSum: {
-						// 	required:"<?php echo $this->lang->line('ERR_COUPON_RECEIVEDATE');?>"
-						// },
-						couponExpireDate: {
-							required:"<?php echo $this->lang->line('ERR_COUPON_EXPIRE_DATE');?>"
-						},
-						couponReceiveDate: {
-							required:"<?php echo $this->lang->line('ERR_COUPON_RECEIVEDATE');?>"
-						}
-					},
-			
-					invalidHandler: function (event, validator) { //display error alert on form submit   
-						$('.alert-danger', $('.login-form')).show();
-					},
-			
-					highlight: function (e) {
-						$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
-					},
-			
-					success: function (e) {
-						$(e).closest('.form-group').removeClass('has-error').addClass('has-info');
-						$(e).remove();
-					},
-			
-					errorPlacement: function (error, element) {
-						if(element.is(':checkbox') || element.is(':radio')) {
-							var controls = element.closest('div[class*="col-"]');
-							if(controls.find(':checkbox,:radio').length > 1) controls.append(error);
-							else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
-						}
-						else if(element.is('.select2')) {
-							error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
-						}
-						else if(element.is('.chosen-select')) {
-							error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
-						}
-						else error.insertAfter(element.parent());
-					},
-			
-					submitHandler: function (form) {
-					},
-					invalidHandler: function (form) {
-					}
-				});
-
-				$('#modal-wizard .modal-header').ace_wizard();
-				$('#modal-wizard .wizard-actions .btn[data-dismiss=modal]').removeAttr('disabled');
-			})
-
-			function subAddCouponForm(){
-				if(!$('#addCoupon-form').valid()){
+			function delCoupon(couponId){
+				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DEL_COUPON');?>")) {
 					return false;
 				}
 
 				$.ajax({
 					type:"POST",
-					url:"<?php echo site_url('Coupon/addCoupon');?>",
-					data:$('#addCoupon-form').serialize(),
+					url:"<?php echo site_url('Coupon/delCoupon');?>",
+					data:{couponId:couponId},
 					success:function(data){
 						if (data.status) {
 							alert(data.msg);
 							return false;
 						}else{
-							return true;
+							window.location.reload();
 						}
-					}
-				});
-			}
-
-			function subMallForm(){
-				$.ajax({
-					type:"POST",
-					url:"<?php echo site_url('Coupon/addCouponMall');?>",
-					data:$('#mallForm').serialize(),
-					success:function(data){
-						if (data.status) {
-							alert(data.msg);
-							return false;
-						}
-
-						return true;
 					}
 				});
 			}
