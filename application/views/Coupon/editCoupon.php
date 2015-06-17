@@ -79,13 +79,13 @@
 													<div class="step-content row-fluid position-relative" id="step-container">
 														<div class="step-pane active" id="step1">
 
-															<form class="form-horizontal" id="addCoupon-form" method="post" enctype="multipart/form-data" >
+															<form class="form-horizontal" id="editCouponform" method="post" enctype="multipart/form-data" >
 																<div class="form-group">
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponTitle"><?php echo $this->lang->line('TEXT_COUPON_TITLE');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<input type="text" name="couponTitle" id="couponTitle" class="col-xs-12 col-sm-6" maxlength="40" placeholder="<?php echo $this->lang->line('TEXT_COUPON_TITLE_PLACEHOLDER');?>"/>
+																			<input type="text" name="couponTitle" id="couponTitle" class="col-xs-12 col-sm-6" maxlength="40" placeholder="<?php echo $this->lang->line('TEXT_COUPON_TITLE_PLACEHOLDER');?>" value="<?php echo $couponData->name;?>"/>
 																		</div>
 																	</div>
 																</div>
@@ -97,21 +97,21 @@
 																		<div class="row">
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponType" value="1" type="radio" class="ace" checked />
+																				<input name="couponType" value="1" type="radio" class="ace" <?php echo $couponData->coupon_type === '1' ? 'checked' : '';?> />
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_VOUCHERS');?></span>
 																			</label>
 																		</div>
 
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponType" value="102" type="radio" class="ace" />
+																				<input name="couponType" value="102" type="radio" class="ace" <?php echo $couponData->coupon_type === '102' ? 'checked' : '';?>/>
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_DISCOUNT');?></span>
 																			</label>
 																		</div>
 
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponType" value="103" type="radio" class="ace" />
+																				<input name="couponType" value="103" type="radio" class="ace" <?php echo $couponData->coupon_type === '103' ? 'checked' : '';?> />
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_DELIVERY');?></span>
 																			</label>
 																		</div>
@@ -129,17 +129,17 @@
 																		<div class="row">
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponMoney" value="1" type="radio" class="ace" checked/>
+																				<input name="couponMoney" value="1" type="radio" class="ace" <?php echo $couponData->cost_price > 0 ? '' : 'checked';?> />
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_FREE');?></span>
 																			</label>
 																		</div>
 
 																		<div class="col-xs-3">
 																			<label class="blue">
-																				<input name="couponMoney" value="2" type="radio" class="ace" />
+																				<input name="couponMoney" value="2" type="radio" class="ace" <?php echo $couponData->cost_price > 0 ? 'checked' : '';?> />
 																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_TOLL');?></span>
 																				<div class="form-inline">
-																				<input type="text" name="couponMoneyNum" class="input-small" placeholder="如:50.00" />
+																				<input type="text" name="couponMoneyNum" class="input-small" placeholder="如:50.00" value="<?php echo $couponData->cost_price > 0 ? $couponData->cost_price : '';?>"/>
 																				</div>
 																			</label>
 
@@ -153,7 +153,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<input type="text" class="input-mini" id="couponSum" name="couponSum"/>
+																			<input type="text" class="input-mini" id="couponSum" name="couponSum" />
 																		</div>
 																	</div>
 																</div>
@@ -178,7 +178,7 @@
 																				<i class="icon-calendar bigger-110"></i>
 																			</span>
 
-																			<input type="text" name="couponExpireDate" id="couponExpireDate" class="col-xs-6 col-sm-4"/>
+																			<input type="text" name="couponExpireDate" id="couponExpireDate" class="col-xs-6 col-sm-4" value="<?php echo $couponData->couponExpireDate;?>"/>
 																		</div>
 																	</div>
 																</div>
@@ -193,7 +193,7 @@
 																				<i class="icon-calendar bigger-110"></i>
 																			</span>
 
-																			<input type="text" name="couponReceiveDate" id="couponReceiveDate" class="col-xs-6 col-sm-4"/>
+																			<input type="text" name="couponReceiveDate" id="couponReceiveDate" class="col-xs-6 col-sm-4" value="<?php echo $couponData->couponReceiveDate;?>"/>
 																		</div>
 																	</div>
 																</div>
@@ -210,7 +210,7 @@
 																				<span class="input-group-addon">
 																					<i class="icon-time bigger-110"></i>
 																				</span>
-																				<input id="couponUseTimeStart" type="text" name="couponUseTimeStart" class="col-xs-6 col-sm-4" value="10:00:00" />
+																				<input id="couponUseTimeStart" type="text" name="couponUseTimeStart" class="col-xs-6 col-sm-4" value="10:00:00"/>
 																			</div>
 																			</div>
 
@@ -234,7 +234,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<textarea class="input-xlarge" name="couponUseGuide" id="couponUseGuide" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"></textarea>
+																			<textarea class="input-xlarge" name="couponUseGuide" id="couponUseGuide" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"><?php echo $couponData->coupon_desc;?></textarea>
 																		</div>
 																	</div>
 																</div>
@@ -244,7 +244,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<textarea class="input-xlarge" name="couponNotice" id="couponNotice" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"></textarea>
+																			<textarea class="input-xlarge" name="couponNotice" id="couponNotice" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"><?php echo $couponData->recommend_desc;?></textarea>
 																		</div>
 																	</div>
 																</div>
@@ -267,7 +267,7 @@
 																	<div class="col-xs-12 col-sm-9">
 																		<div>
 																			<label>
-																				<input name="couponAutoCode" value="1" type="checkbox" class="ace" id="couponAutoCode"/>
+																				<input name="couponAutoCode" value="1" type="checkbox" class="ace" id="couponAutoCode" <?php echo $couponData->gene_type == '1' ? 'checked' : '';?>/>
 																				<span class="lbl" for="couponAutoCode"><?php echo $this->lang->line('TEXT_COUPON_AUTO_CODE');?></span>
 																			</label>
 																		</div>
@@ -278,10 +278,15 @@
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_IMAGE');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
+																				<?php if (isset($couponData->brand_pic_url) && !empty($couponData->brand_pic_url)) {?>
+																				<span id="fileImageSpan">
+																					<img src="<?php echo site_url().''.$couponData->brand_pic_url;?>" style="width: 200px;"><a onclick="removeFileImg();">重置</a>
+																				</span>
+																				<?php } ?>
 																		<div>
 																			<label>
-																				<input type="file" name="image" class="ace" id="fileImage"/>
-																				<input type="hidden" name="couponPic" />
+																				<input type="file" name="image" class="ace" id="fileImage" />
+																				<input type="hidden" name="couponPic" value="<?php echo isset($couponData->brand_pic_url) && !empty($couponData->brand_pic_url) ? $couponData->brand_pic_url : '';?>"/>
 																			</label>
 																		</div>
 																	</div>
@@ -327,7 +332,7 @@
 																						<tr>
 																							<td class="center">
 																								<label>
-																									<input type="checkbox" class="ace" name="mallID[]" value="<?php echo $v['mallID']?>"/>
+																									<input type="checkbox" class="ace" name="mallID[]" value="<?php echo $v['mallID']?>" <?php echo isset($v['checked']) && $v['checked'] ? 'checked' : '';?>/>
 																									<span class="lbl"></span>
 																								</label>
 																							</td>
@@ -364,11 +369,11 @@
 
 																		<div>
 																			<label class="blue">
-																				<input name="reviewPass" value="2" type="radio" class="ace" />
+																				<input name="reviewPass" value="2" type="radio" class="ace" <?php echo $couponData->on_sale_time ? 'checked' : '';?>/>
 																				<span class="lbl"> <?php echo $this->lang->line('TEXT_REVIEW_PASSTIME');?></span>
 																			</label>
 																			<div class="input-group col-xs-12 col-sm-3" style="float:right;">
-																				<input class="form-control date-picker" type="text" name="reviewPassDate" data-date-format="yyyy-mm-dd" />
+																				<input class="form-control date-picker" type="text" name="reviewPassDate" data-date-format="yyyy-mm-dd" value="<?php echo $couponData->on_sale_time ? date('Y-m-d', strtotime($couponData->on_sale_time)) : '';?>"/>
 																				<span class="input-group-addon">
 																					<i class="icon-calendar bigger-110"></i>
 																				</span>
@@ -391,8 +396,8 @@
 
 													<hr />
 													<div class="row-fluid wizard-actions">
-														<button class="btn btn-success" onclick="subAddCouponForm();">
-															<?php echo $this->lang->line('BTN_SUBMIT');?>
+														<button class="btn btn-success" onclick="subEditCouponForm();">
+															<?php echo $this->lang->line('BTN_UPDATE');?>
 															<i class="icon-arrow-right icon-on-right"></i>
 														</button>
 													</div>
@@ -519,6 +524,7 @@
 
 							return;
 						}else{
+							$('#fileImageSpan').html('');
 							$("<img />").attr("src", response.url).css("width", 200).appendTo($span);
 							$("<a />").attr("href", "#").text("<?php echo $this->lang->line('BTN_RESET');?>").bind("click", function(e) {
 									$span.replaceWith($fileInput);
@@ -592,12 +598,12 @@
 				});
 
 				// 数字选择
-				$('#couponSum').ace_spinner({value:0,min:0,max:9999,step:10, btn_up_class:'btn-info' , btn_down_class:'btn-info'})
+				$('#couponSum').ace_spinner({value:<?php echo $couponData->total_count > 0 ? $couponData->total_count : 0 ;?>,min:0,max:9999,step:10, btn_up_class:'btn-info' , btn_down_class:'btn-info'})
 				.on('change', function(){
 					//alert(this.value)
 				});
 
-				$('#couponEveryoneSum').ace_spinner({value:0,min:0,max:9999,step:1, btn_up_class:'btn-info' , btn_down_class:'btn-info'})
+				$('#couponEveryoneSum').ace_spinner({value:<?php echo $couponData->limit_count_per_person > 0 ? $couponData->limit_count_per_person : 0 ;?>,min:0,max:9999,step:1, btn_up_class:'btn-info' , btn_down_class:'btn-info'})
 				.on('change', function(){
 					//alert(this.value)
 				});
@@ -656,7 +662,7 @@
 			
 				//documentation : http://docs.jquery.com/Plugins/Validation/validate
 			
-				$('#addCoupon-form').validate({
+				$('#editCouponform').validate({
 					errorElement: 'div',
 					errorClass: 'help-block',
 					focusInvalid: false,
@@ -747,23 +753,25 @@
 				$('#modal-wizard .modal-header').ace_wizard();
 				$('#modal-wizard .wizard-actions .btn[data-dismiss=modal]').removeAttr('disabled');
 			})
+	
+			function removeFileImg(){
+				$('#fileImageSpan').html('');
+			}
 
-			function subAddCouponForm(){
-				if(!$('#addCoupon-form').valid()){
+			function subEditCouponForm(){
+				if(!$('#editCouponform').valid()){
 					return false;
 				}
 
 				$.ajax({
 					type:"POST",
-					url:"<?php echo site_url('Coupon/addCoupon');?>",
-					data:$('#addCoupon-form').serialize(),
+					url:"<?php echo site_url('Coupon/editCoupon').'?couponId='.$this->input->get('couponId');?>",
+					data:$('#editCouponform').serialize(),
 					success:function(data){
-						if (data.status) {
-							alert(data.msg);
-							return false;
-						}else{
+						if (data.status == 0) {
+
 							bootbox.dialog({
-								message: "<?php echo $this->lang->line('TEXT_ADDCOUPON_SUCCESS');?>", 
+								message: "<?php echo $this->lang->line('TEXT_EDITCOUPON_SUCCESS');?>", 
 								buttons: {
 									"goList" : {
 										"label" : "<?php echo $this->lang->line('TEXT_GO_COUPONLIST');?>",
@@ -776,12 +784,15 @@
 										"label" : "<?php echo $this->lang->line('TEXT_CONTINUE_ADDCOUPON');?>",
 										"className" : "btn-sm btn-primary",
 										callback: function(){
-											window.location.reload();
+											window.location.href = "<?php echo site_url('Coupon/addCoupon');?>";
 										}
 									}
 								}
 							});
 							return true;
+						}else{
+							alert(data.msg);
+							return false;
 						}
 					}
 				});

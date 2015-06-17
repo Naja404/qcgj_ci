@@ -78,6 +78,63 @@ class Coupon extends WebBase {
 	}
 
 	/**
+	 * 编辑优惠券
+	 *
+	 */
+	public function editCoupon(){
+		$couponId = strDecrypt($this->input->get('couponId'));
+
+		if (!$this->CouponModel->checkAuthCoupon($couponId)) {
+			$outData = array(
+					'errLang' => $this->lang->line('ERR_AUTH_EDIT_COUPON'),
+					'url'     => site_url('Coupon/couponList'),
+				);
+			$this->load->view('Public/error', $outData);
+		}
+
+		if ($this->input->is_ajax_request()) {
+
+			$verlidationRes = $this->_verlidationAddCoupon();
+
+			if ($verlidationRes !== true) {
+				$this->ajaxRes['msg'] = $verlidationRes;
+				jsonReturn($this->ajaxRes);
+			}
+			
+			$couponData = $this->input->post();
+			$couponData['couponId'] = $couponId;
+
+			$editCouponRes = $this->CouponModel->editCoupon($couponData);
+
+			if ($editCouponRes['error']) {
+				$this->ajaxRes['msg'] = $editCouponRes['msg'];
+			}else{
+				$this->ajaxRes = array(
+						'status' => 0,
+					);
+			}
+
+			jsonReturn($this->ajaxRes);
+		}
+
+		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_EDITCOUPON');
+
+		$this->outData['couponData'] = $this->CouponModel->getCouponById($couponId);
+
+		$shopList = $this->CouponModel->getShopList();
+
+		$this->outData['shopList'] = $this->_fetchCheckMall($shopList['data']['list'], $this->outData['couponData']->mallID);
+
+		$this->outData['areaList'] = $shopList['data']['areaList'];
+		$this->outData['cityList'] = $shopList['data']['cityList'];
+		$this->outData['bjAreaList'] = $shopList['data']['bjAreaList'];
+		$this->outData['shAreaList'] = $shopList['data']['shAreaList'];
+		$this->outData['gzAreaList'] = $shopList['data']['gzAreaList'];
+
+		$this->load->view('Coupon/editCoupon', $this->outData);
+	}
+
+	/**
 	 * 删除优惠券
 	 *
 	 */
@@ -86,7 +143,7 @@ class Coupon extends WebBase {
 			jsonReturn($this->ajaxRes);
 		}
 
-		$updateRes = $this->CouponModel->delCouponById($this->input->post('couponId'));
+		$updateRes = $this->CouponModel->delCouponById(strDecrypt($this->input->post('couponId')));
 
 		if (!$updateRes) {
 			$this->ajaxRes['msg'] = $this->lang->line('TEXT_COUPON_DELETE_FAIL');
@@ -159,6 +216,29 @@ class Coupon extends WebBase {
 	}
 
 	/**
+	 * 遍历选中的mall
+	 * @param array $mallList
+	 * @param array $checkedMall
+	 */
+	private function _fetchCheckMall($mallList = array(), $checkedMall = array()){
+
+		$checkedMallArr = array();
+		foreach ($checkedMall as $k => $v) {
+			if (!in_array($v['id'], $checkedMallArr)) {
+				array_push($checkedMallArr, $v['id']);
+			}
+		}
+
+		foreach ($mallList as $k => $v) {
+			if (in_array($v['mallID'], $checkedMallArr)) {
+				$mallList[$k]['checked'] = true;
+			}
+		}
+
+		return $mallList;
+	}
+
+	/**
 	 * 验证优惠券添加
 	 */
 	private function _verlidationAddCoupon(){
@@ -174,6 +254,10 @@ class Coupon extends WebBase {
 			if ((float)$this->input->post('couponMoneyNum') <= 0) {
 				return $this->lang->line('ERR_COUPON_MONEY_NUM');
 			}
+		}
+
+		if ($this->input->post('couponEveryoneSum') > $this->input->post('couponSum')) {
+			return $this->lang->line('ERR_COUPON_EVERYONE_LIMIT');
 		}
 
 		// 验证有效期、领取期

@@ -199,13 +199,13 @@ class CouponModel extends CI_Model {
 				'limit_count_used'       => $couponData['couponSum'],				//使用总数
 				'limit_count_per_person' => $couponData['couponEveryoneSum'],		//每人限领数
 				'cost_price'             => $couponData['couponMoney'] == 2 ? floatval($couponData['couponMoneyNum']) : 0.00,//收费优惠券
-				'begin_date'             => $expireDate['start'],					//有效期开始
-				'end_date'               => $expireDate['end'],						//有效期结束
+				'begin_date'             => $this->_formatTimeToDate($expireDate['start'], $couponData['couponUseTimeStart']),//有效期开始
+				'end_date'               => $this->_formatTimeToDate($expireDate['end'], $couponData['couponUseTimeEnd']),//有效期结束
 				'receive_begin_date'     => $receiveDate['start'],					//领取开始
 				'receive_end_date'       => $receiveDate['end'],					//领取结束
 				'is_delete'              => 0,
 				'on_sale'				 => 0,
-				'on_sale_time'           => $couponData['reviewPass'] == 2 ? $couponData['reviewPassDate'] : '', //上架时间
+				'on_sale_time'           => $couponData['reviewPass'] == 2 ? $couponData['reviewPassDate'] : NULL, //上架时间
 				'oper'                   => $this->userInfo->user_id,
 			);
 	
@@ -247,6 +247,74 @@ class CouponModel extends CI_Model {
 	}
 
 	/**
+	 * 编辑优惠券
+	 * @param array $couponData 优惠券数组数据
+	 */
+	public function editCoupon($couponData = array()){
+
+		$expireDate = $this->_formatExpireDate($couponData['couponExpireDate']);
+		$receiveDate = $this->_formatExpireDate($couponData['couponReceiveDate']);
+
+		$couponEditData = array(
+				'name'                   => $couponData['couponTitle'],
+				'brand_pic_url'          => $couponData['couponPic'],
+				'gene_type'              => $couponData['couponAutoCode'] ? 1 : 0,	//生成类型 0.无须生成 1.自动生成 2.手动
+				'coupon_type'            => $couponData['couponType'],				// 1.代金券 102.折扣劵 103.提货券
+				'update_time'            => currentTime(),
+				'coupon_desc'            => $couponData['couponUseGuide'],			//使用说明
+				'recommend_desc'         => $couponData['couponVerification'],		//验劵说明
+				'total_count'            => $couponData['couponSum'],				//总数
+				'limit_count_used'       => $couponData['couponSum'],				//使用总数
+				'limit_count_per_person' => $couponData['couponEveryoneSum'],		//每人限领数
+				'cost_price'             => $couponData['couponMoney'] == 2 ? floatval($couponData['couponMoneyNum']) : 0.00,//收费优惠券
+				'begin_date'             => $this->_formatTimeToDate($expireDate['start'], $couponData['couponUseTimeStart']),//有效期开始
+				'end_date'               => $this->_formatTimeToDate($expireDate['end'], $couponData['couponUseTimeEnd']),//有效期结束
+				'receive_begin_date'     => $receiveDate['start'],					//领取开始
+				'receive_end_date'       => $receiveDate['end'],					//领取结束
+				'on_sale_time'           => $couponData['reviewPass'] == 2 ? $couponData['reviewPassDate'] : NULL, //上架时间
+				'oper'                   => $this->userInfo->user_id,
+			);
+		$where = array(
+				'id' => $couponData['couponId'],
+			);
+		// 编辑优惠券
+		$couponRes = $this->db->where($where)->update(tname('coupon'), $couponEditData);
+
+		if (!$couponRes) {
+			$this->returnRes['msg'] = $this->lang->line('ERR_COUPON_EDIT_FAILURE');
+			return $this->returnRes;
+		}
+
+		// 优惠券适用门店
+		if (is_array($couponData['mallID']) && count($couponData['mallID'])) {
+
+			$this->db->delete(tname('coupon_mall'), array('tb_coupon_id' => $couponId));
+
+			$couponInsertMall = $tmpMallArr = array();
+
+			foreach ($couponData['mallID'] as $k => $v) {
+
+				if (in_array($v, $tmpMallArr)) {
+					continue;
+				}
+
+				$couponInsertMall[] = array(
+						'id'           => makeUUID(),
+						'tb_coupon_id' => $couponData['couponId'],
+						'tb_mall_id'   => $v,
+						'address'	   => $this->getMallFloorById($v, $this->userInfo->brand_id),
+						'create_time'  => currentTime(),
+						'update_time'  => currentTime(),
+					);
+			}
+
+			$this->db->insert_batch(tname('coupon_mall'), $couponInsertMall);
+		}
+
+		$this->returnRes['error'] = false;
+	}
+
+	/**
 	 * 删除优惠券
 	 * @param string $couponId 优惠券id
 	 */
@@ -266,6 +334,30 @@ class CouponModel extends CI_Model {
 		$queryRes = $this->db->where($where)->update(tname('coupon'), $update);
 
 		return $queryRes ? true : false;
+	}
+
+	/**
+	 * 获取优惠券信息
+	 * @param string $couponId 优惠券id
+	 */
+	public function getCouponById($couponId = false){
+		if (!$this->checkAuthCoupon($couponId)) {
+			return false;
+		}
+
+		$where = array(
+				'id'          => $couponId,
+				'tb_brand_id' => $this->userInfo->brand_id,
+			);
+
+		$couponRes = $this->db->get_where(tname('coupon'), $where)->first_row();
+
+		$couponRes->couponExpireDate = $this->_formatDateToStr($couponRes->begin_date, $couponRes->end_date);
+		$couponRes->couponReceiveDate = $this->_formatDateToStr($couponRes->receive_begin_date, $couponRes->receive_end_date);
+
+		$couponRes->mallID = $this->db->select('tb_mall_id AS id')->get_where(tname('coupon_mall'), array('tb_coupon_id' => $couponId))->result_array();
+
+		return $couponRes;		
 	}
 
 	/**
@@ -351,6 +443,22 @@ class CouponModel extends CI_Model {
 	}
 
 	/**
+	 * 验证优惠券编辑权限
+	 * @param string $couponId
+	 */
+	public function checkAuthCoupon($couponId = false){
+		$where = array(
+				'id'          => $couponId,
+				'tb_brand_id' => $this->userInfo->brand_id,
+				'on_sale'     => 0,
+			);
+
+		$queryRes = $this->db->get_where(tname('coupon'),$where)->result();
+
+		return count($queryRes) > 0 ? true : false;
+	}
+
+	/**
 	 * 格式化优惠券数据
 	 * @param array $couponData 优惠券内容
 	 */
@@ -408,6 +516,25 @@ class CouponModel extends CI_Model {
 		}
 
 		return isset($cacheRes) ? $cacheRes : array();
+	}
+
+	/**
+	 * 将日期格式化成字符
+	 * @param date $start
+	 * @param date $end
+	 */
+	private function _formatDateToStr($start, $end){
+		return date('Y/m/d', strtotime($start)).' - '.date('Y/m/d', strtotime($end));
+	}
+
+	/**
+	 * 将时间转成日期
+	 * @param date $date
+	 * @param time $time 
+	 */
+	private function _formatTimeToDate($date, $time){
+		$date = date('Y-m-d', strtotime($date));
+		return $date.' '.$time;
 	}
 
 	/**

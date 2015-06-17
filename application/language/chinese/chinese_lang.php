@@ -39,6 +39,7 @@ $lang = array(
 		'BTN_PREV'   => '上一步',
 		'BTN_NEXT'   => '下一步',
 		'BTN_SUBMIT' => '提交',
+		'BTN_UPDATE' => '更新',
 		'BTN_RESET'  => '重置',
 		'BTN_CLOSE'  => '关闭',
 		'BTN_CHOOSE' => '选择',

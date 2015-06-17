@@ -110,14 +110,14 @@
 														<td><?php echo $v->mallCount;?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-																<?php if($v->status != 2){?>
-																<button class="btn btn-xs btn-info" onclick="editCoupon('<?php echo $v->id;?>');">
+																<button class="btn btn-xs btn-danger" onclick="delCoupon('<?php echo strEncrypt($v->id);?>');">
+																	<i class="icon-trash bigger-120"></i>
+																</button>
+																<?php if($v->status == 0){?>
+																<button class="btn btn-xs btn-info" onclick="editCoupon('<?php echo strEncrypt($v->id);?>');">
 																	<i class="icon-edit bigger-120"></i>
 																</button>
 																<?php } ?>
-																<button class="btn btn-xs btn-danger" onclick="delCoupon('<?php echo $v->id;?>');">
-																	<i class="icon-trash bigger-120"></i>
-																</button>
 															</div>
 
 														</td>
@@ -186,6 +186,10 @@
 
 		<!-- inline scripts related to this page -->
 		<script type="text/javascript">
+			function editCoupon(couponId){
+				window.location.href = "<?php echo site_url('Coupon/editCoupon');?>"+"?couponId="+couponId;
+			}
+
 			function delCoupon(couponId){
 				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DEL_COUPON');?>")) {
 					return false;
