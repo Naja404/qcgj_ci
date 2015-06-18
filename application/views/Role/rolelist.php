@@ -124,13 +124,15 @@
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 																<?php if($v->status == 0){?>
-																<button class="btn btn-xs btn-success" onclick="setUserStatus('<?php echo $v->user_id;?>', 1);">
-																	<i class="icon-ok bigger-120"></i>
+																<button class="btn btn-xs btn-success" onclick="setUserStatus('<?php echo $v->user_id;?>');" >
+																	<i id="userStat_<?php echo $v->user_id;?>" class="icon-ok bigger-120"></i>
 																</button>
+																<input type="hidden" value="1" name="userStatVal_<?php echo $v->user_id;?>"/>
 																<?php }else{ ?>
-																<button class="btn btn-xs btn-danger" onclick="setUserStatus('<?php echo $v->user_id;?>', 0);">
-																	<i class="icon-remove bigger-120"></i>
+																<button class="btn btn-xs btn-success" onclick="setUserStatus('<?php echo $v->user_id;?>');" >
+																	<i id="userStat_<?php echo $v->user_id;?>" class="icon-remove bigger-120"></i>
 																</button>
+																<input type="hidden" value="0" name="userStatVal_<?php echo $v->user_id;?>"/>
 																<?php }?>
 																<button class="btn btn-xs btn-info">
 																	<i class="icon-edit bigger-120"></i>
@@ -139,45 +141,8 @@
 																<button class="btn btn-xs btn-danger">
 																	<i class="icon-trash bigger-120"></i>
 																</button>
-
-																<button class="btn btn-xs btn-warning">
-																	<i class="icon-flag bigger-120"></i>
-																</button>
 															</div>
 
-															<div class="visible-xs visible-sm hidden-md hidden-lg">
-																<div class="inline position-relative">
-																	<button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown">
-																		<i class="icon-cog icon-only bigger-110"></i>
-																	</button>
-
-																	<ul class="dropdown-menu dropdown-only-icon dropdown-yellow pull-right dropdown-caret dropdown-close">
-																		<li>
-																			<a href="#" class="tooltip-info" data-rel="tooltip" title="View">
-																				<span class="blue">
-																					<i class="icon-zoom-in bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-
-																		<li>
-																			<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">
-																				<span class="green">
-																					<i class="icon-edit bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-
-																		<li>
-																			<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete">
-																				<span class="red">
-																					<i class="icon-trash bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-																	</ul>
-																</div>
-															</div>
 														</td>
 													</tr>
 													<?php endforeach;?>
@@ -390,7 +355,7 @@
 												</tr>
 												<tr>
 													<td>
-														<?php echo $this->lang->line('TEXT_ROLE_USERNAME');?>
+														<?php echo $this->lang->line('TEXT_ROLE_PASSWD');?>
 													</td>
 													<td>
 														<input type="password" name="passwd" placeholder="<?php echo $this->lang->line('PLACEHOLDER_PASSWORD');?>"/>
@@ -398,7 +363,7 @@
 												</tr>
 												<tr>
 													<td>
-														<?php echo $this->lang->line('TEXT_ROLE_USERNAME');?>
+														<?php echo $this->lang->line('TEXT_ROLE_CONFIRM_PASSWD');?>
 													</td>
 													<td>
 														<input type="password" name="confirm_passwd" placeholder="<?php echo $this->lang->line('PLACEHOLDER_CONFIRM_PASSWORD');?>"/>
@@ -414,7 +379,19 @@
 															<option value="<?php echo $v->role_id;?>">
 																<?php echo $v->name;?>
 															</option>
-														<?php endforeach;?>
+															<?php endforeach;?>
+														</select>
+
+														<select name="brandId" id="brandSelect" style="display:none;">
+															<?php foreach($brandList as $v):?>
+															<option value="<?php echo strEncrypt($v->id);?>">
+																<?php echo $v->name_en.$v->name_zh;?>
+															</option>
+															<?php endforeach;?>
+														</select>
+
+														<select name="mallId" id="mallSelect" style="display:none;">
+															<option><?php echo $this->lang->line('TEXT_PLASE_SELECT_MALL');?></option>
 														</select>
 													</td>
 												</tr>
@@ -499,6 +476,42 @@
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 
 		<script type="text/javascript">
+			jQuery(function($) {
+				$('#roleIdSelect').on('change', function(){
+					if (this.value == '1') {
+						$('#brandSelect').hide();
+						$('#mallSelect').hide();
+					}
+
+					if (this.value == '2') {
+						$('#brandSelect').show();
+						$('#mallSelect').hide();
+					}
+
+					if (this.value == '3') {
+						$('#brandSelect').show();
+						$('#mallSelect').show();
+					}
+				});
+
+				$('#brandSelect').on('change', function(){
+					
+					if ($('#roleIdSelect').val() != '3') {
+						return false;
+					}
+
+					$.ajax({
+						type:"POST",
+						url:"<?php echo site_url('Role/getMallList');?>",
+						data:{brandId:this.value},
+						success:function(data){
+							if (data.status == 0) {
+								$('#mallSelect').html(data.html);
+							}
+						}
+					});
+				});
+			});
 
 			function subAddRuleForm(){
 				$.ajax({
@@ -507,14 +520,16 @@
 					data:$('#addrule_form').serialize(),
 					success:function(data){
 
-						if (data.status) {
-							alert(data.msg);
-						}else{
+						if (data.status == '0') {
 							setTimeout('$("#addrule_dismiss").trigger("click");', 1000);
 							$('#addrule_form').each(function(){
 								this.reset();
 							});
+							return true;
 						}
+
+						alert(data.msg);
+						return false;
 					}
 				});
 			}
@@ -526,14 +541,16 @@
 					data:$('#addruleuser_form').serialize(),
 					success:function(data){
 
-						if (data.status) {
-							alert(data.msg);
-						}else{
+						if (data.status == '0') {
 							setTimeout('$("#addruleuser_dismiss").trigger("click");', 1000);
 							$('#addruleuser_form').each(function(){
 								this.reset();
 							});
+							return true;
 						}
+
+						alert(data.msg);
+						return false;
 					}
 				});
 			}
@@ -546,18 +563,21 @@
 					success:function(data){
 
 						if (data.status) {
-							alert(data.msg);
-						}else{
 							setTimeout('$("#addrole_dismiss").trigger("click");', 1000);
 							$('#addrole_form').each(function(){
 								this.reset();
 							});
+							return true;
 						}
+
+						alert(data.msg);
+						return false;
 					}
 				});
 			}
 
-			function setUserStatus(userID, userStatus){
+			function setUserStatus(userID){
+				var userStatus = $('input[name=userStatVal_'+userID+']').val();
 				$.ajax({
 					type:"POST",
 					url:"<?php echo site_url('Role/updateUser');?>",
@@ -568,7 +588,8 @@
 							alert(data.msg);
 						}else{
 							$('#status_' + userID).html(data.html);
-							console.log(this);
+							$('#userStat_'+userID).attr("class", data.class);
+							$('input[name=userStatVal_'+userID+']').val(data.userStatus);
 						}
 					}
 				});

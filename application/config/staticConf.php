@@ -6,6 +6,11 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 $config = array(
+		// 普通缓存
+		'NORMAL_CACHE' => array(
+				'BRAND_LIST' => 'Normal:Brand:List',
+				'MALLLIST_BY_BRAND' => 'Normal:Mall:Brand:',
+			),
 		// 用户缓存
 		'USER_CACHE' => array(
 				'LOGIN'              => 'User:Login:',

@@ -29,7 +29,7 @@ class ShopModel extends CI_Model {
 		$limit = ' LIMIT '.$pageNum.','.$pageCount;
 
 		$field = 'b.id AS brandId,
-					b.name_zh AS brandName,
+					CONCAT(b.name_en, b.name_zh) AS brandName,
 					e.name AS categoryName,
 					c.name_zh AS mallName,
 					c.address,

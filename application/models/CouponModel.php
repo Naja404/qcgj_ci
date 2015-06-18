@@ -16,7 +16,7 @@ class CouponModel extends CI_Model {
 	 * @param int $pageNum 页码
 	 * @param int $pageCount 条数
 	 */
-	public function getCouponList($where = NULL, $order = NULL, $pageNum = 1, $pageCount = 25){
+	public function getCouponList($where = NULL, $order = NULL, $pageNum = 1, $pageCount = 15){
 		$pageNum = ($pageNum - 1) * $pageCount;
 
 		$limit = ' LIMIT '.$pageNum.','.$pageCount;
@@ -51,7 +51,7 @@ class CouponModel extends CI_Model {
 
 		$returnData = array(
 						'list'  => $queryRes,
-						'page' => $this->setPagination(site_url('Coupon/couponList'), count($queryTotal)),
+						'page' => $this->setPagination(site_url('Coupon/'.$this->router->method), count($queryTotal), $pageCount),
 					);
 
 
@@ -65,6 +65,10 @@ class CouponModel extends CI_Model {
 	public function getStateList($couponId = false){
 
 		$couponList = $this->_getCouponListWithState();
+
+		if (empty($couponList)) {
+			return false;
+		}
 
 		if (!in_array($couponId, $couponList['couponId'])) {
 			if (count($couponList['couponId']) <= 0) return false;
@@ -312,6 +316,33 @@ class CouponModel extends CI_Model {
 		}
 
 		$this->returnRes['error'] = false;
+	}
+
+	/**
+	 * 上架优惠券
+	 * @param string $couponId 优惠券id
+	 */
+	public function saleCoupon($couponId = false, $saleStatus = 0){
+		if ($this->userInfo->role_id != 1) return $this->lang->line('ERR_AUTH_OPERTION');
+		if (!in_array($saleStatus, array(0,1,2))) return $this->lang->line('ERR_AUTH_OPERTION');
+		
+		$where = array(
+				'id' => $couponId,
+			);
+		$update = array(
+				'on_sale' => (int)$saleStatus,
+			);
+
+		$updateRes = $this->db->where($where)->update(tname('coupon'), $update);
+
+		if (!$updateRes) return $this->lang->line('ERR_ONSALE_FAIL');
+
+		$returnRes = array(
+				'html' => $this->lang->line('TEXT_STATUS_'.$saleStatus),
+				'class' => $this->lang->line('TEXT_OPERATION_ICON_'.$saleStatus),
+			);
+
+		return $returnRes;
 	}
 
 	/**
@@ -593,6 +624,7 @@ class CouponModel extends CI_Model {
 	private function _checkUserWhere($where = false){
 
 		if ($this->userInfo->role_id == 1) {
+			if (!empty($where) && is_string($where)) return ' AND '.$where;
 			return ' ';
 		}
 

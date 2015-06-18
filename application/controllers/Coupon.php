@@ -17,6 +17,53 @@ class Coupon extends WebBase {
 	}
 
 	/**
+	 * 优惠券审核
+	 *
+	 */
+	public function verifyCoupon(){
+		$where = ' a.on_sale = 0 ';
+
+		$order = ' ORDER BY a.create_time DESC ';
+
+
+		$this->outData['pageTitle'] = $this->lang->line('TEXT_COUPON_VERIFY');
+		$couponList = $this->CouponModel->getCouponList($where, $order, $this->p);
+
+		$this->outData['couponList'] = $couponList['data']['list'];
+		$this->outData['couponListPage'] = $couponList['data']['page'];
+
+		$this->load->view('Coupon/verifyCoupon', $this->outData);
+	}
+
+	/**
+	 * 上架优惠券
+	 *
+	 */
+	public function saleCoupon(){
+		if (!$this->input->is_ajax_request()) {
+			jsonReturn($this->ajaxRes);
+		}
+
+		$couponId = strDecrypt($this->input->post('couponId'));
+		$couponStatus = $this->input->post('status');
+
+		$updateRes = $this->CouponModel->saleCoupon($couponId, $couponStatus);
+
+		if (!is_array($updateRes)) {
+			$this->ajaxRes['msg'] = $updateRes;
+		}else{
+			$this->ajaxRes = array(
+						'status'       => 0, 
+						'html'         => $updateRes['html'], 
+						'couponStatus' => $couponStatus == 1 ? 2 : 1,
+						'class'        => $updateRes['class'],
+						);
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
 	 * 优惠券列表
 	 *
 	 */

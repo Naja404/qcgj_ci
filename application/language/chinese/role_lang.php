@@ -5,7 +5,6 @@ $lang = array(
 	'TEXT_ROLE_RULE_ADD'                 => '权限添加',
 	'TEXT_ROLE_RULE_USER_ADD'			 => '用户添加',
 	'TEXT_ROLE_NAME'                     => '角色名',
-	'TEXT_ROLE_USERNAME' => '用户名',
 	'TEXT_ROLE_RULE'                     => '权限',
 	'TEXT_RULE_MODULE'                   => '模块',
 	'TEXT_RULE_MODULE_TITLE'             => '主菜单标题',
@@ -21,6 +20,9 @@ $lang = array(
 	'TEXT_ROLE_LIST'                     => '角色列表',
 	'TEXT_TITLE_ROLELIST'                => '角色列表',
 	'TEXT_ROLE_USERNAME'                 => '用户名',
+	'TEXT_ROLE_CONFIRM_PASSWD'			 => '确认密码',
+	'TEXT_ROLE_PASSWD'					 => '密码',
+	'TEXT_PLASE_SELECT_MALL'			 => '请选择店铺',
 	
 	'TEXT_PLACEHOLDER_RULE_MODULE'       => '如:Coupon',
 	'TEXT_PLACEHOLDER_RULE_MODULE_TITLE' => '如:优惠券管理',
@@ -28,9 +30,15 @@ $lang = array(
 	'TEXT_PLACEHOLDER_RULE_ACTION_TITLE' => '如:优惠券列表',
 	'TEXT_PLACEHOLDER_RULE_ACTION_URL'   => '如:Web/Coupon/listview',
 	'TEXT_PLACEHOLDER_RULE_SORT'         => '数字越大排序越高',
-	
+	'TEXT_UPDATE_USER_STATUS_0'			 => '<span class="label label-success">停用</span>',
+	'TEXT_UPDATE_USER_STATUS_1'			 => '<span class="label label-error">正常</span>',
+	'TEXT_UPDATE_USERSTATUS_CLASS_0'	 => 'icon-ok bigger-120',
+	'TEXT_UPDATE_USERSTATUS_CLASS_1'	 => 'icon-remove bigger-120',
+
 	'ERR_ADD_ROLENAME_EXISTS'            => '角色名已存在',
 	'ERR_ADDROLE_USERNAME_EXISTS'		 => '用户名已存在',
+	'ERR_ROLE_NO_BRAND'					 => '品牌错误,请刷新后重试',
+	'ERR_ROLE_NO_MALL'					 => '该品牌下店铺不存在,请刷新后重试',
 
 	'ADD_RULE_VALIDATION' => array(
 				array(

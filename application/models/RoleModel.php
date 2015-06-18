@@ -16,6 +16,47 @@ class RoleModel extends CI_Model {
 	}
 
 	/**
+	 * 获取品牌列表
+	 *
+	 */
+	public function getBrandList(){
+		
+		$cacheRes = $this->cache->get(config_item('NORMAL_CACHE.BRAND_LIST'));
+
+		if ($cacheRes) return $cacheRes;
+
+		$queryRes = $this->db->select("id,name_en,name_zh")->get(tname('brand'))->result();
+
+		if (count($queryRes)) $this->cache->save(config_item('NORMAL_CACHE.BRAND_LIST'), $queryRes);
+
+		return $queryRes;
+	}
+
+	/**
+	 * 获取店铺地址列表
+	 * @param string $brandId 品牌列表
+	 */
+	public function getMallList($brandId = false){
+		
+		$cacheRes = $this->cache->get(config_item('NORMAL_CACHE.MALLLIST_BY_BRAND').$brandId);
+		
+		if ($cacheRes) return $cacheRes;
+		
+		$sql = "SELECT b.id, 
+					   b.name_zh, 
+					   b.address 
+					   FROM ".tname('brand_mall')." AS a 
+					LEFT JOIN ".tname('mall')." AS b ON b.id = a.tb_mall_id 
+					WHERE a.tb_brand_id = '".$brandId."' ";
+		
+		$queryRes = $this->db->query($sql)->result();
+
+		if (count($queryRes)) $this->cache->save(config_item('NORMAL_CACHE.MALLLIST_BY_BRAND').$brandId, $queryRes);
+
+		return $queryRes;
+	}
+
+	/**
 	 * 添加规则
 	 * @param array $addRuleData 规则数组
 	 */
@@ -79,6 +120,14 @@ class RoleModel extends CI_Model {
 			$this->returnRes['msg'] = $this->lang->line('ERR_ADD_FAILURE');
 		}else{
 			$this->returnRes['error'] = false;
+			
+			$insertBrand = array(
+						'user_id'  => $insertData['user_id'],
+						'brand_id' => $addRoleUserData['brandId'] ? strDecrypt($addRoleUserData['brandId']) : '',
+						'mall_id'   => $addRoleUserData['mallId'] ? strDecrypt($addRoleUserData['mallId']) : '',
+				);
+
+			$this->db->insert(tname('qcgj_role_brand_mall'), $insertBrand);
 		}
 
 		return $this->returnRes;
@@ -106,6 +155,8 @@ class RoleModel extends CI_Model {
 			$this->returnRes['msg'] = $this->lang->line('ERR_UPDATE_FAILURE');
 		}else{
 			$this->returnRes['error'] = false;
+			$this->returnRes['html'] = $this->lang->line('TEXT_UPDATE_USER_STATUS_'.$updateArr['status']);
+			$this->returnRes['class'] = $this->lang->line('TEXT_UPDATE_USERSTATUS_CLASS_'.$updateArr['status']);
 		}
 
 		return $this->returnRes;
@@ -126,7 +177,7 @@ class RoleModel extends CI_Model {
 						a.created_time, 
 						a.status 
 					FROM ".tname('qcgj_role_user')." AS a
-		 			LEFT JOIN ".tname('qcgj_role')." AS b ON b.role_id = a.role_id ";
+		 			LEFT JOIN ".tname('qcgj_role')." AS b ON b.role_id = a.role_id ORDER BY a.created_time DESC";
 
 		$queryTotal = $this->db->count_all(tname('qcgj_role_user'));
 		$queryRes = $this->db->query($sql.$limit)->result();
@@ -250,6 +301,7 @@ class RoleModel extends CI_Model {
 	 * @param array $reqData ajax数据内容
 	 */
 	public function verlidationAddRoleUser($verlidationConf = array(), $reqData = array()){
+
 		$this->form_validation->set_rules($verlidationConf);
 
 		if (!$this->form_validation->run()) {
@@ -270,6 +322,45 @@ class RoleModel extends CI_Model {
 			return $this->lang->line('ERR_ADD_FAILURE');
 		}
 
+		// 验证品牌和店铺
+		if (in_array($reqData['role_id'], array(2, 3))) {
+			if (!$this->existsBrand(strDecrypt($reqData['brandId']))) return $this->lang->line('ERR_ROLE_NO_BRAND');
+
+			if ($reqData['role_id'] == 3) {
+				if (!$this->existsMall(strDecrypt($reqData['brandId']), strDecrypt($reqData['mallId']))) return $this->lang->line('ERR_ROLE_NO_MALL');
+			}
+		}
+
 		return true;
+	}
+
+	/**
+	 * 检测品牌是否存在
+	 * @param string $brandId 品牌id
+	 */
+	public function existsBrand($brandId = false){
+		$where = array(
+				'id' => $brandId,
+			);
+
+		$queryRes = $this->db->get_where(tname('brand'), $where)->result();
+
+		return count($queryRes) > 0 ? true : false;
+	}
+
+	/**
+	 * 检测品牌下的店铺是否存在
+	 * @param string $brandId 品牌id
+	 * @param string $mallId 店铺id
+	 */
+	public function existsMall($brandId = false, $mallId = false){
+		$where = array(
+				'tb_brand_id' => $brandId,
+				'tb_mall_id'  => $mallId,
+			);
+
+		$queryRes = $this->db->get_where(tname('brand_mall'), $where)->result();
+
+		return count($queryRes) > 0 ? true : false;
 	}
 }

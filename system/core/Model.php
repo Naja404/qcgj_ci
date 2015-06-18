@@ -88,13 +88,13 @@ class CI_Model {
 	 * 设置分页
 	 * @param string $url 
 	 * @param int $total 总数
-	 * @param int $prePage 每页条数
+	 * @param int $perPage 每页条数
 	 */
-	public function setPagination($url = false, $total = 1, $prePage = 15){
+	public function setPagination($url = false, $total = 1, $perPage = 15){
 		$pageConfig = array(
 				'base_url'   => $url,
 				'total_rows' => $total,
-				'pre_page'   => $prePage,
+				'per_page'   => $perPage,
 			);
 
 		$this->pagination->initialize($pageConfig);
