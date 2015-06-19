@@ -21,6 +21,18 @@ class Shop extends WebBase {
 	}
 
 	/**
+	 * 添加门店
+	 *
+	 */
+	public function addShop(){
+		$this->outData['pageTitle'] = $this->lang->line('TEXT_ADD_SHOP');
+		$this->outData['cityList'] = $this->ShopModel->getCityList();
+
+		$this->outData['areaList'] = $this->ShopModel->getAreaList($this->outData['cityList'][0]->cityId);
+		$this->load->view('Shop/addShop', $this->outData);
+	}
+
+	/**
 	 * 门店列表
 	 */
 	public function shopList(){

@@ -290,7 +290,7 @@ class CI_Loader {
 			load_class('Model', 'core');
 		}
 
-		$model = ucfirst(strtolower($model));
+		// $model = ucfirst(strtolower($model));
 
 		foreach ($this->_ci_model_paths as $mod_path)
 		{
@@ -1204,7 +1204,8 @@ class CI_Loader {
 		// Was a custom class name supplied? If so we'll use it
 		if (empty($object_name))
 		{
-			$object_name = strtolower($class);
+			// $object_name = strtolower($class);
+			$object_name = $class;
 			if (isset($this->_ci_varmap[$object_name]))
 			{
 				$object_name = $this->_ci_varmap[$object_name];
@@ -1368,13 +1369,15 @@ class CI_Loader {
 	{
 		if ( ! is_array($filename))
 		{
-			return array(strtolower(str_replace(array($extension, '.php'), '', $filename).$extension));
+			// return array(strtolower(str_replace(array($extension, '.php'), '', $filename).$extension));
+			return array(str_replace(array($extension, '.php'), '', $filename).$extension);
 		}
 		else
 		{
 			foreach ($filename as $key => $val)
 			{
-				$filename[$key] = strtolower(str_replace(array($extension, '.php'), '', $val).$extension);
+				// $filename[$key] = strtolower(str_replace(array($extension, '.php'), '', $val).$extension);
+				$filename[$key] = str_replace(array($extension, '.php'), '', $val).$extension;
 			}
 
 			return $filename;

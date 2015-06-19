@@ -8,6 +8,7 @@ $lang = array(
 	'TEXT_TITLE_SHOPLIST'        => '门店列表',
 	'TEXT_TITLE_MANAGERLIST'     => '店长列表',
 	'TEXT_TITLE_ADD_SHOPMANAGER' => '添加店长',
+	'TEXT_ADD_SHOP'				 => '添加门店',
 	'TEXT_MANGER_NAME'           => '店长名',
 	'TEXT_ENTER_MANAGER_NAME'    => '请输入邮箱地址',
 	'TEXT_PASSWORD'              => '登陆密码',
@@ -26,6 +27,7 @@ $lang = array(
 	'TEXT_ADDMANAGER_SUCCESS'    => '添加店长成功',
 	'TEXT_GO_MANAGERLIST'        =>'店长列表',
 	'TEXT_CONTINUE_ADDMANAGER'   => '继续添加',
+
 
 
 	'ERR_ENTER_MANAGER_NAME'     => '请输入正确的店长名',

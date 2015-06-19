@@ -10,6 +10,8 @@ $config = array(
 		'NORMAL_CACHE' => array(
 				'BRAND_LIST' => 'Normal:Brand:List',
 				'MALLLIST_BY_BRAND' => 'Normal:Mall:Brand:',
+				'CITY_LIST' => 'Normal:cityList',
+				'AREA_LIST'	=> 'Normal:areaList:',
 			),
 		// 用户缓存
 		'USER_CACHE' => array(

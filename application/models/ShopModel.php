@@ -16,6 +16,53 @@ class ShopModel extends CI_Model {
 	}
 
 	/**
+	 * 获取商厦相关信息
+	 *
+	 */
+	public function getShopMallInfo(){
+
+	}
+
+	/**
+	 * 获取城市列表
+	 *
+	 */
+	public function getCityList(){
+		$cacheRes = $this->cache->get(config_item('NORMAL_CACHE.CITY_LIST'));
+
+		if ($cacheRes) return $cacheRes;
+
+		$queryRes = $this->db->select('id AS cityId, name_zh AS cityName')->get(tname('city'))->result();
+
+		if (count($queryRes)) $this->cache->save(config_item('NORMAL_CACHE.CITY_LIST'), $queryRes);
+
+		return $queryRes;
+	}
+
+	/**
+	 * 获取商圈列表
+	 * @param string $cityId 城市id
+	 */
+	public function getAreaList($cityId = false){
+
+		$cacheRes = $this->cache->get(config_item('NORMAL_CACHE.AREA_LIST').$cityId);
+
+		if ($cacheRes) return $cacheRes;
+
+		$where = array(
+					'tb_city_id' => is_string($cityId) ? $cityId : '',
+				);
+		
+		$select = "tb_trade_area_id AS areaId, trade_area_name AS areaName";
+
+		$queryRes = $this->db->select($select)->group_by('tb_trade_area_id')->get_where(tname('mall'), $where)->result();
+
+		if (count($queryRes)) $this->cache->save(config_item('NORMAL_CACHE.AREA_LIST').$cityId, $queryRes);
+
+		return $queryRes;
+	}
+
+	/**
 	 * 获取门店列表
 	 * @param string $where 查询条件
 	 * @param string $order 排序条件
@@ -26,7 +73,7 @@ class ShopModel extends CI_Model {
 
 		$pageNum = ($pageNum - 1) * $pageCount;
 
-		$limit = ' LIMIT '.$pageNum.','.$pageCount;
+		$limit = ' GROUP BY a.id LIMIT '.$pageNum.','.$pageCount;
 
 		$field = 'b.id AS brandId,
 					CONCAT(b.name_en, b.name_zh) AS brandName,
@@ -58,7 +105,7 @@ class ShopModel extends CI_Model {
 		$queryTotal = $this->db->query(sprintf($sql, $totalField, $where, $order, ''))->first_row();
 
 		$queryRes = $this->db->query(sprintf($sql, $field, $where, $order, $limit))->result();
-		// echo $this->db->last_query();exit;
+
 		$this->returnRes = array(
 				'error' => false,
 				'msg'   => false,
