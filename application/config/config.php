@@ -17,8 +17,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | environments.
 |
 */
-$config['base_url'] = 'http://ci.qcgj.com/';
-$config['html_url'] = $config['base_url'].'html/';
+$config['base_url']  = 'http://ci.qcgj.com/';
+$config['image_url'] = 'http://api.dev.gjla.com/app_admin_sj/';
+$config['html_url']  = $config['base_url'].'html/';
 $config['db_prefix'] = 'tb_';
 
 /*

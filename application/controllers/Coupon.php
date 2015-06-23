@@ -235,16 +235,14 @@ class Coupon extends WebBase {
 	public function uploadCouponPic(){
 
 		if ($this->input->method() != 'post') {
-			// jsonReturn($this->ajaxRes);
 			echo json_encode($this->ajaxRes);exit;
 		}
 
 		$uploadConf = config_item('FILE_UPLOAD');
 
-		$uploadConf['upload_path'] = './uploads/Coupon/';
-		// $uploadConf['file_name'] =  implode('_', explode('.', currentTime('MICROTIME')));
-		$uploadConf['file_name'] = 'coupon_'.md5(currentTime('MICROTIME'));
-		$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_sj/coupon/';	
+		$uploadConf['upload_path']   = './uploadtemp/coupon/';
+		$uploadConf['file_name']     = 'coupon_'.md5(currentTime('MICROTIME'));
+		$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_sj/coupon/';
 
 	
 		$this->load->library('upload');
@@ -254,11 +252,9 @@ class Coupon extends WebBase {
 		if (!$this->upload->do_upload('image')){
 			$this->ajaxRes['msg'] = $this->upload->display_errors();
 		}else{
-			echo '<pre>';
-			print_r($this->upload->data());exit;
 			$this->ajaxRes = array(
 					'status' => 0,
-					'url'    => config_item('base_url').$this->upload->data('relative_path'),
+					'url'    => config_item('image_url').$this->upload->data('relative_path'),
 					'path'   => $this->upload->data('relative_path'),
 				);
 		} 

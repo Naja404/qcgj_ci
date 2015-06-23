@@ -239,22 +239,22 @@
 																	</div>
 																</div>
 
-																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponNotice"><?php echo $this->lang->line('TEXT_COUPON_NOTICE');?>:</label>
+<!-- 																<div class="form-group">
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponNotice"><?php //echo $this->lang->line('TEXT_COUPON_NOTICE');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<textarea class="input-xlarge" name="couponNotice" id="couponNotice" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"><?php echo $couponData->recommend_desc;?></textarea>
+																			<textarea class="input-xlarge" name="couponNotice" id="couponNotice" placeholder="<?php //echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"><?php //echo $couponData->recommend_desc;?></textarea>
 																		</div>
 																	</div>
-																</div>
+																</div> -->
 
 																<div class="form-group">
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponVerification"><?php echo $this->lang->line('TEXT_COUPON_VERIFICATION');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<textarea class="input-xlarge" name="couponVerification" id="couponVerification" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"></textarea>
+																			<textarea class="input-xlarge" name="couponVerification" id="couponVerification" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"><?php echo $couponData->recommend_desc;?></textarea>
 																		</div>
 																	</div>
 																</div>

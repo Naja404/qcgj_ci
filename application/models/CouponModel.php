@@ -263,7 +263,7 @@ class CouponModel extends CI_Model {
 
 		$couponEditData = array(
 				'name'                   => $couponData['couponTitle'],
-				'main_pic_url'          => $couponData['couponPic'],
+				'main_pic_url'           => $couponData['couponPic'],
 				'gene_type'              => isset($couponData['couponAutoCode']) ? 1 : 0,	//生成类型 0.无须生成 1.自动生成 2.手动
 				'coupon_type'            => $couponData['couponType'],				// 1.代金券 102.折扣劵 103.提货券
 				'update_time'            => currentTime(),
@@ -294,7 +294,7 @@ class CouponModel extends CI_Model {
 		// 优惠券适用门店
 		if (is_array($couponData['mallID']) && count($couponData['mallID'])) {
 
-			$this->db->delete(tname('coupon_mall'), array('tb_coupon_id' => $couponId));
+			$this->db->delete(tname('coupon_mall'), array('tb_coupon_id' => $couponData['couponId']));
 
 			$couponInsertMall = $tmpMallArr = array();
 
