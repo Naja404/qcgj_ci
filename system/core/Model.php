@@ -132,6 +132,7 @@ class CI_Model {
 		$sql = "SELECT 	 a.id,
 						 a.name_en,
 						 a.name_zh,
+						 a.logo_url,
 						 b.tb_category_id,
 						 c.name AS category_name
 				 FROM ".tname('brand')." AS a 

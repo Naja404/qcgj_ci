@@ -186,9 +186,10 @@ class CouponModel extends CI_Model {
 		$couponInsertData = array(
 				'id'                     => makeUUID(),
 				'name'                   => $couponData['couponTitle'],
-				'brand_pic_url'          => $couponData['couponPic'],
+				'brand_pic_url'			 => $brandInfo->logo_url,
+				'main_pic_url'         	 => $couponData['couponPic'],
 				'status'                 => 0,
-				'gene_type'              => $couponData['couponAutoCode'] ? 1 : 0,	//生成类型 0.无须生成 1.自动生成 2.手动
+				'gene_type'              => isset($couponData['couponAutoCode']) ? 1 : 0,	//生成类型 0.无须生成 1.自动生成 2.手动
 				'coupon_type'            => $couponData['couponType'],				// 1.代金券 102.折扣劵 103.提货券
 				'create_time'            => currentTime(),
 				'update_time'            => currentTime(),
@@ -211,6 +212,7 @@ class CouponModel extends CI_Model {
 				'on_sale'				 => 0,
 				'on_sale_time'           => $couponData['reviewPass'] == 2 ? $couponData['reviewPassDate'] : NULL, //上架时间
 				'oper'                   => $this->userInfo->user_id,
+				'access_limit'			 => 1,
 			);
 	
 		// 创建优惠券
@@ -261,8 +263,8 @@ class CouponModel extends CI_Model {
 
 		$couponEditData = array(
 				'name'                   => $couponData['couponTitle'],
-				'brand_pic_url'          => $couponData['couponPic'],
-				'gene_type'              => $couponData['couponAutoCode'] ? 1 : 0,	//生成类型 0.无须生成 1.自动生成 2.手动
+				'main_pic_url'          => $couponData['couponPic'],
+				'gene_type'              => isset($couponData['couponAutoCode']) ? 1 : 0,	//生成类型 0.无须生成 1.自动生成 2.手动
 				'coupon_type'            => $couponData['couponType'],				// 1.代金券 102.折扣劵 103.提货券
 				'update_time'            => currentTime(),
 				'coupon_desc'            => $couponData['couponUseGuide'],			//使用说明

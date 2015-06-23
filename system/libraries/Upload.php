@@ -266,6 +266,12 @@ class CI_Upload {
 	public $sub_dir = FALSE;
 
 	/**
+	 * relation_path 2015-6-23
+	 * @var string
+	 */
+	public $relation_path = '';
+
+	/**
 	 * File relative path
 	 *
 	 * @var	string
@@ -1015,6 +1021,11 @@ class CI_Upload {
 
 		$this->upload_path = preg_replace('/(.+?)\/*$/', '\\1/',  $this->upload_path);
 
+		// relation other path 2015-6-23
+		if (isset($this->relation_path) && !empty($this->relation_path)) {
+			$this->upload_path = $this->relation_path;
+		}
+
 		// add sub dir function 
 		if ($this->sub_dir) {
 			return $this->mkSubDir();
@@ -1030,9 +1041,9 @@ class CI_Upload {
      */
     public function mkSubDir(){
 
-		$date =  date('Y-m-d');
+		$sub_dir =  date('Y-m');
 
-		$sub_dir = implode('/', explode('-', $date));
+		// $sub_dir = implode('/', explode('-', $date));
 
 		$this->upload_path .= $sub_dir.'/';
 		$this->upload_relative_path .= $sub_dir.'/';

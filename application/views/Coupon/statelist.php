@@ -1,4 +1,4 @@
-<?php $this->load->view('public/header');?>
+<?php $this->load->view('Public/header');?>
 
 		<link rel="stylesheet" href="<?php echo config_item('html_url');?>css/ace-skins.min.css" />
 

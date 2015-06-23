@@ -1229,6 +1229,13 @@ class CI_Loader {
 		$this->_ci_classes[$object_name] = $class;
 
 		// Instantiate the class
+		if (ENVIRONMENT == 'development') { // 2015-6-23
+			if (in_array(strtolower($object_name), array('pagination', 'upload', 'form_validation', 'cache'))) {
+				$object_name = strtolower($object_name);
+			}
+		}
+
+
 		$CI->$object_name = isset($config)
 			? new $class_name($config)
 			: new $class_name();
