@@ -278,15 +278,15 @@
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_IMAGE');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
-																				<?php if (isset($couponData->brand_pic_url) && !empty($couponData->brand_pic_url)) {?>
+																				<?php if (isset($couponData->main_pic_url) && !empty($couponData->main_pic_url)) {?>
 																				<span id="fileImageSpan">
-																					<img src="<?php echo site_url().''.$couponData->brand_pic_url;?>" style="width: 200px;"><a onclick="removeFileImg();">重置</a>
+																					<img src="<?php echo config_item('image_url').''.$couponData->main_pic_url;?>" style="width: 200px;"><a onclick="removeFileImg();">重置</a>
 																				</span>
 																				<?php } ?>
 																		<div>
 																			<label>
 																				<input type="file" name="image" class="ace" id="fileImage" />
-																				<input type="hidden" name="couponPic" value="<?php echo isset($couponData->brand_pic_url) && !empty($couponData->brand_pic_url) ? $couponData->brand_pic_url : '';?>"/>
+																				<input type="hidden" name="couponPic" value="<?php echo isset($couponData->main_pic_url) && !empty($couponData->main_pic_url) ? $couponData->main_pic_url : '';?>"/>
 																			</label>
 																		</div>
 																	</div>

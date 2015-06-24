@@ -11,7 +11,7 @@ class Coupon extends WebBase {
 
 	public function __construct(){
 		parent::__construct();
-		
+
 		$this->load->model('CouponModel');
 		$this->outData['currentModule'] = __CLASS__;
 	}
@@ -53,8 +53,8 @@ class Coupon extends WebBase {
 			$this->ajaxRes['msg'] = $updateRes;
 		}else{
 			$this->ajaxRes = array(
-						'status'       => 0, 
-						'html'         => $updateRes['html'], 
+						'status'       => 0,
+						'html'         => $updateRes['html'],
 						'couponStatus' => $couponStatus == 1 ? 2 : 1,
 						'class'        => $updateRes['class'],
 						);
@@ -68,7 +68,7 @@ class Coupon extends WebBase {
 	 *
 	 */
 	public function couponList(){
-		
+
 		$where = $order = '';
 
 		$order = ' ORDER BY a.create_time DESC ';
@@ -113,7 +113,7 @@ class Coupon extends WebBase {
 
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ADDCOUPON');
 		$shopList = $this->CouponModel->getShopList();
-		
+
 		$this->outData['shopList'] = $shopList['data']['list'];
 		$this->outData['areaList'] = $shopList['data']['areaList'];
 		$this->outData['cityList'] = $shopList['data']['cityList'];
@@ -147,7 +147,7 @@ class Coupon extends WebBase {
 				$this->ajaxRes['msg'] = $verlidationRes;
 				jsonReturn($this->ajaxRes);
 			}
-			
+
 			$couponData = $this->input->post();
 			$couponData['couponId'] = $couponId;
 
@@ -202,11 +202,37 @@ class Coupon extends WebBase {
 	}
 
 	/**
+	 * 置顶=1,推荐=2,取消置顶=101,取消推荐=102
+	 *
+	 */
+	public function setCouponStatus(){
+
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+		
+		$statusArr = array(1, 2, 101, 102);
+		$reqStatus = $this->input->post('reqStatus');
+		$couponId  = strDecrypt($this->input->post('couponId'));
+
+		if (!in_array($reqStatus, $statusArr)) jsonReturn($this->ajaxRes);
+
+		$reqStatus = $reqStatus > 2 ? 0 : $reqStatus;
+
+		$returnRes = $this->CouponModel->setCouponStatus($couponId, $reqStatus);
+
+		if ($returnRes === true) {
+			$this->ajaxRes = array('status' => 0);
+		}
+
+		jsonReturn($this->ajaxRes);
+
+	}
+
+	/**
 	 * 优惠券报表
 	 *
 	 */
 	public function analysis(){
-		
+
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_COUPON_TITLE_ANALYSIS');
 
 		$this->load->view('Coupon/analysis', $this->outData);
@@ -218,11 +244,11 @@ class Coupon extends WebBase {
 	 */
 	public function statelist(){
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_STATELIST');
-		
+
 		$couponId = $this->input->post('couponId');
 
 		$this->outData['couponData'] = $this->CouponModel->getStateList($couponId);
-		
+
 		$this->outData['selectCouponId'] = $couponId;
 
 		$this->load->view('Coupon/statelist', $this->outData);
@@ -244,9 +270,9 @@ class Coupon extends WebBase {
 		$uploadConf['file_name']     = 'coupon_'.md5(currentTime('MICROTIME'));
 		$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_sj/coupon/';
 
-	
+
 		$this->load->library('upload');
-		
+
 		$this->upload->initialize($uploadConf);
 
 		if (!$this->upload->do_upload('image')){
@@ -257,7 +283,7 @@ class Coupon extends WebBase {
 					'url'    => config_item('image_url').$this->upload->data('relative_path'),
 					'path'   => $this->upload->data('relative_path'),
 				);
-		} 
+		}
 
 		echo json_encode($this->ajaxRes);exit;
 
@@ -315,7 +341,7 @@ class Coupon extends WebBase {
 			);
 
 		foreach ($couponDate as $k => $v) {
-			
+
 			if ($k == 0) $couponExpireDate = strtotime($v[1]);
 
 			if (strtotime($v[1]) <= strtotime($v[0])) {

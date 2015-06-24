@@ -24,7 +24,8 @@ class CouponModel extends CI_Model {
 		$field = " a.id,
 					a.name AS title,
 					CONCAT(a.begin_date, '<br/>~<br/>', a.end_date) AS expire,
-					a.on_sale AS status,
+					a.status AS status,
+					a.on_sale AS saleStatus,
 					d.city_name AS cityName,
 					(SELECT COUNT(*) FROM ".tname('coupon_individual')." WHERE tb_coupon_id = a.id AND status > 0) AS received,
 					(SELECT COUNT(*) FROM ".tname('coupon_individual')." WHERE tb_coupon_id = a.id AND status = 2) AS used,
@@ -489,6 +490,22 @@ class CouponModel extends CI_Model {
 		$queryRes = $this->db->get_where(tname('coupon'),$where)->result();
 
 		return count($queryRes) > 0 ? true : false;
+	}
+
+	/**
+	 * 置顶=1,推荐=2,取消置顶=101,取消推荐=102
+	 * @param string $couponId 优惠券id
+	 * @param int $reqStatus 状态码
+	 */
+	public function setCouponStatus($couponId = false, $reqStatus = 0){
+		if (empty($couponId) || !$couponId) return false;
+
+		$where = array('id' => $couponId);
+		$update = array('status' => (int)$reqStatus);
+
+		$updateRes = $this->db->where($where)->update(tname('coupon'), $update);
+
+		return $updateRes ? true : false;
 	}
 
 	/**

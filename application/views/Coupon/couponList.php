@@ -103,7 +103,7 @@
 															<a href="#"><?php echo $v->title;?></a>
 														</td>
 														<td><?php echo $v->expire;?></td>
-														<td><?php echo $this->lang->line('TEXT_STATUS_'.$v->status);?></td>
+														<td><?php echo $this->lang->line('TEXT_STATUS_'.$v->saleStatus);?></td>
 														<td><?php echo $v->cityName;?></td>
 														<td><?php echo $v->received;?></td>
 														<td><?php echo $v->used;?></td>
@@ -113,11 +113,24 @@
 																<button class="btn btn-xs btn-danger" onclick="delCoupon('<?php echo strEncrypt($v->id);?>');">
 																	<i class="icon-trash bigger-120"></i>
 																</button>
-																<?php if($v->status == 0){?>
+																<?php if($v->saleStatus == 0){?>
 																<button class="btn btn-xs btn-info" onclick="editCoupon('<?php echo strEncrypt($v->id);?>');">
 																	<i class="icon-edit bigger-120"></i>
 																</button>
 																<?php } ?>
+																<select name="couponStatus" onchange="setCouponStatus(this, '<?php echo strEncrypt($v->id);?>')" >
+																	<option value="0" <?php echo $v->status == 0 ? 'selected' : ''; ?>>
+																		<?php echo $this->lang->line('TEXT_DEFAULT_STATUS');?>
+																	</option>
+																	<option value="1" <?php echo $v->status == 1 ? 'selected' : ''; ?>>
+																		<?php echo $this->lang->line('TEXT_RECOMMEND');?>
+																	</option>
+																	<option value="2" <?php echo $v->status == 2 ? 'selected' : ''; ?>>
+																		<?php echo $this->lang->line('TEXT_TOPCOUPON');?>
+																	</option>
+																	<option value="101"><?php echo $this->lang->line('TEXT_CANCEL_RECOMMEND');?></option>
+																	<option value="102"><?php echo $this->lang->line('TEXT_CANCEL_TOPCOUPON');?></option>
+																</select>
 															</div>
 
 														</td>
@@ -206,6 +219,26 @@
 						}else{
 							window.location.reload();
 						}
+					}
+				});
+			}
+
+			function setCouponStatus(obj, couponId){
+
+				var reqStatus = obj.value;
+
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Coupon/setCouponStatus');?>",
+					data:{couponId:couponId, reqStatus:reqStatus},
+					success:function(data){
+						if (data.status == '0') {
+
+							return true;
+						}
+
+						alert(data.msg);
+						return false;
 					}
 				});
 			}
