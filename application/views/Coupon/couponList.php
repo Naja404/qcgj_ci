@@ -118,6 +118,7 @@
 																	<i class="icon-edit bigger-120"></i>
 																</button>
 																<?php } ?>
+																<?php if($this->userInfo->role_id == 1){?>
 																<select name="couponStatus" onchange="setCouponStatus(this, '<?php echo strEncrypt($v->id);?>')" >
 																	<option value="0" <?php echo $v->status == 0 ? 'selected' : ''; ?>>
 																		<?php echo $this->lang->line('TEXT_DEFAULT_STATUS');?>
@@ -131,6 +132,7 @@
 																	<option value="101"><?php echo $this->lang->line('TEXT_CANCEL_RECOMMEND');?></option>
 																	<option value="102"><?php echo $this->lang->line('TEXT_CANCEL_TOPCOUPON');?></option>
 																</select>
+																<?php } ?>
 															</div>
 
 														</td>
