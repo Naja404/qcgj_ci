@@ -156,6 +156,11 @@ class CI_Cache extends CI_Driver_Library {
 		return $this->{$this->_adapter}->get($this->key_prefix.$id);
 	}
 
+	public function getList($id)
+	{
+		return $this->{$this->_adapter}->getList($this->key_prefix.$id);
+	}
+
 	// ------------------------------------------------------------------------
 
 	/**

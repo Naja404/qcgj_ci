@@ -96,6 +96,18 @@ class CI_Cache_redis extends CI_Driver
 		return $value;
 	}
 
+	/**
+	 * Get cache List
+	 *
+	 * @param	string	Cache ID
+	 * @return	mixed
+	 */
+	public function getList($key)
+	{
+		$value = $this->_redis->LPOP($key);
+		return json_decode($value, true);
+	}
+
 	// ------------------------------------------------------------------------
 
 	/**
