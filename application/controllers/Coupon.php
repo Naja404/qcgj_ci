@@ -233,50 +233,6 @@ class Coupon extends WebBase {
 	 */
 	public function analysis(){
 
-		$cache = $this->cache->getList('logo_test');
-
-		$sourceIMG = './uploads/logo_other/'.$cache['path'];
-		// Load source and mask
-		$source = imagecreatefrompng($sourceIMG);
-		$mask = imagecreatefrompng('./uploads/logo_other/mask.png');
-		// Apply mask to source
-		imagealphamask( $source, $mask );
-		// Output
-		// header( "Content-type: image/png");
-		// echo '<pre>';
-		imagepng( $source, './uploads/new_logo/'.$cache['path']);
-		// print_r(imagepng($source));exit;
-		// imageantialias(imagepng( $source ));
-	
-		// $this->load->library('Snoopy');
-
-		// $queryList = $this->db->get_where(tname('mall'), array('city_name' => '上海'))->result();
-		
-		// $url = 'http://api.dev.gjla.com/app_admin/api/unionpay/queryShop';
-
-		// $shopList = array();
-
-		// foreach ($queryList as $k => $v) {
-		// 	$postForm = array(
-		// 			'province_name' => '上海',
-		// 			'city_name'     => '上海',
-		// 			'shop_name'     => $v->name_zh,
-		// 			'address'       => $v->address,
-		// 		);
-
-		// 	$this->Snoopy->submit($url, $postForm);
-		// 	$data = json_decode($this->Snoopy->results, true);
-			
-		// 	array_push($data, $v->name_zh.'-'.$v->address);
-
-		// 	array_push($shopList, $data);
-
-		// }
-
-		// echo '<pre>';
-		// print_r($shopList);exit;
-
-
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_COUPON_TITLE_ANALYSIS');
 
 		$this->load->view('Coupon/analysis', $this->outData);

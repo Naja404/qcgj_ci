@@ -271,5 +271,55 @@ function imagealphamask( &$picture, $mask ) {
     $picture = $newPicture;
 }
 
+/**
+ * 缩放尺寸
+ * @param string $src_img 图片路径
+ * @param string $save_src 存储路径
+ */
+function resizeIMG($src_img = false, $save_src = false, $dst_h = 200, $dst_w = 200){
+    list($src_w,$src_h) = $imageInfo = getimagesize($src_img);  // 获取原图尺寸
 
+    $dst_scale = $dst_h/$dst_w; //目标图像长宽比
+    $src_scale = $src_h/$src_w; // 原图长宽比
+
+    if ($src_scale>=$dst_scale){  // 过高
+        $w = intval($src_w);
+        $h = intval($dst_scale*$w);
+
+        $x = 0;
+        $y = ($src_h - $h)/3;
+    } else { // 过宽
+        $h = intval($src_h);
+        $w = intval($h/$dst_scale);
+
+        $x = ($src_w - $w)/2;
+        $y = 0;
+    }
+
+    if ($imageInfo['mime'] == 'image/jpeg') {
+        $source=imagecreatefromjpeg($src_img); 
+    }else{
+        $source = imagecreatefrompng($src_img);
+    }
+
+    // 剪裁
+
+    $croped=imagecreatetruecolor($w, $h);
+    imagecopy($croped, $source, 0, 0, $x, $y, $src_w, $src_h);
+
+    // 缩放
+    $scale = $dst_w / $w;
+    $target = imagecreatetruecolor($dst_w, $dst_h);
+    $final_w = intval($w * $scale);
+    $final_h = intval($h * $scale);
+    imagecopyresampled($target, $croped, 0, 0, 0, 0, $final_w,$final_h, $w, $h);
+
+    // 保存
+    if ($imageInfo['mime'] == 'image/jpeg') {
+        imagejpeg($target, $save_src); 
+    }else{
+        imagepng($target, $save_src);
+    }
+    imagedestroy($target);
+}
 ?>

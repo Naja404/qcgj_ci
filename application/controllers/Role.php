@@ -126,7 +126,10 @@ class Role extends WebBase {
 	 */
 	public function addRoleUser(){
 		if (!$this->input->is_ajax_request()) {
-			jsonReturn($this->ajaxRes);
+			$this->outData['pageTitle'] = $this->lang->line('TEXT_ROLE_RULE_USER_ADD');
+			$this->outData['roleSelect'] = $this->RoleModel->getRoleList();
+			$this->outData['brandList'] = $this->RoleModel->getBrandList();
+			return $this->load->view('Role/addUser', $this->outData);
 		}
 
 		$verlidationRes = $this->RoleModel->verlidationAddRoleUser($this->lang->line('ADD_ROLE_USER_VALIDATION'), $this->input->post());
@@ -180,6 +183,28 @@ class Role extends WebBase {
 
 			jsonReturn($this->ajaxRes);
 		}
+	}
+
+	/**
+	 * 品牌模糊查询
+	 *
+	 */
+	public function searchBrand(){
+		
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$brandName = $this->input->post('brand');
+		
+		if (empty($brandName)) jsonReturn($this->ajaxRes); 
+
+		$list = $this->RoleModel->searchBrand($brandName);
+
+		$this->ajaxRes = array(
+				'status' => 0,
+				'list' => $list,
+			);
+
+		jsonReturn($this->ajaxRes);
 	}
 
 }

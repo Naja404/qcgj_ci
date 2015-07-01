@@ -16,6 +16,29 @@ class RoleModel extends CI_Model {
 	}
 
 	/**
+	 * 搜索品牌
+	 * @param string $brandName 品牌名
+	 */
+	public function searchBrand($brandName = false){
+		if (!$brandName) return false;
+
+		$list = $this->db->select('name_zh, name_en')
+						 ->like('name_zh', $brandName)
+						 ->or_like('name_en', $brandName)
+						 ->order_by('name_en, name_zh ASC')
+						 ->get(tname('brand'))
+						 ->result();
+
+		$returnList = array();
+
+		foreach ($list as $k => $v) {
+			array_push($returnList, $v->name_en.$v->name_zh);
+		}
+
+		return $returnList;
+	}
+
+	/**
 	 * 获取品牌列表
 	 *
 	 */

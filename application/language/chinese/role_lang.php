@@ -23,6 +23,8 @@ $lang = array(
 	'TEXT_ROLE_CONFIRM_PASSWD'			 => '确认密码',
 	'TEXT_ROLE_PASSWD'					 => '密码',
 	'TEXT_PLASE_SELECT_MALL'			 => '请选择店铺',
+	'TEXT_BRAND'						 => '品牌',
+	'TEXT_SHOP'							 => '店铺',
 	
 	'TEXT_PLACEHOLDER_RULE_MODULE'       => '如:Coupon',
 	'TEXT_PLACEHOLDER_RULE_MODULE_TITLE' => '如:优惠券管理',
