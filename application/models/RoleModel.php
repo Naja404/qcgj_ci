@@ -22,20 +22,54 @@ class RoleModel extends CI_Model {
 	public function searchBrand($brandName = false){
 		if (!$brandName) return false;
 
+		$cacheRes = $this->cache->get(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName));
+		
+		if ($cacheRes) return $cacheRes; 
+
 		$list = $this->db->select('name_zh, name_en')
 						 ->like('name_zh', $brandName)
 						 ->or_like('name_en', $brandName)
 						 ->order_by('name_en, name_zh ASC')
+						 ->limit(20)
 						 ->get(tname('brand'))
 						 ->result();
 
 		$returnList = array();
 
 		foreach ($list as $k => $v) {
-			array_push($returnList, $v->name_en.$v->name_zh);
+			array_push($returnList, $v->name_en.'_'.$v->name_zh);
 		}
 
+		if (count($returnList)) $this->cache->save(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName), $returnList, 3600); 
+
 		return $returnList;
+	}
+
+	/**
+	 * 根据品牌名搜索店铺列表
+	 * @param string $brandEn 品牌英文名
+	 * @param string $brandZh 品牌中文名
+	 */
+	public function searchMallByBrand($brandEn = false, $brandZh = false){
+
+		$sql = "SELECT 
+					CONCAT(c.city_name, '-',c.name_zh, b.address) AS name,
+					c.id AS mallId
+					FROM ".tname('brand')." AS a 
+					INNER JOIN ".tname('brand_mall')." AS b ON b.tb_brand_id = a.id
+					INNER JOIN ".tname('mall')." AS c ON c.id = b.tb_mall_id
+					WHERE a.name_zh = '".$brandZh."' AND a.name_en = '".$brandEn."' 
+					ORDER BY c.city_name";
+
+		$queryRes = $this->db->query($sql)->result();
+
+		$html = '';
+
+		foreach ($queryRes as $k => $v) {
+			$html .= '<option value="'.$v->mallId.'">'.$v->name.'</option>';
+		}
+
+		return $html;
 	}
 
 	/**
@@ -131,7 +165,7 @@ class RoleModel extends CI_Model {
 		$insertData = array(
 				'user_id'      => makeUUID(),
 				'role_id'      => $addRoleUserData['role_id'],
-				'name'         => $addRoleUserData['role_username'],
+				'name'         => $addRoleUserData['roleUsername'],
 				'passwd'	   => md5($addRoleUserData['passwd']),
 				'status'       => 1,
 				'created_time' => currentTime(),
@@ -144,11 +178,16 @@ class RoleModel extends CI_Model {
 		}else{
 			$this->returnRes['error'] = false;
 			
+			$brandId = $this->getBrandIdWithName($addRoleUserData['brandName']);
+			
 			$insertBrand = array(
 						'user_id'  => $insertData['user_id'],
-						'brand_id' => $addRoleUserData['brandId'] ? strDecrypt($addRoleUserData['brandId']) : '',
-						'mall_id'   => $addRoleUserData['mallId'] ? strDecrypt($addRoleUserData['mallId']) : '',
+						'brand_id' => $brandId,
 				);
+
+			if ($addRoleUserData['role_id'] == 3) {
+				$insertBrand['mall_id'] = $addRoleUserData['mallId'];
+			}
 
 			$this->db->insert(tname('qcgj_role_brand_mall'), $insertBrand);
 		}
@@ -331,7 +370,7 @@ class RoleModel extends CI_Model {
 			return validation_errors();
 		}
 
-		$queryRes = $this->db->get_where(tname('qcgj_role_user'), array('name' => $reqData['role_username']))->result();
+		$queryRes = $this->db->get_where(tname('qcgj_role_user'), array('name' => $reqData['roleUsername']))->result();
 
 		if (count($queryRes) > 0) {
 			return $this->lang->line('ERR_ADDROLE_USERNAME_EXISTS');
@@ -345,16 +384,39 @@ class RoleModel extends CI_Model {
 			return $this->lang->line('ERR_ADD_FAILURE');
 		}
 
+		$brandId = $this->getBrandIdWithName($reqData['brandName']);
+
 		// 验证品牌和店铺
 		if (in_array($reqData['role_id'], array(2, 3))) {
-			if (!$this->existsBrand(strDecrypt($reqData['brandId']))) return $this->lang->line('ERR_ROLE_NO_BRAND');
+			if (!$this->existsBrand($brandId)) return $this->lang->line('ERR_ROLE_NO_BRAND');
 
 			if ($reqData['role_id'] == 3) {
-				if (!$this->existsMall(strDecrypt($reqData['brandId']), strDecrypt($reqData['mallId']))) return $this->lang->line('ERR_ROLE_NO_MALL');
+				if (!$this->existsMall($brandId, $reqData['mallId'])) return $this->lang->line('ERR_ROLE_NO_MALL');
 			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * 根据品牌名获取品牌id
+	 * @param string $brandName 拼接品牌名 NIKE_耐克
+	 */
+	public function getBrandIdWithName($brandName = false){
+		if (empty($brandName)) return '';
+
+		$brandName = explode('_', $brandName);
+
+		if (count($brandName) != 2) return ''; 
+
+		$where = array(
+				'name_zh' => $brandName[1],
+				'name_en' => $brandName[0],
+			);
+
+		$queryRes = $this->db->select('id')->get_where(tname('brand'), $where)->first_row();
+
+		return is_string($queryRes->id) ? $queryRes->id : '';
 	}
 
 	/**

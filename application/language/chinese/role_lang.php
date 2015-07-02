@@ -3,7 +3,7 @@
 $lang = array(
 	'TEXT_ROLE_ADD'                      => '角色添加',
 	'TEXT_ROLE_RULE_ADD'                 => '权限添加',
-	'TEXT_ROLE_RULE_USER_ADD'			 => '用户添加',
+	'TEXT_ROLE_RULE_USER_ADD'            => '用户添加',
 	'TEXT_ROLE_NAME'                     => '角色名',
 	'TEXT_ROLE_RULE'                     => '权限',
 	'TEXT_RULE_MODULE'                   => '模块',
@@ -20,11 +20,12 @@ $lang = array(
 	'TEXT_ROLE_LIST'                     => '角色列表',
 	'TEXT_TITLE_ROLELIST'                => '角色列表',
 	'TEXT_ROLE_USERNAME'                 => '用户名',
-	'TEXT_ROLE_CONFIRM_PASSWD'			 => '确认密码',
-	'TEXT_ROLE_PASSWD'					 => '密码',
-	'TEXT_PLASE_SELECT_MALL'			 => '请选择店铺',
-	'TEXT_BRAND'						 => '品牌',
-	'TEXT_SHOP'							 => '店铺',
+	'TEXT_ROLE_CONFIRM_PASSWD'           => '确认密码',
+	'TEXT_ROLE_PASSWD'                   => '密码',
+	'TEXT_PLASE_SELECT_MALL'             => '请选择店铺',
+	'TEXT_BRAND'                         => '品牌',
+	'TEXT_SHOP'                          => '店铺',
+	'TEXT_INPUT_BRAND_NAME'              => '请输入品牌名',
 	
 	'TEXT_PLACEHOLDER_RULE_MODULE'       => '如:Coupon',
 	'TEXT_PLACEHOLDER_RULE_MODULE_TITLE' => '如:优惠券管理',
@@ -32,15 +33,21 @@ $lang = array(
 	'TEXT_PLACEHOLDER_RULE_ACTION_TITLE' => '如:优惠券列表',
 	'TEXT_PLACEHOLDER_RULE_ACTION_URL'   => '如:Web/Coupon/listview',
 	'TEXT_PLACEHOLDER_RULE_SORT'         => '数字越大排序越高',
-	'TEXT_UPDATE_USER_STATUS_0'			 => '<span class="label label-success">停用</span>',
-	'TEXT_UPDATE_USER_STATUS_1'			 => '<span class="label label-error">正常</span>',
-	'TEXT_UPDATE_USERSTATUS_CLASS_0'	 => 'icon-ok bigger-120',
-	'TEXT_UPDATE_USERSTATUS_CLASS_1'	 => 'icon-remove bigger-120',
-
+	'TEXT_UPDATE_USER_STATUS_0'          => '<span class="label label-success">停用</span>',
+	'TEXT_UPDATE_USER_STATUS_1'          => '<span class="label label-error">正常</span>',
+	'TEXT_UPDATE_USERSTATUS_CLASS_0'     => 'icon-ok bigger-120',
+	'TEXT_UPDATE_USERSTATUS_CLASS_1'     => 'icon-remove bigger-120',
+	
 	'ERR_ADD_ROLENAME_EXISTS'            => '角色名已存在',
-	'ERR_ADDROLE_USERNAME_EXISTS'		 => '用户名已存在',
-	'ERR_ROLE_NO_BRAND'					 => '品牌错误,请刷新后重试',
-	'ERR_ROLE_NO_MALL'					 => '该品牌下店铺不存在,请刷新后重试',
+	'ERR_ADDROLE_USERNAME_EXISTS'        => '用户名已存在',
+	'ERR_ROLE_NO_BRAND'                  => '品牌错误或不存在',
+	'ERR_ROLE_NO_MALL'                   => '该品牌下店铺不存在',
+	
+	'ERR_ROLEUSER_NAME'                  => '请正确填写用户名',
+	'ERR_ROLEUSER_NAME_LENGTH'           => '用户名最长不超过20个字符',
+	'ERR_ROLEUSER_PASSWD_MIN'            => '密码长度不小于6个字符',
+	'ERR_ROLEUSER_PASSWD_MAX'            => '密码长度不大于20个字符',
+	'ERR_ROLEUSER_CONFIRM_PASSWD'        => '两次密码不一致',
 
 	'ADD_RULE_VALIDATION' => array(
 				array(
@@ -85,7 +92,7 @@ $lang = array(
 
 	'ADD_ROLE_USER_VALIDATION' => array(
 				array(
-					'field' => 'role_username',
+					'field' => 'roleUsername',
 					'label' => 'ERR_ROLE_USERNAME',
 					'rules' => 'required',
 					),
@@ -95,7 +102,7 @@ $lang = array(
 					'rules' => 'required',
 					),
 				array(
-					'field' => 'confirm_passwd',
+					'field' => 'confirmPasswd',
 					'label' => 'ERR_ROLE_CONFIRM_PASSWD',
 					'rules' => 'required|matches[passwd]',
 					),

@@ -207,4 +207,25 @@ class Role extends WebBase {
 		jsonReturn($this->ajaxRes);
 	}
 
+	/**
+	 * 搜索品牌对应的店铺
+	 * 
+	 */
+	public function searchMallByBrand(){
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$brandName = explode('_', $this->input->post('brand'));
+
+		if (empty($brandName[0])) jsonReturn($this->ajaxRes);
+ 
+ 		$mallList = $this->RoleModel->searchMallByBrand($brandName[0], $brandName[1]);
+
+ 		$this->ajaxRes = array(
+ 				'status' => 0,
+ 				'html' => $mallList,
+ 			);
+
+ 		jsonReturn($this->ajaxRes);
+	}
+
 }

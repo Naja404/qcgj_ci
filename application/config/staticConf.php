@@ -12,6 +12,7 @@ $config = array(
 				'MALLLIST_BY_BRAND' => 'Normal:Mall:Brand:',
 				'CITY_LIST' => 'Normal:cityList',
 				'AREA_LIST'	=> 'Normal:areaList:',
+				'SEARCH_BRAND_LIST' => 'Normal:Search:brand:',
 			),
 		// 用户缓存
 		'USER_CACHE' => array(

@@ -322,4 +322,15 @@ function resizeIMG($src_img = false, $save_src = false, $dst_h = 200, $dst_w = 2
     }
     imagedestroy($target);
 }
+
+/**
+ * limit 计算
+ * @param int $page 当前页
+ * @param int $count 页面条数
+ */
+function page($page = 1, $count = 25){
+	$page = $page <= 0 ? 1 : $page;
+	return ($page - 1)*$count.','.$count;
+}
+
 ?>
