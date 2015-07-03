@@ -45,6 +45,7 @@ class Brand extends WebBase {
 	 */
 	public function addBrand(){
 		$this->outData['pageTitle'] = $this->lang->line('TITLE_ADD_BRAND');
+		$this->outData['brandCate'] = $this->BrandModel->getBrandCategory();
 		$this->load->view('Brand/addBrand', $this->outData);
 	}
 
@@ -62,4 +63,22 @@ class Brand extends WebBase {
 		jsonReturn(array('status' => 0));
 	}
 
+	/**
+	 * 搜索商场/店铺
+	 * @param string $mall 商场/店铺名称
+	 */
+	public function searchMall(){
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$mall = $this->input->post('mall');
+
+		$queryRes =  $this->BrandModel->searchMall($mall);
+
+		$this->ajaxRes = array(
+				'status' => 0,
+				'list' => $queryRes,
+			);
+
+		jsonReturn($this->ajaxRes);
+	}
 }

@@ -61,4 +61,42 @@ class BrandModel extends CI_Model {
 
 		return $this->db->delete(tname('brand'), $where);
 	}
+
+	/**
+	 * 获取品牌分类
+	 *
+	 */
+	public function getBrandCategory(){
+		$where = array(
+				'level' => 1,
+			);
+
+		$queryRes = $this->db->select('id, name')->get_where(tname('category'), $where)->result();
+
+		return $queryRes;
+	}
+
+	/**
+	 * 搜索商场/店铺
+	 * @param string $mall 商场/店铺名称
+	 */
+	public function searchMall($mall = false){
+		if (empty($mall)) return array();
+
+		$queryRes = $this->db->select('id, name_zh, address, city_name')
+							 ->like('name_zh', $mall)
+							 ->get(tname('mall'))
+							 ->result();
+		$returnRes = array();
+		
+		foreach ($queryRes as $k => $v) {
+			$tmp = array(
+					'label' => $v->name_zh.'('.$v->city_name.$v->address.')',
+					'id'    => $v->id,
+				);
+			array_push($returnRes, $tmp);
+		}
+
+		return $returnRes;
+	}
 }

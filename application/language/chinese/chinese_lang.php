@@ -45,6 +45,7 @@ $lang = array(
 		'BTN_CHOOSE' => '选择',
 		'BTN_CHANGE' => '变更',
 		'BTN_SEARCH' => '搜索',
+		'BTN_DELETE' => '删除',
 		
 		'ERR_TEXT'           => '错误信息',
 		'ERR_PARAM'          => '参数错误',

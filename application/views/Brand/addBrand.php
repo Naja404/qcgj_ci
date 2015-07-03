@@ -62,64 +62,76 @@
 
 						<div class="row">
 							<div class="col-xs-12">
-								<form class="form-horizontal" role="form" id="addRoleUser-form">
+								<form class="form-horizontal" role="form" id="addBrand-form">
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="roleUsername"> <?php echo $this->lang->line('TEXT_ROLE_USERNAME');?> </label>
+										<label class="col-sm-3 control-label no-padding-right" for="nameZh"> <?php echo $this->lang->line('TEXT_NAME_ZH');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="roleUsername" id="roleUsername" placeholder="<?php echo $this->lang->line('PLACEHOLDER_USERNAME');?>"/>
-										</div>
-									</div>
-
-									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="passwd"> <?php echo $this->lang->line('TEXT_ROLE_PASSWD');?> </label>
-
-										<div class="col-sm-9">
-											<input type="password" name="passwd" id="passwd" placeholder="<?php echo $this->lang->line('PLACEHOLDER_PASSWORD');?>"/>
-										</div>
-									</div>
-
-
-									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="confirmPasswd"> <?php echo $this->lang->line('TEXT_ROLE_CONFIRM_PASSWD');?> </label>
-
-										<div class="col-sm-9">
-											<input type="password" name="confirmPasswd" id="confirmPasswd" placeholder="<?php echo $this->lang->line('PLACEHOLDER_CONFIRM_PASSWORD');?>"/>
+											<input type="text" name="nameZh" id="nameZh" placeholder="<?php echo $this->lang->line('PLACEHOLDER_NAME_ZH');?>"/>
 										</div>
 									</div>
 
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="roleIdSelect"><?php echo $this->lang->line('TEXT_ROLE_NAME');?></label>
+										<label class="col-sm-3 control-label no-padding-right" for="nameEn"> <?php echo $this->lang->line('TEXT_NAME_EN');?> </label>
+
 										<div class="col-sm-9">
-											<select name="role_id" id="roleIdSelect">
-												<?php foreach($roleSelect as $v):?>
-												<option value="<?php echo $v->role_id;?>">
-													<?php echo $v->name;?>
-												</option>
-												<?php endforeach;?>
-											</select>
+											<input type="text" name="nameEn" id="nameEn" placeholder="<?php echo $this->lang->line('PLACEHOLDER_NAME_EN');?>"/>
 										</div>
 									</div>
 
-									<div class="form-group" style="display:none;" id="brandDiv">
-										<label class="col-sm-3 control-label no-padding-right" for="brandSelect"><?php echo $this->lang->line('TEXT_BRAND');?></label>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="brandLogo"> <?php echo $this->lang->line('TEXT_LOGO');?> </label>
+
 										<div class="col-sm-9">
-											<input type="text" name="brandName" id="brandName" value="" placeholder="<?php echo $this->lang->line('TEXT_INPUT_BRAND_NAME');?>" />
+											<input type="file" name="brandLogo" id="brandLogo" />
 										</div>
 									</div>
 
-									<div class="form-group" style="display:none;" id="mallDiv">
-										<label class="col-sm-3 control-label no-padding-right" for="mallSelect"><?php echo $this->lang->line('TEXT_SHOP');?></label>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="brandShow"> <?php echo $this->lang->line('TEXT_LOGO_SHOW');?> </label>
+
 										<div class="col-sm-9">
-											<select name="mallId" id="mallSelect" >
-												<option><?php echo $this->lang->line('TEXT_PLASE_SELECT_MALL');?></option>
-											</select>
+											<input type="file" name="brandShow" id="brandShow" />
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="summary"> <?php echo $this->lang->line('TEXT_DESCRIPTION');?> </label>
+
+										<div class="col-sm-9">
+											<textarea name="summary" id="summary"></textarea>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="category"> <?php echo $this->lang->line('TEXT_DESCRIPTION');?> </label>
+
+										<div class="col-sm-9">
+												<?php foreach ($brandCate as $k => $v) :?>
+												<label>
+													<input type="checkbox" name="category[]" class="ace" value="<?php echo $v->id;?>">
+													<span class="lbl"><?php echo $v->name;?></span>
+												</label>&nbsp;&nbsp;
+												<?php if (($k+1) % 4 == 0) echo '<br>';?>
+												<?php endforeach; ?>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="searchMall"> <?php echo $this->lang->line('TEXT_SHOPMALL');?> </label>
+
+										<div class="col-sm-9">
+												<input type="type" name="searchMall" id="searchMall" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SEARCH_MALL');?>">
+										</div>
+
+										<div class="col-sm-9" id="searchMallRes">
+												<br>
 										</div>
 									</div>
 
 									<div class="clearfix form-actions">
 										<div class="col-md-offset-3 col-md-9">
-											<button class="btn btn-info" type="button" onclick="subAddRoleUser()">
+											<button class="btn btn-info" type="button" onclick="subAddBrand()">
 												<i class="icon-ok bigger-110"></i>
 												<?php echo $this->lang->line('BTN_SUBMIT');?>
 											</button>
@@ -187,52 +199,33 @@
 
 		<script type="text/javascript">
 			jQuery(function($) {
-				$("#roleIdSelect").on('change', function(){
-					if (this.value == '1') {
-						$('#brandDiv').hide();
-						$('#mallDiv').hide();
-					}
 
-					if (this.value == '2') {
-						$('#brandDiv').show();
-						$('#mallDiv').hide();
-					}
-
-					if (this.value == '3') {
-						$('#brandDiv').show();
-						$('#mallDiv').show();
-					}
-				});
-				$("#brandName").keyup(function(){
+				$("#searchMall").keyup(function(){
 					$.ajax({
 			      		type:"POST",
-			      		url:"<?php echo site_url('Role/searchBrand');?>",
-			      		data:{brand:$("#brandName").val()},
+			      		url:"<?php echo site_url('Brand/searchMall');?>",
+			      		data:{mall:$("#searchMall").val()},
 			      		success:function(data){
 			      			if (data.status != 0) { return false;}
 			      			
 			      			var sourceData = new Array();
+			      				mallHtml = '';
 
 			      			$.each(data.list, function(k, v){
 			      				sourceData.push(v);
 			      			});
 
-						    $( "#brandName" ).autocomplete({
+						    $( "#searchMall" ).autocomplete({
 						      source: sourceData,
 						      select:function(event, ui){
-						      	$.ajax({
-						      		type:"POST",
-						      		url:"<?php echo site_url('Role/searchMallByBrand');?>",
-						      		data:{brand:ui.item.value},
-						      		success:function(data){
-						      			if (data.status == '0') {
-						      				$("#mallSelect").html(data.html);
-						      			}
-						      		}
-						      	});
+						      		mallHtml = '<div id="mall_'+ui.item.id+'"><label><span class="ace">'+ui.item.label+'</span></label><input type="hidden" name="mallId[]" value="'+ui.item.id+'"><input type="text" class="ace" placeholder="<?php echo $this->lang->line("PLACEHOLDER_FLOOR");?>"><a onclick="delMall(\'mall_'+ui.item.id+'\')"><?php echo $this->lang->line("BTN_DELETE");?></a><br><br></div>';
+						      		$("#searchMallRes").append(mallHtml);
+						      },
+						      close:function(event, ui){
+						      	$('#searchMall').val("");
 						      }
 						  });
-
+						
 			      		}
 					});
 				});
@@ -293,6 +286,11 @@
 				});
 
 			});
+			
+			function delMall(id){
+				$("#"+id).remove();
+			}
+
 			function subAddRoleUser(){
 				
 				if(!$('#addRoleUser-form').valid()){
