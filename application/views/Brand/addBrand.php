@@ -218,7 +218,7 @@
 						    $( "#searchMall" ).autocomplete({
 						      source: sourceData,
 						      select:function(event, ui){
-						      		mallHtml = '<div id="mall_'+ui.item.id+'"><label><span class="ace">'+ui.item.label+'</span></label><input type="hidden" name="mallId[]" value="'+ui.item.id+'"><input type="text" class="ace" placeholder="<?php echo $this->lang->line("PLACEHOLDER_FLOOR");?>"><a onclick="delMall(\'mall_'+ui.item.id+'\')"><?php echo $this->lang->line("BTN_DELETE");?></a><br><br></div>';
+						      		mallHtml = '<div id="mall_'+ui.item.id+'"><label><span class="ace">'+ui.item.label+'</span></label><input type="hidden" name="mallId[]" value="'+ui.item.id+'"><input type="text" class="ace" name="floor[]" placeholder="<?php echo $this->lang->line("PLACEHOLDER_FLOOR");?>"><a onclick="delMall(\'mall_'+ui.item.id+'\')"><?php echo $this->lang->line("BTN_DELETE");?></a><br><br></div>';
 						      		$("#searchMallRes").append(mallHtml);
 						      },
 						      close:function(event, ui){
@@ -230,46 +230,31 @@
 					});
 				});
 
-				$('#addRoleUser-form').validate({
+				$('#addBrand-form').validate({
 					errorElement: 'div',
 					errorClass: 'help-block',
 					focusInvalid: false,
 					rules: {
-						roleUsername: {
-							required:true,
-							maxlength:20,
+						nameZh: {
+							required:true
 						},
-						passwd: {
-							required:true,
-							minlength:6,
-							maxlength:20
-						},
-						confirmPasswd :{
-							required:true,
-							equalTo: "#passwd"
+						'category[]':{
+							required:true
 						}
 					},
 			
 					messages: {
-						roleUsername: {
-							required:"<?php echo $this->lang->line('ERR_ROLEUSER_NAME');?>",
-							maxlength:"<?php echo $this->lang->line('ERR_ROLEUSER_NAME_LENGTH');?>"
+						nameZh: {
+							required:"<?php echo $this->lang->line('ERR_NAME_ZH');?>",
 						},
-						passwd: {
-							required:"<?php echo $this->lang->line('ERR_ROLEUSER_PASSWD');?>",
-							minlength:"<?php echo $this->lang->line('ERR_ROLEUSER_PASSWD_MIN');?>",
-							maxlength:"<?php echo $this->lang->line('ERR_ROLEUSER_PASSWD_MAX');?>"
-						},
-						confirmPasswd :{
-							required:"<?php echo $this->lang->line('ERR_ROLEUSER_CONFIRM_PASSWD');?>",
-							equalTo: "<?php echo $this->lang->line('ERR_ROLEUSER_CONFIRM_PASSWD');?>"
+						'category[]':{
+							required:"<?php echo $this->lang->line('ERR_CHECKBOX_MIN');?>"
 						}
 					},
 			
 					invalidHandler: function (event, validator) { //display error alert on form submit   
 						$('.alert-danger', $('.login-form')).show();
 					},
-			
 					highlight: function (e) {
 						$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
 					},
@@ -278,9 +263,8 @@
 						$(e).closest('.form-group').removeClass('has-error').addClass('has-info');
 						$(e).remove();
 					},
-			
 					errorPlacement: function (error, element) {
-
+						console.log(error);
 						error.insertAfter(element.parent().children());
 					}
 				});
@@ -291,19 +275,19 @@
 				$("#"+id).remove();
 			}
 
-			function subAddRoleUser(){
+			function subAddBrand(){
 				
-				if(!$('#addRoleUser-form').valid()){
+				if(!$('#addBrand-form').valid()){
 					return false;
 				}
 
 				$.ajax({
 					type:"POST",
-					url:"<?php echo site_url('Role/addRoleUser');?>",
-					data:$('#addRoleUser-form').serialize(),
+					url:"<?php echo site_url('Brand/addBrand');?>",
+					data:$('#addBrand-form').serialize(),
 					success:function(data){
 						if (data.status == '0') {
-							window.location.href = "<?php echo site_url('Role/roleList');?>";
+							window.location.href = "<?php echo site_url('Brand/listView');?>";
 							return true;
 						}
 

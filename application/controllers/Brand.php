@@ -44,6 +44,9 @@ class Brand extends WebBase {
 	 *
 	 */
 	public function addBrand(){
+
+		if ($this->input->is_ajax_request()) return $this->_addBrandForm(); 
+
 		$this->outData['pageTitle'] = $this->lang->line('TITLE_ADD_BRAND');
 		$this->outData['brandCate'] = $this->BrandModel->getBrandCategory();
 		$this->load->view('Brand/addBrand', $this->outData);
@@ -80,5 +83,14 @@ class Brand extends WebBase {
 			);
 
 		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 添加品牌
+	 *
+	 */
+	private function _addBrandForm(){
+		echo '<pre>';
+		print_r($this->input->post());exit;
 	}
 }
