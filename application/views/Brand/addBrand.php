@@ -104,7 +104,7 @@
 									</div>
 
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="category"> <?php echo $this->lang->line('TEXT_DESCRIPTION');?> </label>
+										<label class="col-sm-3 control-label no-padding-right" for="category"> <?php echo $this->lang->line('TEXT_CATEGORY');?> </label>
 
 										<div class="col-sm-9">
 												<?php foreach ($brandCate as $k => $v) :?>
@@ -114,6 +114,46 @@
 												</label>&nbsp;&nbsp;
 												<?php if (($k+1) % 4 == 0) echo '<br>';?>
 												<?php endforeach; ?>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="style"> <?php echo $this->lang->line('TEXT_STYLE');?> </label>
+
+										<div class="col-sm-9">
+												<?php foreach ($brandStyle as $k => $v) :?>
+												<label>
+													<input type="checkbox" name="style[]" class="ace" value="<?php echo $v->id;?>">
+													<span class="lbl"><?php echo $v->name;?></span>
+												</label>&nbsp;&nbsp;
+												<?php if (($k+1) % 4 == 0) echo '<br>';?>
+												<?php endforeach; ?>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="age"> <?php echo $this->lang->line('TEXT_AGE');?> </label>
+
+										<div class="col-sm-9">
+												<select name="age">
+													<option></option>
+												<?php foreach ($brandAge as $k => $v) :?>
+													<option value="<?php echo $v->id;?>"><?php echo $v->name;?></option>
+												<?php endforeach; ?>
+												</select>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="price"> <?php echo $this->lang->line('TEXT_PRICE');?> </label>
+
+										<div class="col-sm-9">
+												<select name="price">
+													<option></option>
+												<?php foreach ($brandPrice as $k => $v) :?>
+													<option value="<?php echo $v->id;?>"><?php echo $v->name;?></option>
+												<?php endforeach; ?>
+												</select>
 										</div>
 									</div>
 
@@ -237,18 +277,12 @@
 					rules: {
 						nameZh: {
 							required:true
-						},
-						'category[]':{
-							required:true
 						}
 					},
 			
 					messages: {
 						nameZh: {
 							required:"<?php echo $this->lang->line('ERR_NAME_ZH');?>",
-						},
-						'category[]':{
-							required:"<?php echo $this->lang->line('ERR_CHECKBOX_MIN');?>"
 						}
 					},
 			

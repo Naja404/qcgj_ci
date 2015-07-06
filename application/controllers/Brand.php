@@ -47,8 +47,12 @@ class Brand extends WebBase {
 
 		if ($this->input->is_ajax_request()) return $this->_addBrandForm(); 
 
-		$this->outData['pageTitle'] = $this->lang->line('TITLE_ADD_BRAND');
-		$this->outData['brandCate'] = $this->BrandModel->getBrandCategory();
+		$this->outData['pageTitle']  = $this->lang->line('TITLE_ADD_BRAND');
+		$this->outData['brandCate']  = $this->BrandModel->getBrandCategory();
+		$this->outData['brandStyle'] = $this->BrandModel->getBrandStyle();
+		$this->outData['brandAge']   = $this->BrandModel->getBrandAge();
+		$this->outData['brandPrice'] = $this->BrandModel->getBrandPrice();
+
 		$this->load->view('Brand/addBrand', $this->outData);
 	}
 
@@ -90,7 +94,28 @@ class Brand extends WebBase {
 	 *
 	 */
 	private function _addBrandForm(){
-		echo '<pre>';
-		print_r($this->input->post());exit;
+
+		$reqData = $this->input->post();
+
+		$rule = $this->lang->line('ADD_BRAND_VALIDATION');
+
+		$validateRes = $this->BrandModel->validateAddBrand($rule, $reqData);
+
+		if (is_string($validateRes) && !empty($validateRes)) {
+			$this->ajaxRes['msg'] = $validateRes;
+			jsonReturn($this->ajaxRes);
+		}
+
+		$addRes = $this->BrandModel->addBrand($reqData);
+
+		if (is_string($addRes) && !empty($addRes)) {
+			$this->ajaxRes['msg'] = $addRes;
+		}else{
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}
+
+		jsonReturn($this->ajaxRes);
 	}
 }
