@@ -48,9 +48,9 @@
 							</li>
 
 							<li>
-								<a href="<?php echo site_url('Role/roleList');?>"><?php echo $this->lang->line('TEXT_ROLE_MANAGER');?></a>
+								<a href="<?php echo site_url('Brand/listView');?>"><?php echo $this->lang->line('TITLE_BRAND_MANAGER');?></a>
 							</li>
-							<li class="active"><?php echo $this->lang->line('TEXT_ROLE_RULE_USER_ADD');?></li>
+							<li class="active"><?php echo $this->lang->line('TITLE_ADD_SHOP');?></li>
 						</ul>
 
 					</div>
@@ -62,64 +62,144 @@
 
 						<div class="row">
 							<div class="col-xs-12">
-								<form class="form-horizontal" role="form" id="addRoleUser-form">
+								<form class="form-horizontal" role="form" id="addShop-form">
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="roleUsername"> <?php echo $this->lang->line('TEXT_ROLE_USERNAME');?> </label>
+										<label class="col-sm-3 control-label no-padding-right" for="shopNameZH"> <?php echo $this->lang->line('TEXT_SHOP_NAMEZH');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="roleUsername" id="roleUsername" placeholder="<?php echo $this->lang->line('PLACEHOLDER_USERNAME');?>"/>
+											<input type="text" name="shopNameZH" id="shopNameZH" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_NAMEZH');?>"/>
 										</div>
 									</div>
 
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="passwd"> <?php echo $this->lang->line('TEXT_ROLE_PASSWD');?> </label>
+										<label class="col-sm-3 control-label no-padding-right" for="shopNameEN"> <?php echo $this->lang->line('TEXT_SHOP_NAMEEN');?> </label>
 
 										<div class="col-sm-9">
-											<input type="password" name="passwd" id="passwd" placeholder="<?php echo $this->lang->line('PLACEHOLDER_PASSWORD');?>"/>
-										</div>
-									</div>
-
-
-									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="confirmPasswd"> <?php echo $this->lang->line('TEXT_ROLE_CONFIRM_PASSWD');?> </label>
-
-										<div class="col-sm-9">
-											<input type="password" name="confirmPasswd" id="confirmPasswd" placeholder="<?php echo $this->lang->line('PLACEHOLDER_CONFIRM_PASSWORD');?>"/>
+											<input type="text" name="shopNameEN" id="shopNameEN" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_NAMEEN');?>"/>
 										</div>
 									</div>
 
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="roleIdSelect"><?php echo $this->lang->line('TEXT_ROLE_NAME');?></label>
+										<label class="col-sm-3 control-label no-padding-right" for="shopNamePY"> <?php echo $this->lang->line('TEXT_SHOP_NAME_PY');?> </label>
+
 										<div class="col-sm-9">
-											<select name="role_id" id="roleIdSelect">
-												<?php foreach($roleSelect as $v):?>
-												<option value="<?php echo $v->role_id;?>">
-													<?php echo $v->name;?>
-												</option>
+											<input type="text" name="shopNamePY" id="shopNamePY" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_NAME_PY');?>"/>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="shopNameShort"> <?php echo $this->lang->line('TEXT_SHOP_NAME_SHORT');?> </label>
+
+										<div class="col-sm-9">
+											<input type="text" name="shopNameShort" id="shopNameShort" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_NAME_SHORT');?>"/>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="shopImg"> <?php echo $this->lang->line('TEXT_SHOP_IMG');?> </label>
+
+										<div class="col-sm-9">
+											<input type="file" name="shopImg" id="shopImg" />
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="shopType"> <?php echo $this->lang->line('TEXT_SHOP_TYPE');?> </label>
+
+										<div class="col-sm-9">
+											<select name="shopType" id="shopType">
+												<option value="1"><?php echo $this->lang->line('TEXT_SHOP_TYPE_MALL');?></option>
+												<option value="2"><?php echo $this->lang->line('TEXT_SHOP_TYPE_STREET');?></option>
+											</select>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="shopDistrict"> <?php echo $this->lang->line('TEXT_SHOP_DISTRICT');?> </label>
+
+										<div class="col-sm-9">
+											<select name="shopCity" id="shopCity">
+												<?php foreach($cityList as $k => $v):?>
+												<option value="<?php echo $v->id;?>"><?php echo $v->name; ?></option>
+												<?php endforeach;?>
+											</select>
+											<select name="shopDistrict" id="shopDistrict">
+												<?php foreach($districtList as $k => $v):?>
+												<option value="<?php echo $v->id;?>"><?php echo $v->name; ?></option>
 												<?php endforeach;?>
 											</select>
 										</div>
 									</div>
 
-									<div class="form-group" style="display:none;" id="brandDiv">
-										<label class="col-sm-3 control-label no-padding-right" for="brandSelect"><?php echo $this->lang->line('TEXT_BRAND');?></label>
+<!-- 									<div class="form-group" id="shopMallDiv">
+										<label class="col-sm-3 control-label no-padding-right" for="shopMall"> <?php echo $this->lang->line('TEXT_SHOP_MALL');?> </label>
+
 										<div class="col-sm-9">
-											<input type="text" name="brandName" id="brandName" value="" placeholder="<?php echo $this->lang->line('TEXT_INPUT_BRAND_NAME');?>" />
+											<select name="mallId" id="mallId">
+												<?php echo $mallList;?>
+											</select>
+										</div>
+									</div> -->
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="shopOpenTime"> <?php echo $this->lang->line('TEXT_SHOP_OPENTIME');?> </label>
+
+										<div class="col-sm-9">
+											<input type="text" name="shopOpenTime" id="shopOpenTime" value="10:00">
 										</div>
 									</div>
 
-									<div class="form-group" style="display:none;" id="mallDiv">
-										<label class="col-sm-3 control-label no-padding-right" for="mallSelect"><?php echo $this->lang->line('TEXT_SHOP');?></label>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="shopCloseTime"> <?php echo $this->lang->line('TEXT_SHOP_CLOSETIME');?> </label>
+
 										<div class="col-sm-9">
-											<select name="mallId" id="mallSelect" >
-												<option><?php echo $this->lang->line('TEXT_PLASE_SELECT_MALL');?></option>
-											</select>
+											<input type="text" name="shopCloseTime" value="22:00">
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="shopTel"> <?php echo $this->lang->line('TEXT_SHOP_TEL');?> </label>
+
+										<div class="col-sm-9">
+											<input type="text" name="shopTel" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_TEL');?>">
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="shopDescription"> <?php echo $this->lang->line('TEXT_DESCRIPTION');?> </label>
+
+										<div class="col-sm-9">
+											<textarea name="shopDescription"></textarea>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="shopAddress"> <?php echo $this->lang->line('TEXT_SHOP_ADDRESS');?> </label>
+
+										<div class="col-sm-9">
+											<input type="text" name="shopAddress" id="shopAddress" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_ADDRESS');?>"><a class="btn btn-sm" onclick="getLngLat()">search</a>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="shopLng"> <?php echo $this->lang->line('TEXT_SHOP_LNG');?> </label>
+
+										<div class="col-sm-9">
+											<input type="text" name="shopLng" id="shopLng" >
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="shopLat"> <?php echo $this->lang->line('TEXT_SHOP_LAT');?> </label>
+
+										<div class="col-sm-9">
+											<input type="text" name="shopLat" id="shopLat" >
 										</div>
 									</div>
 
 									<div class="clearfix form-actions">
 										<div class="col-md-offset-3 col-md-9">
-											<button class="btn btn-info" type="button" onclick="subAddRoleUser()">
+											<button class="btn btn-info" type="button" onclick="subAddShop();">
 												<i class="icon-ok bigger-110"></i>
 												<?php echo $this->lang->line('BTN_SUBMIT');?>
 											</button>
@@ -176,7 +256,6 @@
 		</script>
 		<script src="<?php echo config_item('html_url');?>js/bootstrap.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/typeahead-bs2.min.js"></script>
-
 		<!-- ace scripts -->
 
 		<script src="<?php echo config_item('html_url');?>js/ace-elements.min.js"></script>
@@ -184,99 +263,43 @@
 		<script src="<?php echo config_item('html_url');?>js/jquery.validate.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/bootbox.min.js"></script>
 
+		<script src="http://api.map.baidu.com/api?v=1.5&ak=C06d8528dd571c548c6f862391f97d9f" type="text/javascript"></script>
+		<script src="http://api.gjla.com:80/app_admin_v330/res/baidumap/scripts/bmap.js" type="text/javascript"></script>
 
 		<script type="text/javascript">
 			jQuery(function($) {
-				$("#roleIdSelect").on('change', function(){
-					if (this.value == '1') {
-						$('#brandDiv').hide();
-						$('#mallDiv').hide();
-					}
 
-					if (this.value == '2') {
-						$('#brandDiv').show();
-						$('#mallDiv').hide();
-					}
-
-					if (this.value == '3') {
-						$('#brandDiv').show();
-						$('#mallDiv').show();
-					}
-				});
-				$("#brandName").keyup(function(){
-					$.ajax({
-			      		type:"POST",
-			      		url:"<?php echo site_url('Role/searchBrand');?>",
-			      		data:{brand:$("#brandName").val()},
-			      		success:function(data){
-			      			if (data.status != 0) { return false;}
-			      			
-			      			var sourceData = new Array();
-
-			      			$.each(data.list, function(k, v){
-			      				sourceData.push(v);
-			      			});
-
-						    $( "#brandName" ).autocomplete({
-						      source: sourceData,
-						      select:function(event, ui){
-						      	$.ajax({
-						      		type:"POST",
-						      		url:"<?php echo site_url('Role/searchMallByBrand');?>",
-						      		data:{brand:ui.item.value},
-						      		success:function(data){
-						      			if (data.status == '0') {
-						      				$("#mallSelect").html(data.html);
-						      			}
-						      		}
-						      	});
-						      }
-						  });
-
-			      		}
-					});
-				});
-
-				$('#addRoleUser-form').validate({
+				$('#addShop-form').validate({
 					errorElement: 'div',
 					errorClass: 'help-block',
 					focusInvalid: false,
 					rules: {
-						roleUsername: {
-							required:true,
-							maxlength:20,
+						shopNameZH: {
+							required:true
 						},
-						passwd: {
-							required:true,
-							minlength:6,
-							maxlength:20
+						shopLng: {
+							required:true
 						},
-						confirmPasswd :{
-							required:true,
-							equalTo: "#passwd"
+						shopLat:{
+							required:true
 						}
 					},
 			
 					messages: {
-						roleUsername: {
-							required:"<?php echo $this->lang->line('ERR_ROLEUSER_NAME');?>",
-							maxlength:"<?php echo $this->lang->line('ERR_ROLEUSER_NAME_LENGTH');?>"
+						shopNameZH: {
+							required:"<?php echo $this->lang->line('ERR_SHOP_NAMEZH');?>"
 						},
-						passwd: {
-							required:"<?php echo $this->lang->line('ERR_ROLEUSER_PASSWD');?>",
-							minlength:"<?php echo $this->lang->line('ERR_ROLEUSER_PASSWD_MIN');?>",
-							maxlength:"<?php echo $this->lang->line('ERR_ROLEUSER_PASSWD_MAX');?>"
+						shopLng: {
+							required:"<?php echo $this->lang->line('ERR_SHOP_LNG');?>"
 						},
-						confirmPasswd :{
-							required:"<?php echo $this->lang->line('ERR_ROLEUSER_CONFIRM_PASSWD');?>",
-							equalTo: "<?php echo $this->lang->line('ERR_ROLEUSER_CONFIRM_PASSWD');?>"
+						shopLat:{
+							required:"<?php echo $this->lang->line('ERR_SHOP_LAT');?>"
 						}
 					},
 			
 					invalidHandler: function (event, validator) { //display error alert on form submit   
 						$('.alert-danger', $('.login-form')).show();
 					},
-			
 					highlight: function (e) {
 						$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
 					},
@@ -285,35 +308,77 @@
 						$(e).closest('.form-group').removeClass('has-error').addClass('has-info');
 						$(e).remove();
 					},
-			
 					errorPlacement: function (error, element) {
-
+						console.log(error);
 						error.insertAfter(element.parent().children());
 					}
 				});
 
+				$('#shopCity').on('change', function(){
+					$.ajax({
+						type:"POST",
+						url:"<?php echo site_url('Brand/getDistrictList');?>",
+						data:{cityId:this.value},
+						success:function(data){
+							var html = '';
+							if (data.status == 0) {
+								$.each(data.list, function(k, v){
+									html += '<option value="'+v.id+'">'+v.name+'</option>';
+								});
+
+								$('#shopDistrict').html(html);
+								// $('#mallId').html(data.mall);
+							}
+						}
+					});
+				});
+
+				// $('#shopType').on('change', function(){
+				// 	if (this.value == '1') {
+				// 		$('#shopMallDiv').show();
+				// 	}else{
+				// 		$('#shopMallDiv').hide();
+				// 	}
+				// });
+
 			});
-			function subAddRoleUser(){
-				
-				if(!$('#addRoleUser-form').valid()){
+	
+		function subAddShop(){
+			if(!$('#addShop-form').valid()){
+				return false;
+			}
+
+			$.ajax({
+				type:"POST",
+				url:"<?php echo site_url('Brand/addShop');?>",
+				data:$('#addShop-form').serialize(),
+				success:function(data){
+					if (data.status == '0') {
+						window.location.href = "<?php echo site_url('Brand/shopList');?>";
+						return true;
+					}
+
+					alert(data.msg);
 					return false;
 				}
+			});
+		}
 
-				$.ajax({
-					type:"POST",
-					url:"<?php echo site_url('Role/addRoleUser');?>",
-					data:$('#addRoleUser-form').serialize(),
-					success:function(data){
-						if (data.status == '0') {
-							window.location.href = "<?php echo site_url('Role/roleList');?>";
-							return true;
-						}
+		function getLngLat(){
+			var myGeo = new BMap.Geocoder();
+			var	address = $("#shopAddress").val();
 
-						alert(data.msg);
-						return false;
-					}
-				});
-			}
+			// 将地址解析结果显示在地图上,并调整地图视野
+			myGeo.getPoint(address, function(point){
+				if (point) {
+					$('#shopLng').val(point.lng);
+					$('#shopLat').val(point.lat);
+				}else{
+					alert('<?php echo $this->lang->line("ERR_NO_ADDRESS_LNGLAT");?>');
+				}
+			});
+		}
+
 		</script>
 
 	</body>

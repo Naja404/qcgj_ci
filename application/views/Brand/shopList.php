@@ -73,29 +73,25 @@
 											<table id="rolelist-table" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
-														<th><?php echo $this->lang->line('TEXT_LOGO');?></th>
-														<th><?php echo $this->lang->line('TEXT_NAME_EN');?></th>
-														<th><?php echo $this->lang->line('TEXT_NAME_ZH');?></th>
+														<th><?php echo $this->lang->line('TEXT_SHOP_IMG');?></th>
+														<th><?php echo $this->lang->line('TEXT_SHOP_NAMEZH');?></th>
+														<th><?php echo $this->lang->line('TEXT_SHOP_DISTRICT');?></th>
 														<th style="width:200px;"><?php echo $this->lang->line('TEXT_DESCRIPTION');?></th>
-														<th><?php echo $this->lang->line('TEXT_CREATED_TIME');?></th>
-														<th><?php echo $this->lang->line('TEXT_UPDATED_TIME');?></th>
-														<th><?php echo $this->lang->line('TEXT_OPERATION_USER');?></th>
+														<th><?php echo $this->lang->line('TEXT_SHOP_ADDRESS');?></th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
 												</thead>
 
 												<tbody>
-													<?php foreach ($brandList as $v):?>
+													<?php foreach ($shopList as $v):?>
 													<tr>
 														<td>
-															<img src="<?php echo $v->logo_url;?>">
+															<img src="<?php echo $v->pic_url;?>">
 														</td>
 														<td><?php echo $v->name_zh;?></td>
-														<td><?php echo $v->name_en;?></td>
+														<td><?php echo $v->city;?></td>
 														<td><?php echo $v->summary;?></td>
-														<td><?php echo $v->create_time;?></td>
-														<td><?php echo $v->update_time;?></td>
-														<td><?php echo $v->oper;?></td>
+														<td><?php echo $v->address;?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 
@@ -103,7 +99,7 @@
 																	<i class="icon-edit bigger-120"></i>
 																</button>
 
-																<button class="btn btn-xs btn-danger" onclick="delBrand('<?php echo $v->id;?>');">
+																<button class="btn btn-xs btn-danger" onclick="delShop('<?php echo $v->id;?>');">
 																	<i class="icon-trash bigger-120"></i>
 																</button>
 
@@ -170,15 +166,15 @@
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 
 		<script type="text/javascript">
-			function delBrand(brandId){
-				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DELBRAND');?>")) {
+			function delShop(shopId){
+				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DELSHOP');?>")) {
 					return false;
 				}
 
 				$.ajax({
 					type:"POST",
-					url:"<?php echo site_url('Brand/delBrand');?>",
-					data:{brandId:brandId},
+					url:"<?php echo site_url('Brand/delShop');?>",
+					data:{shopId:shopId},
 					success:function(data){
 						window.location.reload();
 					}

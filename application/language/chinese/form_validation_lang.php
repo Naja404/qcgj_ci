@@ -44,4 +44,12 @@ $lang = array(
 	// 添加品牌 Brand/addBrand
 	'ERR_NAME_ZH'  => '请填写正确的品牌中文名',
 
+	// 添加店铺 Brand/addShop
+	'ERR_SHOP_NAMEZH'   => '请正确填写门店中文名',
+	'ERR_SHOP_CITY'     => '请正确选择城市',
+	'ERR_SHOP_DISTRICT' => '请正确选择城市区域',
+	'ERR_SHOP_LNG'      => '请正确填写门店地址经度',
+	'ERR_SHOP_LAT'      => '请正确填写门店地址纬度',
+	'ERR_SHOP_ADDRESS'	=> '请正确填写门店地址',
+
 );

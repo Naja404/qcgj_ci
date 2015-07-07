@@ -48,9 +48,9 @@
 							</li>
 
 							<li>
-								<a href="<?php echo site_url('Role/roleList');?>"><?php echo $this->lang->line('TEXT_ROLE_MANAGER');?></a>
+								<a href="<?php echo site_url('Brand/listView');?>"><?php echo $this->lang->line('TITLE_BRAND_MANAGER');?></a>
 							</li>
-							<li class="active"><?php echo $this->lang->line('TEXT_ROLE_RULE_USER_ADD');?></li>
+							<li class="active"><?php echo $this->lang->line('TITLE_ADD_BRAND');?></li>
 						</ul>
 
 					</div>

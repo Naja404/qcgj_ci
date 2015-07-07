@@ -40,6 +40,27 @@ class Brand extends WebBase {
 	}
 
 	/**
+	 * 商场店铺列表
+	 * 
+	 */
+	public function shopList(){
+		$this->outData['pageTitle'] = $this->lang->line('TITLE_SHOP_LIST');
+		
+		$where = NULL;
+		$shopName = $this->input->get('shop');
+		
+		if ($shopName) $where = " name_zh LIKE '%".$shopName."%' OR name_en LIKE '%".$shopName."%' ";
+
+		$shopList = $this->BrandModel->getShopList($where, $this->p);
+
+		$this->outData['pagination'] = $shopList['pagination'];
+
+		$this->outData['shopList'] = $shopList['list'];
+
+		$this->load->view('Brand/shopList', $this->outData);
+	}
+
+	/**
 	 * 添加品牌
 	 *
 	 */
@@ -57,6 +78,39 @@ class Brand extends WebBase {
 	}
 
 	/**
+	 * 添加店铺
+	 *
+	 */ 
+	public function addShop(){
+
+		if ($this->input->is_ajax_request()) return $this->_addShopForm(); 
+
+		$this->outData['pageTitle']    = $this->lang->line('TITLE_ADD_SHOP');
+		$this->outData['cityList']     = $this->BrandModel->getCityList();
+		$this->outData['districtList'] = $this->BrandModel->getDistrictList($this->outData['cityList'][0]->id);
+		// $this->outData['mallList']     = $this->BrandModel->getMallList($this->outData['cityList'][0]->id, 'html');
+
+		$this->load->view('Brand/addShop', $this->outData);
+	}
+
+	/**
+	 * 获取城市区域列表
+	 * @param string $_request['cityId'] 城市id
+	 */
+	public function getDistrictList(){
+		
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes); 
+
+		$this->ajaxRes = array(
+				'status' => 0,
+				'list' => $this->BrandModel->getDistrictList($this->input->post('cityId')),
+				// 'mall' => $this->BrandModel->getMallList($this->input->post('cityId'), 'html'),
+			);
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
 	 * 删除品牌
 	 *
 	 */
@@ -66,6 +120,20 @@ class Brand extends WebBase {
 		$brandId = $this->input->post('brandId');
 		
 		$this->BrandModel->delBrand($brandId);
+
+		jsonReturn(array('status' => 0));
+	}
+
+	/**
+	 * 删除商场/门店
+	 *
+	 */
+	public function delShop(){
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$shopId = $this->input->post('shopId');
+		
+		$this->BrandModel->delShop($shopId);
 
 		jsonReturn(array('status' => 0));
 	}
@@ -85,6 +153,35 @@ class Brand extends WebBase {
 				'status' => 0,
 				'list' => $queryRes,
 			);
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 添加店铺
+	 *
+	 */
+	private function _addShopForm(){
+		$reqData = $this->input->post();
+
+		$rule = $this->lang->line('ADD_SHOP_VALIDATION');
+
+		$validateRes = $this->BrandModel->validateAddShop($rule, $reqData);
+
+		if (is_string($validateRes) && !empty($validateRes)) {
+			$this->ajaxRes['msg'] = $validateRes;
+			jsonReturn($this->ajaxRes);
+		}
+
+		$addRes = $this->BrandModel->addShop($reqData);
+
+		if (is_string($addRes) && !empty($addRes)) {
+			$this->ajaxRes['msg'] = $addRes;
+		}else{
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}
 
 		jsonReturn($this->ajaxRes);
 	}
