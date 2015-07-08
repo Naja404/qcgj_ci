@@ -68,9 +68,9 @@
 							<button class="btn">
 								<a href="#modal-addrule" role="button" class="white" data-toggle="modal"><i class="icon-pencil bigger-100"><?php echo $this->lang->line('TEXT_ROLE_RULE_ADD');?></i></a>
 							</button>
-							<button class="btn">
+<!-- 							<button class="btn">
 								<a href="#modal-addruleuser" role="button" class="white" data-toggle="modal"><i class="icon-pencil bigger-100"><?php echo $this->lang->line('TEXT_ROLE_RULE_USER_ADD');?></i></a>
-							</button>
+							</button> -->
 						</div>
 
 						<div class="row">

@@ -67,14 +67,14 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopBrandName"> <?php echo $this->lang->line('TEXT_SHOP_BRANDNAME');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopBrandName" id="shopBrandName" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_BRANDNAME');?>"/>
+											<input type="text" name="shopBrandName" id="shopBrandName" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_BRANDNAME');?>" value="<?php echo $shop->brandName;?>"/>
 										</div>
 									</div>
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right" for="shopNameZH"> <?php echo $this->lang->line('TEXT_SHOP_NAMEZH');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopNameZH" id="shopNameZH" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_NAMEZH');?>"/>
+											<input type="text" name="shopNameZH" id="shopNameZH" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_NAMEZH');?>" value="<?php echo $shop->shopNameZh;?>"/>
 										</div>
 									</div>
 
@@ -82,7 +82,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopNameEN"> <?php echo $this->lang->line('TEXT_SHOP_NAMEEN');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopNameEN" id="shopNameEN" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_NAMEEN');?>"/>
+											<input type="text" name="shopNameEN" id="shopNameEN" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_NAMEEN');?>" value="<?php echo $shop->shopNameEn;?>"/>
 										</div>
 									</div>
 
@@ -90,7 +90,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopNamePY"> <?php echo $this->lang->line('TEXT_SHOP_NAME_PY');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopNamePY" id="shopNamePY" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_NAME_PY');?>"/>
+											<input type="text" name="shopNamePY" id="shopNamePY" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_NAME_PY');?>" value="<?php echo $shop->shopNamePy;?>"/>
 										</div>
 									</div>
 
@@ -98,7 +98,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopNameShort"> <?php echo $this->lang->line('TEXT_SHOP_NAME_SHORT');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopNameShort" id="shopNameShort" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_NAME_SHORT');?>"/>
+											<input type="text" name="shopNameShort" id="shopNameShort" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_NAME_SHORT');?>" value="<?php echo $shop->shopNameShort;?>"/>
 										</div>
 									</div>
 
@@ -106,7 +106,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopBranchName"> <?php echo $this->lang->line('TEXT_SHOP_BRANCH_NAME');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopBranchName" id="shopBranchName" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_BRANCH_NAME');?>"/>
+											<input type="text" name="shopBranchName" id="shopBranchName" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_BRANCH_NAME');?>"  value="<?php echo $shop->branchName;?>"/>
 										</div>
 									</div>
 
@@ -115,7 +115,7 @@
 
 										<div class="col-sm-9">
 											<input type="file" name="shopImg" id="fileImage" />
-											<input type="hidden" name="shopImgPath" value="what1111">
+											<input type="hidden" name="shopImgPath" value="<?php echo $shop->shopPic;?>">
 										</div>
 									</div>
 
@@ -124,8 +124,8 @@
 
 										<div class="col-sm-9">
 											<select name="shopType" id="shopType">
-												<option value="1"><?php echo $this->lang->line('TEXT_SHOP_TYPE_MALL');?></option>
-												<option value="2"><?php echo $this->lang->line('TEXT_SHOP_TYPE_STREET');?></option>
+												<option value="1" <?php echo $shop->shopTyp == 1 ? 'selected' : '';?>><?php echo $this->lang->line('TEXT_SHOP_TYPE_MALL');?></option>
+												<option value="2" <?php echo $shop->shopTyp == 2 ? 'selected' : '';?>><?php echo $this->lang->line('TEXT_SHOP_TYPE_STREET');?></option>
 											</select>
 										</div>
 									</div>
@@ -136,7 +136,7 @@
 										<div class="col-sm-9">
 											<select name="shopCity" id="shopCity">
 												<?php foreach($cityList as $k => $v):?>
-												<option value="<?php echo $v->id;?>"><?php echo $v->name; ?></option>
+												<option value="<?php echo $v->id;?>" <?php echo $shop->cityId == $v->id ? 'selected' : '';?>><?php echo $v->name; ?></option>
 												<?php endforeach;?>
 												<input type="hidden" name="selectCity" id="selectCity" value="<?php echo $cityList[0]->name;?>">
 											</select>

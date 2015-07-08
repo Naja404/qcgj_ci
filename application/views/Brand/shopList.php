@@ -74,9 +74,9 @@
 												<thead>
 													<tr>
 														<th><?php echo $this->lang->line('TEXT_SHOP_IMG');?></th>
+														<th><?php echo $this->lang->line('TEXT_SHOP_BRANDNAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_SHOP_NAMEZH');?></th>
 														<th><?php echo $this->lang->line('TEXT_SHOP_DISTRICT');?></th>
-														<th style="width:200px;"><?php echo $this->lang->line('TEXT_DESCRIPTION');?></th>
 														<th><?php echo $this->lang->line('TEXT_SHOP_ADDRESS');?></th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
@@ -86,17 +86,17 @@
 													<?php foreach ($shopList as $v):?>
 													<tr>
 														<td>
-															<img src="<?php echo $v->pic_url;?>">
+															<img src="<?php echo $v->shopPic;?>">
 														</td>
-														<td><?php echo $v->name_zh;?></td>
-														<td><?php echo $v->city;?></td>
-														<td><?php echo $v->summary;?></td>
+														<td><?php echo $v->brandName;?></td>
+														<td><?php echo $v->shopName;?>(<?php echo $v->branchName;?>)</td>
+														<td><?php echo $v->district;?></td>
 														<td><?php echo $v->address;?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 
 																<button class="btn btn-xs btn-info">
-																	<i class="icon-edit bigger-120"></i>
+																	<a href="<?php echo site_url('Brand/editShop').'?shopId='.strEncrypt($v->id);?>"><i class="icon-edit bigger-120"></i></a>
 																</button>
 
 																<button class="btn btn-xs btn-danger" onclick="delShop('<?php echo $v->id;?>');">

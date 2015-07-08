@@ -40,7 +40,10 @@ $lang = array(
 	'TEXT_SHOP_LAT'               => '纬度',
 	'TEXT_SHOP_ADDRESS'           => '商场/门店地址',
 	'TEXT_SHOP_MALL'              => '所属商场',
-	
+	'TEXT_SHOP_BRANDNAME'		  => '品牌名',
+	'TEXT_SHOP_FLOOR'			  => '楼层',
+	'TEXT_SHOP_BRANCH_NAME'		  => '分店名',
+
 	'PLACEHOLDER_NAME_ZH'         => '请输入品牌中文名',
 	'PLACEHOLDER_NAME_EN'         => '请输入品牌英文名',
 	'PLACEHOLDER_SEARCH_MALL'     => '商场/店铺名称',
@@ -51,7 +54,10 @@ $lang = array(
 	'PLACEHOLDER_SHOP_NAME_SHORT' => '请输入门店名缩写',
 	'PLACEHOLDER_SHOP_ADDRESS'    => '如:上海市延安西路1号',
 	'PLACEHOLDER_SHOP_TEL'        => '如:021-65631234*123',
-	
+	'PLACEHOLDER_SHOP_BRANDNAME'  => '请输入品牌名',
+	'PLACEHOLDER_SHOP_FLOOR'	  => '如:2F,4F',
+	'PLACEHOLDER_SHOP_BRANCH_NAME' => '如: 延安路',
+
 	'ERR_NAME_ZH'                 => '品牌中文名不能为空',
 	'ERR_CHECKBOX_MIN'            => '至少选择一项',
 	'ERR_CATEGORY'                => '请选择品牌分类',
@@ -59,6 +65,9 @@ $lang = array(
 	'ERR_EXISTS_BRAND_NAME'       => '品牌名已存在',
 	'ERR_NO_ADDRESS_LNGLAT'       => '查询不到该地址经纬度,请重新输入关键字',
 	'ERR_EXISTS_SHOP_NAME'        => '门店中文名或英文名已存在',
+	'ERR_SHOP_BRANDNAME'		  => '请正确填写品牌名',
+	'ERR_SHOP_TYPE_MALL'		  => '商场/门店地址有误',
+	'ERR_AUTH_EDIT_SHOP'		  => '您没有权限编辑该信息',
 	
 	'ERR_SHOP_NAMEZH'             => '请正确填写门店中文名',
 	'ERR_SHOP_LNG'                => '请正确填写门店经度',

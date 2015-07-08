@@ -94,6 +94,32 @@ class Brand extends WebBase {
 	}
 
 	/**
+	 * 编辑店铺
+	 *
+	 */
+	public function editShop(){
+		
+		$shopId = strDecrypt($this->input->get('shopId'));
+
+		if (!$this->BrandModel->checkEditShop($shopId)) {
+			$outData = array(
+					'errLang' => $this->lang->line('ERR_AUTH_EDIT_SHOP'),
+					'url'     => site_url('Brand/shopList'),
+				);
+			$this->load->view('Public/error', $outData);
+		}
+
+		if ($this->input->is_ajax_request()) return $this->_editShopForm();
+
+		$this->outData['pageTitle']    = $this->lang->line('TITLE_ADD_SHOP');
+		$this->outData['cityList']     = $this->BrandModel->getCityList();
+		$this->outData['shop']         = $this->BrandModel->getShopInfo($shopId);
+		$this->outData['districtList'] = $this->BrandModel->getDistrictList($this->outData['cityList'][0]->id);
+
+		$this->load->view('Brand/editShop', $this->outData);
+	}
+
+	/**
 	 * 获取城市区域列表
 	 * @param string $_request['cityId'] 城市id
 	 */
@@ -104,6 +130,7 @@ class Brand extends WebBase {
 		$this->ajaxRes = array(
 				'status' => 0,
 				'list' => $this->BrandModel->getDistrictList($this->input->post('cityId')),
+				'city' => $this->BrandModel->getCityNameById($this->input->post('cityId')),
 				// 'mall' => $this->BrandModel->getMallList($this->input->post('cityId'), 'html'),
 			);
 
@@ -139,6 +166,50 @@ class Brand extends WebBase {
 	}
 
 	/**
+	 * 品牌模糊查询
+	 *
+	 */
+	public function searchBrand(){
+		
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$brandName = $this->input->post('brand');
+		
+		if (empty($brandName)) jsonReturn($this->ajaxRes); 
+
+		$list = $this->BrandModel->searchBrand($brandName);
+
+		$this->ajaxRes = array(
+				'status' => 0,
+				'list' => $list,
+			);
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 搜索地址
+	 * @param string $address 地址
+	 */
+	public function searchAddress(){
+
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$address = $this->input->post('address');
+		
+		if (empty($address)) jsonReturn($this->ajaxRes); 
+
+		$list = $this->BrandModel->searchAddress($address);
+
+		$this->ajaxRes = array(
+				'status' => 0,
+				'list' => $list,
+			);
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
 	 * 搜索商场/店铺
 	 * @param string $mall 商场/店铺名称
 	 */
@@ -155,6 +226,41 @@ class Brand extends WebBase {
 			);
 
 		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * ajax上传图片
+	 *
+	 */
+	public function uploadPic(){
+
+		if ($this->input->method() != 'post') {
+			echo json_encode($this->ajaxRes);exit;
+		}
+
+		$uploadConf = config_item('FILE_UPLOAD');
+
+		// $uploadConf['upload_path']   = './uploadtemp/mall/';
+		$uploadConf['file_name']     = 'mall_'.md5(currentTime('MICROTIME'));
+		// $uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_sj/mall/';
+
+
+		$this->load->library('upload');
+
+		$this->upload->initialize($uploadConf);
+
+		if (!$this->upload->do_upload($this->input->get('filesName'))){
+			$this->ajaxRes['msg'] = $this->upload->display_errors();
+		}else{
+			$this->ajaxRes = array(
+					'status' => 0,
+					'url'    => config_item('image_url').$this->upload->data('relative_path'),
+					'path'   => $this->upload->data('relative_path'),
+				);
+		}
+
+		echo json_encode($this->ajaxRes);exit;
+
 	}
 
 	/**

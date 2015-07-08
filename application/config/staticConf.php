@@ -8,15 +8,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $config = array(
 		// 普通缓存
 		'NORMAL_CACHE' => array(
-				'BRAND_LIST'        => 'Normal:Brand:List',
-				'MALLLIST_BY_BRAND' => 'Normal:Mall:Brand:',
-				'CITY_LIST'         => 'Normal:cityList',
-				'AREA_LIST'         => 'Normal:areaList:',
-				'SEARCH_BRAND_LIST' => 'Normal:Search:brand:',
-				'BRAND_STYLE'       => 'Normal:Brand:Style',
-				'BRAND_AGE'			=> 'Normal:Brand:Age',
-				'BRAND_PRICE'		=> 'Normal:Brand:Price',
-				'BRAND_DISTRICT'    => 'Normal:Brand:District:',
+				'BRAND_LIST'          => 'Normal:Brand:List',
+				'MALLLIST_BY_BRAND'   => 'Normal:Mall:Brand:',
+				'CITY_LIST'           => 'Normal:cityList',
+				'AREA_LIST'           => 'Normal:areaList:',
+				'SEARCH_BRAND_LIST'   => 'Normal:Search:brand:',
+				'SEARCH_ADDRESS_LIST' => 'Normal:Search:address:',
+				'BRAND_STYLE'         => 'Normal:Brand:Style',
+				'BRAND_AGE'           => 'Normal:Brand:Age',
+				'BRAND_PRICE'         => 'Normal:Brand:Price',
+				'BRAND_DISTRICT'      => 'Normal:Brand:District:',
+				'CITY_NAME'			  => 'Normal:Brand:cityName',	
 			),
 		// 用户缓存
 		'USER_CACHE' => array(
