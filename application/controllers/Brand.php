@@ -23,6 +23,73 @@ class Brand extends WebBase {
 	 */
 	public function listView(){
 		
+		$i = 0;
+
+		$sql = "SELECT 
+					e.id AS mallId,
+					a.tb_brand_id AS brandId,
+					b.name_zh AS brandName,
+					d.name AS cateName,
+					e.name_zh AS mallName,
+					e.address AS address,
+					e.city_name AS cityName 
+
+					FROM 
+					tb_qcgj_brand_mall AS a 
+					LEFT JOIN tb_qcgj_brand AS b ON b.id = a.tb_brand_id
+					LEFT JOIN tb_qcgj_mall AS e ON e.id = a.tb_mall_id
+					LEFT JOIN tb_qcgj_brand_category AS c ON c.tb_brand_id = b.id
+					LEFT JOIN tb_qcgj_category AS d ON d.id = c.tb_category_id
+
+					WHERE d.name IN ('服饰鞋包', '珠宝饰品', '孕产用品', '男士礼服', '黄金珠宝', '流行饰品', '家纺/床上用品', '儿童服饰', '更多家居用品', '宝宝用品', '化妆品', '运动户外', '家具', '美甲', '美容/SPA', '家具家居')";
+
+		$mall = $this->db->query($sql)->result_array();
+
+		foreach ($mall as $k => $v) {
+			$where = array(
+					'brandName' => $v['brandName'],
+					'mallName' => $v['mallName'],
+					'address' => $v['address'],
+				);
+
+			$result = $this->db->get_where(tname('new_mall_s'), $where)->result();
+
+			if (count($result) > 0) {
+				continue;
+			}
+
+			$insert = $this->db->insert(tname('new_mall_s'), $v);
+
+			if ($insert) {
+				$i++;
+			}
+		}
+
+		echo $i;exit();
+
+		// $sql = "SELECT 
+		// 			e.id AS mallId,
+		// 			a.tb_brand_id AS brandId,
+		// 			b.name_zh AS brandName,
+		// 			d.name AS cateName,
+		// 			e.name_zh AS mallName,
+		// 			e.address AS address,
+		// 			e.city_name AS cityName 
+
+		// 			FROM 
+		// 			tb_brand_mall AS a 
+		// 			LEFT JOIN tb_brand AS b ON b.id = a.tb_brand_id
+		// 			LEFT JOIN tb_mall AS e ON e.id = a.tb_mall_id
+		// 			LEFT JOIN tb_brand_category AS c ON c.tb_brand_id = b.id
+		// 			LEFT JOIN tb_category AS d ON d.id = c.tb_category_id
+		// 			WHERE b.name_zh != ''";
+		// $mall = $this->db->query($sql)->result_array();
+
+		// foreach ($mall as $k => $v) {
+		// 	$v['mark'] = 1;
+		// 	$this->db->insert(tname('old_mall'), $v);
+		// }
+
 		$this->outData['pageTitle'] = $this->lang->line('TITLE_BRAND_LIST');
 		
 		$where = NULL;
@@ -44,7 +111,8 @@ class Brand extends WebBase {
 	 * 
 	 */
 	public function shopList(){
-		$this->outData['pageTitle'] = $this->lang->line('TITLE_SHOP_LIST');
+
+		$this->outData['pageTitle'] = $this->lang->line('TITLE_SHOP_MALL_LIST');
 		
 		$where = NULL;
 		$shopName = $this->input->get('shop');
@@ -55,7 +123,7 @@ class Brand extends WebBase {
 
 		$this->outData['pagination'] = $shopList['pagination'];
 
-		$this->outData['shopList'] = $shopList['list'];
+		$this->outData['shopList'] = $shopList['list'];	
 
 		$this->load->view('Brand/shopList', $this->outData);
 	}
@@ -109,11 +177,12 @@ class Brand extends WebBase {
 			$this->load->view('Public/error', $outData);
 		}
 
-		if ($this->input->is_ajax_request()) return $this->_editShopForm();
+		if ($this->input->is_ajax_request()) return $this->_editShopForm($shopId);
 
-		$this->outData['pageTitle']    = $this->lang->line('TITLE_ADD_SHOP');
+		$this->outData['pageTitle']    = $this->lang->line('TITLE_EDIT_SHOP');
 		$this->outData['cityList']     = $this->BrandModel->getCityList();
 		$this->outData['shop']         = $this->BrandModel->getShopInfo($shopId);
+		$this->outData['selectCity']   = $this->BrandModel->getCityNameById($this->outData['shop']->cityId);
 		$this->outData['districtList'] = $this->BrandModel->getDistrictList($this->outData['cityList'][0]->id);
 
 		$this->load->view('Brand/editShop', $this->outData);
@@ -240,9 +309,9 @@ class Brand extends WebBase {
 
 		$uploadConf = config_item('FILE_UPLOAD');
 
-		// $uploadConf['upload_path']   = './uploadtemp/mall/';
+		$uploadConf['upload_path']   = './uploadtemp/mall/';
 		$uploadConf['file_name']     = 'mall_'.md5(currentTime('MICROTIME'));
-		// $uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_sj/mall/';
+		$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_sj/mall/';
 
 
 		$this->load->library('upload');
@@ -290,6 +359,38 @@ class Brand extends WebBase {
 		}
 
 		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 编辑商场/店铺信息
+	 * @param string $shopId 商场/店铺id
+	 */
+	private function _editShopForm($shopId = false){
+
+		$reqData = $this->input->post();
+		$reqData['shopId'] = $shopId;
+
+		$rule = $this->lang->line('ADD_SHOP_VALIDATION');
+
+		$validateRes = $this->BrandModel->validateAddShop($rule, $reqData, 'edit');
+
+		if (is_string($validateRes) && !empty($validateRes)) {
+			$this->ajaxRes['msg'] = $validateRes;
+			jsonReturn($this->ajaxRes);
+		}
+
+		$editRes = $this->BrandModel->editShop($reqData);
+
+		if (is_string($editRes) && !empty($editRes)) {
+			$this->ajaxRes['msg'] = $editRes;
+		}else{
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}
+
+		jsonReturn($this->ajaxRes);
+
 	}
 
 	/**

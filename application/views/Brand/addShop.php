@@ -364,7 +364,7 @@
 			      		url:"<?php echo site_url('Brand/searchBrand');?>",
 			      		data:{brand:$("#shopBrandName").val()},
 			      		success:function(data){
-			      			if (data.status != 0) { $("#shopBrandId").val(ui.item.id); return false;}
+			      			if (data.status != 0 || data.list.length == 0) { $("#shopBrandId").val(''); return false;}
 			      			
 			      			var sourceData = new Array();
 			      				mallHtml = '';

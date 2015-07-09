@@ -5,8 +5,10 @@ $lang = array(
 	'TITLE_BRAND_MANAGER'         => '品牌管理',
 	'TITLE_BRAND_LIST'            => '品牌列表',
 	'TITLE_SHOP_LIST'			  => '门店列表',
+	'TITLE_SHOP_MALL_LIST'		  => '店铺列表',
 	'TITLE_ADD_BRAND'             => '添加品牌',
 	'TITLE_ADD_SHOP'              => '添加店铺',
+	'TITLE_EDIT_SHOP'			  => '编辑店铺',
 	
 	'TEXT_NAME_EN'                => '品牌英文名',
 	'TEXT_NAME_ZH'                => '品牌中文名',

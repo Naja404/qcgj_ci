@@ -23,6 +23,7 @@ class BrandModel extends CI_Model {
 		$sql = "SELECT 
 					CONCAT(b.name_en, '_', b.name_zh) AS brandName,
 					b.id AS brandId,
+					c.id AS addressId,
 					c.name_en AS shopNameEn,
 					c.name_zh AS shopNameZh,
 					c.name_py AS shopNamePy,
@@ -36,11 +37,12 @@ class BrandModel extends CI_Model {
 					c.tb_district_id AS districtId,
 					c.longitude AS shopLng,
 					c.latitude AS shopLat,
-					a.open_time AS openTime,
-					a.close_time AS closeTime,
+					c.open_time AS openTime,
+					c.close_time AS closeTime,
 					a.description AS description,
 					a.address AS shopFloor,
-					c.level AS shopTyp
+					c.level AS shopTyp,
+					LEFT(c.update_time, 10) AS updateTime
 					FROM tb_brand_mall AS a 
 					LEFT JOIN tb_brand AS b ON b.id = a.tb_brand_id
 					LEFT JOIN tb_mall AS c ON c.id = a.tb_mall_id
@@ -90,15 +92,7 @@ class BrandModel extends CI_Model {
 	public function getShopList($where = NULL, $p = 1){
 		
 		$limit = "LIMIT ".page($p, 25);
-
-		$countSql = "SELECT COUNT(*) AS total FROM ".tname('brand_mall');
-
-		$queryTotal = $this->db->query($countSql)->first_row();
-
-		$pagination = $this->setPagination(site_url('Brand/shopList'), $queryTotal->total, 25);
-
-		$sql = "SELECT 
-					a.id,
+		$field = "					a.id,
 					b.name_zh AS brandName,
 					b.name_en AS brandNameEn,
 					c.name_zh AS shopName,
@@ -106,16 +100,26 @@ class BrandModel extends CI_Model {
 					a.pic_url AS shopPic,
 					c.tel AS tel,
 					c.district_name AS district,
+					c.city_name AS cityName,
 					c.address AS address,
 					c.level,
-					c.update_time
+					c.update_time,
+					LEFT(a.update_time, 10) AS updateTime 
+					";
+		$countField = " COUNT(*) AS total ";
+		$sql = "SELECT 
+					%s
 					FROM tb_brand_mall AS a 
 					LEFT JOIN tb_brand AS b ON b.id = a.tb_brand_id
 					LEFT JOIN tb_mall AS c ON c.id = a.tb_mall_id
 					WHERE c.address != ''
-					ORDER BY c.update_time DESC ".$limit;
+					ORDER BY a.update_time ASC ";
 
-		$queryRes = $this->db->query($sql)->result();
+		$queryTotal = $this->db->query(sprintf($sql, $countField))->first_row();
+
+		$pagination = $this->setPagination(site_url('Brand/shopList'), $queryTotal->total, 25);
+
+		$queryRes = $this->db->query(sprintf($sql, $field).$limit)->result();
 
 		$returnRes = array(
 				'list'       => $queryRes,
@@ -419,8 +423,8 @@ class BrandModel extends CI_Model {
 	 */
 	public function addShop($reqData = array()){
 
-		// 判断门店类型 1.商场 2.街边店
-		if ($reqData['shopType'] == 1) {
+		// 已有店铺
+		if (!empty($reqData['shopAddressId'])) {
 			return $this->_addBranchShop($reqData);
 		}
 
@@ -456,6 +460,89 @@ class BrandModel extends CI_Model {
 		}
 
 		return $insertRes ? true : $this->lang->line('ERR_ADD_FAILURE');
+	}
+
+	/**
+	 * 编辑门店
+	 * @param array $reqData 门店数据内容
+	 */
+	public function editShop($reqData = array()){
+		
+		$shop = array(
+				'name_en'        => $reqData['shopNameEN'],
+				'name_zh'        => $reqData['shopNameZH'],
+				'name_py'        => $reqData['shopNamePY'],
+				'name_short'     => $reqData['shopNameShort'],
+				'address'        => $reqData['shopAddress'],
+				'update_time'	 => currentTime(),
+				'longitude'		 => $reqData['shopLng'],
+				'latitude'		 => $reqData['shopLat'],
+				'open_time'      => $reqData['shopOpenTime'],
+				'close_time'     => $reqData['shopCloseTime'],
+				'tb_district_id' => $reqData['shopDistrict'],
+				'district_name'	 => $this->getDistrictNameById($reqData['shopDistrict']),
+				'tb_city_id'     => $reqData['shopCity'],
+				'city_name'      => $this->getCityNameById($reqData['shopCity']),
+				'tel'            => $reqData['shopTel'],
+				'description'    => $reqData['shopDescription'],
+				'level'          => $reqData['shopType'],
+			);
+
+		if ($this->existsShopById($reqData['shopAddress'], $reqData['shopAddressId'])) {
+			
+			$where = array(
+					'id' => $this->getMallIdById($reqData['shopId']),
+				);
+			
+			$updateRes = $this->db->where($where)->update(tname('mall'), $shop);
+
+			$mallId = $where['id'];
+
+		}else{
+			
+			$shop['id'] = makeUUID();
+			
+			$insertRes = $this->db->insert(tname('mall'), $shop);
+
+			if (!$insertRes) return $this->lang->line('ERR_UPDATE_FAILURE');
+
+			$mallId = $shop['id'];
+		}
+
+		$brandMall = array(
+					'branch_name' => $reqData['shopBranchName'],
+					'tb_brand_id' => $reqData['shopBrandId'],
+					'tb_mall_id'  => $mallId,
+					'update_time' => currentTime(),
+					'open_time'   => $reqData['shopOpenTime'],
+					'close_time'  => $reqData['shopCloseTime'],
+					'pic_url'	  => $reqData['shopImgPath'],
+					'tel'         => $reqData['shopTel'],
+					'description' => $reqData['shopDescription'],
+					'address'     => $reqData['shopFloor'],
+			);
+
+		$brandMallWhere = array(
+				'id' => $reqData['shopId'],
+			);
+
+		$updateBrandMall = $this->db->where($brandMallWhere)->update(tname('brand_mall'), $brandMall);
+
+		return $updateBrandMall ? true : $this->lang->line('ERR_UPDATE_FAILURE');
+	}
+
+	/**
+	 * 获取店铺id
+	 * @param string $shopId 关联店铺id
+	 */
+	public function getMallIdById($shopId = false){
+		$where = array(
+				'id' => $shopId,
+			);
+
+		$queryRes = $this->db->get_where(tname('brand_mall'), $where)->first_row();
+
+		return $queryRes->tb_mall_id;
 	}
 
 	/**
@@ -592,8 +679,9 @@ class BrandModel extends CI_Model {
 	 * 添加店铺验证
 	 * @param array $validateRuel 验证规则
 	 * @param array $reqData 待验证数据
+	 * @param string $option add 添加, edit 编辑
 	 */
-	public function validateAddShop($validateRule = array(), $reqData = array()){
+	public function validateAddShop($validateRule = array(), $reqData = array(), $option = 'add'){
 
 		// 验证品牌
 		if (!$this->existsBrandById($reqData['shopBrandName'], $reqData['shopBrandId'])) return $this->lang->line('ERR_SHOP_BRANDNAME');
@@ -604,10 +692,13 @@ class BrandModel extends CI_Model {
 		
 		// if ($this->existsShopName($reqData['shopNameZH'], $reqData['shopNameEN'])) return $this->lang->line('ERR_EXISTS_SHOP_NAME');
 
-		// 判断门店类型
-		if ($reqData['shopType'] == 1) { // 1.商场 2.街边店
-			if (!$this->existsShopById($reqData['shopAddress'], $reqData['shopAddressId'])) return $this->lang->line('ERR_SHOP_TYPE_MALL');
-		}
+		// // 验证edit状态
+		// if ($option != 'add') return true;
+
+		// // 判断门店类型
+		// if ($reqData['shopType'] == 1) { // 1.商场 2.街边店
+		// 	if (!$this->existsShopById($reqData['shopAddress'], $reqData['shopAddressId'])) return $this->lang->line('ERR_SHOP_TYPE_MALL');
+		// }
 
 		return true;
 	}

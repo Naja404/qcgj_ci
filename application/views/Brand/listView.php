@@ -88,7 +88,7 @@
 													<?php foreach ($brandList as $v):?>
 													<tr>
 														<td>
-															<img src="<?php echo $v->logo_url;?>">
+															<img src="<?php echo config_item('image_url').$v->logo_url;?>" width="100px">
 														</td>
 														<td><?php echo $v->name_zh;?></td>
 														<td><?php echo $v->name_en;?></td>

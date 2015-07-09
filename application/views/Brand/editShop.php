@@ -62,7 +62,7 @@
 
 						<div class="row">
 							<div class="col-xs-12">
-								<form class="form-horizontal" role="form" id="addShop-form">
+								<form class="form-horizontal" role="form" id="editShop-form">
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right" for="shopBrandName"> <?php echo $this->lang->line('TEXT_SHOP_BRANDNAME');?> </label>
 
@@ -114,6 +114,11 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopImg"> <?php echo $this->lang->line('TEXT_SHOP_IMG');?> </label>
 
 										<div class="col-sm-9">
+											<?php if (isset($shop->shopPic) && !empty($shop->shopPic)) {?>
+											<span id="fileImageSpan">
+												<img src="<?php echo config_item('image_url').''.$shop->shopPic;?>" style="width: 200px;"><a onclick="removeFileImg();">重置</a>
+											</span>
+											<?php } ?>
 											<input type="file" name="shopImg" id="fileImage" />
 											<input type="hidden" name="shopImgPath" value="<?php echo $shop->shopPic;?>">
 										</div>
@@ -142,7 +147,7 @@
 											</select>
 											<select name="shopDistrict" id="shopDistrict">
 												<?php foreach($districtList as $k => $v):?>
-												<option value="<?php echo $v->id;?>"><?php echo $v->name; ?></option>
+												<option value="<?php echo $v->id;?>" <?php echo $shop->districtId == $v->id ? 'selected' : '';?>><?php echo $v->name; ?></option>
 												<?php endforeach;?>
 											</select>
 										</div>
@@ -162,7 +167,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopOpenTime"> <?php echo $this->lang->line('TEXT_SHOP_OPENTIME');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopOpenTime" id="shopOpenTime" value="10:00">
+											<input type="text" name="shopOpenTime" id="shopOpenTime" value="<?php echo $shop->openTime;?>">
 										</div>
 									</div>
 
@@ -170,7 +175,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopCloseTime"> <?php echo $this->lang->line('TEXT_SHOP_CLOSETIME');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopCloseTime" value="22:00">
+											<input type="text" name="shopCloseTime" value="<?php echo $shop->closeTime;?>">
 										</div>
 									</div>
 
@@ -178,7 +183,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopTel"> <?php echo $this->lang->line('TEXT_SHOP_TEL');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopTel" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_TEL');?>">
+											<input type="text" name="shopTel" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_TEL');?>" value="<?php echo $shop->tel;?>">
 										</div>
 									</div>
 
@@ -186,7 +191,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopDescription"> <?php echo $this->lang->line('TEXT_DESCRIPTION');?> </label>
 
 										<div class="col-sm-9">
-											<textarea name="shopDescription"></textarea>
+											<textarea name="shopDescription"><?php echo $shop->description;?></textarea>
 										</div>
 									</div>
 
@@ -194,8 +199,8 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopAddress"> <?php echo $this->lang->line('TEXT_SHOP_ADDRESS');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopAddress" id="shopAddress" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_ADDRESS');?>"><a class="btn btn-sm" onclick="getLngLat()">search</a>
-											<input type="hidden" name="shopAddressId" id="shopAddressId">
+											<input type="text" name="shopAddress" id="shopAddress" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_ADDRESS');?>" value="<?php echo $shop->address;?>"><a class="btn btn-sm" onclick="getLngLat()">search</a>
+											<input type="hidden" name="shopAddressId" id="shopAddressId" value="<?php echo $shop->addressId;?>">
 										</div>
 									</div>
 
@@ -203,7 +208,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopFloor"> <?php echo $this->lang->line('TEXT_SHOP_FLOOR');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopFloor" id="shopFloor" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_FLOOR');?>">
+											<input type="text" name="shopFloor" id="shopFloor" placeholder="<?php echo $this->lang->line('PLACEHOLDER_SHOP_FLOOR');?>" value="<?php echo $shop->shopFloor;?>">
 										</div>
 									</div>
 
@@ -211,7 +216,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopLng"> <?php echo $this->lang->line('TEXT_SHOP_LNG');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopLng" id="shopLng" >
+											<input type="text" name="shopLng" id="shopLng" value="<?php echo $shop->shopLng;?>">
 										</div>
 									</div>
 
@@ -219,13 +224,13 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopLat"> <?php echo $this->lang->line('TEXT_SHOP_LAT');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="shopLat" id="shopLat" >
+											<input type="text" name="shopLat" id="shopLat" value="<?php echo $shop->shopLat;?>">
 										</div>
 									</div>
 
 									<div class="clearfix form-actions">
 										<div class="col-md-offset-3 col-md-9">
-											<button class="btn btn-info" type="button" onclick="subAddShop();">
+											<button class="btn btn-info" type="button" onclick="subEditShop();">
 												<i class="icon-ok bigger-110"></i>
 												<?php echo $this->lang->line('BTN_SUBMIT');?>
 											</button>
@@ -237,7 +242,7 @@
 											</button>
 										</div>
 									</div>
-									<input type="hidden" name="shopBrandId" id="shopBrandId" value="" >
+									<input type="hidden" name="shopBrandId" id="shopBrandId" value="<?php echo $shop->brandId;?>" >
 								</form>
 							</div>
 						</div><!-- /.row -->
@@ -342,6 +347,7 @@
 
 							return;
 						}else{
+							$('#fileImageSpan').html('');
 							$("<img />").attr("src", response.url).css("width", 200).appendTo($span);
 							$("<a />").attr("href", "#").text("<?php echo $this->lang->line('BTN_RESET');?>").bind("click", function(e) {
 									$span.replaceWith($fileInput);
@@ -390,7 +396,7 @@
 			      		url:"<?php echo site_url('Brand/searchAddress');?>",
 			      		data:{address:$("#shopAddress").val()},
 			      		success:function(data){
-			      			if (data.status != 0) { $("#shopAddressId").val(ui.item.id); return false;}
+			      			if (data.status != 0 || data.list.length == 0) { $("#shopAddressId").val(''); return false;}
 			      			
 			      			var sourceData = new Array();
 			      				mallHtml = '';
@@ -411,7 +417,7 @@
 					});
 				});
 
-				$('#addShop-form').validate({
+				$('#editShop-form').validate({
 					errorElement: 'div',
 					errorClass: 'help-block',
 					focusInvalid: false,
@@ -492,15 +498,15 @@
 
 			});
 	
-		function subAddShop(){
-			if(!$('#addShop-form').valid()){
+		function subEditShop(){
+			if(!$('#editShop-form').valid()){
 				return false;
 			}
 
 			$.ajax({
 				type:"POST",
-				url:"<?php echo site_url('Brand/addShop');?>",
-				data:$('#addShop-form').serialize(),
+				url:"<?php echo site_url('Brand/editShop').'?shopId='.$this->input->get('shopId');?>",
+				data:$('#editShop-form').serialize(),
 				success:function(data){
 					if (data.status == '0') {
 						window.location.href = "<?php echo site_url('Brand/shopList');?>";
@@ -511,6 +517,10 @@
 					return false;
 				}
 			});
+		}
+
+		function removeFileImg(){
+			$('#fileImageSpan').html('');
 		}
 
 		function getLngLat(){

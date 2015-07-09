@@ -54,7 +54,7 @@
 							<li>
 								<a href="<?php echo site_url('Brand/listView');?>"><?php echo $this->lang->line('TITLE_BRAND_MANAGER');?></a>
 							</li>
-							<li class="active"><?php echo $this->lang->line('TITLE_BRAND_LIST');?></li>
+							<li class="active"><?php echo $this->lang->line('TITLE_SHOP_MALL_LIST');?></li>
 						</ul>
 
 					</div>
@@ -65,7 +65,6 @@
 						</div>
 
 						<div class="row">
-
 							<div class="col-xs-12">
 								<div class="row">
 									<div class="col-xs-12">
@@ -86,11 +85,11 @@
 													<?php foreach ($shopList as $v):?>
 													<tr>
 														<td>
-															<img src="<?php echo $v->shopPic;?>">
+															<img src="<?php echo config_item('image_url').$v->shopPic;?>" width="100px;">
 														</td>
-														<td><?php echo $v->brandName;?></td>
-														<td><?php echo $v->shopName;?>(<?php echo $v->branchName;?>)</td>
-														<td><?php echo $v->district;?></td>
+														<td><?php echo $v->brandName.' '.$v->brandNameEn;?></td>
+														<td><?php echo $v->shopName;?>(<?php echo $v->branchName;?>-<?php echo $v->level == 1 ? '商场' : '街边店';?>)</td>
+														<td><?php echo $v->cityName.' '.$v->district;?></td>
 														<td><?php echo $v->address;?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
@@ -102,7 +101,9 @@
 																<button class="btn btn-xs btn-danger" onclick="delShop('<?php echo $v->id;?>');">
 																	<i class="icon-trash bigger-120"></i>
 																</button>
-
+																<?php if (strtotime($v->updateTime) >= strtotime('2015-07-09')) {?>
+																<button class="btn">已编辑</button>
+																<?php }?>
 															</div>
 
 														</td>
