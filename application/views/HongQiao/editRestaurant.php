@@ -68,67 +68,78 @@
 
 							<div class="col-xs-12">
 								<div class="row">
+
+									<form role="form" id="editRestaurant-form">
+
 									<div class="col-xs-12">
 										<div class="table-responsive">
 											<table id="rolelist-table" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
-														<th><?php echo $this->lang->line('TEXT_LOGO');?></th>
-														<th><?php echo $this->lang->line('TEXT_PIC_URL');?></th>
-														<th><?php echo $this->lang->line('TEXT_NAME_EN');?></th>
-														<th><?php echo $this->lang->line('TEXT_NAME_ZH');?></th>
-														<th style="width:200px;"><?php echo $this->lang->line('TEXT_DESCRIPTION');?></th>
-														<th><?php echo $this->lang->line('TEXT_CREATED_TIME');?></th>
-														<th><?php echo $this->lang->line('TEXT_UPDATED_TIME');?></th>
-														<th><?php echo $this->lang->line('TEXT_OPERATION_USER');?></th>
+														
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
+														<th>图片</th>	
 													</tr>
 												</thead>
 
 												<tbody>
-													<?php foreach ($brandList as $v):?>
+													<?php foreach ($pic as $v):?>
 													<tr>
 														<td>
-															<img src="<?php echo config_item('image_url').$v->logo_url;?>" width="100px">
-														</td>
-														<td>
-															<?php $pic = explode(',', $v->pic_url);?>
-															<?php foreach($pic as $j => $m):?>
-																<?php if ($m) { $m = explode('|', $m);?>
-																<a href="<?php echo config_item('image_url').$m[0];?>" target="_blank">图<?php echo $j+1;?></a>
-																<?php }?>
-															<?php endforeach;?>
-														</td>
-														<td><?php echo $v->name_zh;?></td>
-														<td><?php echo $v->name_en;?></td>
-														<td><?php echo $v->summary;?></td>
-														<td><?php echo $v->create_time;?></td>
-														<td><?php echo $v->update_time;?></td>
-														<td><?php echo $v->oper;?></td>
-														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-
-																<button class="btn btn-xs btn-info">
-																	<a href="<?php echo site_url('Brand/editBrand').'?=brandId='.strEncrypt($v->id).'&p='.$this->input->get('p');?>"><i class="icon-edit bigger-120"></i></a>
-																</button>
-
-																<button class="btn btn-xs btn-danger" onclick="delBrand('<?php echo $v->id;?>');">
-																	<i class="icon-trash bigger-120"></i>
-																</button>
-
+																<input type="radio" name="path" value="<?php echo $v; ?>">
 															</div>
 
 														</td>
+														<td>
+															<img src="<?php echo $v;?>">
+														</td>
 													</tr>
 													<?php endforeach;?>
+													<tr>
+														<td><input type="checkbox" name="hasMake"></td>
+														<td>是否需要作图</td>
+													</tr>
 												</tbody>
 											</table>
 										</div><!-- /.table-responsive -->
 
 									</div><!-- /span -->
+
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="pic"> 上传图片 </label>
+
+										<div class="col-sm-9">
+											<input type="file" name="pic" id="pic" >
+											<input type="hidden" name="picPath" id="picPath">
+										</div>
+									</div>
+
+
+
+									<br>
+									<br>
+
+									<div class="clearfix form-actions">
+										<div class="col-md-offset-3 col-md-9">
+											<button class="btn btn-info" type="button" onclick="subEditRestaurant()">
+												<i class="icon-ok bigger-110"></i>
+												<?php echo $this->lang->line('BTN_SUBMIT');?>
+											</button>
+
+											&nbsp; &nbsp; &nbsp;
+											<button class="btn" type="button" onclick="returnLast()">
+												<i class="icon-undo bigger-110"></i>
+												返回
+											</button>
+										</div>
+									</div>
+
+									</form>
+
 								</div>
 							</div><!-- /.col -->
-							<?php echo $pagination;?>
 						</div><!-- /.row -->
 
 					</div><!-- /.page-content -->
@@ -177,22 +188,91 @@
 
 		<script src="<?php echo config_item('html_url');?>js/ace-elements.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
+		<script type="text/javascript" src="<?php echo config_item('html_url');?>js/jquery.ajaxfileupload.js"></script>
 
 		<script type="text/javascript">
-			function delBrand(brandId){
-				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DELBRAND');?>")) {
-					return false;
-				}
+		$(document).ready(function() {
+			var interval;
 
-				$.ajax({
-					type:"POST",
-					url:"<?php echo site_url('Brand/delBrand');?>",
-					data:{brandId:brandId},
-					success:function(data){
-						window.location.reload();
+			function applyAjaxFileUpload(element, filesName, filePath) {
+				$(element).AjaxFileUpload({
+					action: "<?php echo site_url('HongQiao/uploadPic');?>?filesName="+filesName,
+					onChange: function(filename) {
+						var $span = $("<span />")
+							.attr("class", $(this).attr("id"))
+							.text("Uploading")
+							.insertAfter($(this));
+
+						$(this).remove();
+
+						interval = window.setInterval(function() {
+							var text = $span.text();
+							if (text.length < 13) {
+								$span.text(text + ".");
+							} else {
+								$span.text("Uploading");
+							}
+						}, 200);
+					},
+					onSubmit: function(filename) {
+						return true;
+					},
+					onComplete: function(filename, response) {
+						window.clearInterval(interval);
+						console.log(response);
+						var $span = $("span." + $(this).attr("id")).text(filename + " "),
+							$fileInput = $("<input />")
+								.attr({
+									type: "file",
+									name: $(this).attr("name"),
+									id: $(this).attr("id")
+								});
+
+						if (response.status) {
+							$span.replaceWith($fileInput);
+
+							applyAjaxFileUpload($fileInput, filesName);
+
+							alert(response.msg);
+
+							return;
+						}else{
+							$("<img />").attr("src", response.url).css("width", 200).appendTo($span);
+							$("<a />").attr("href", "#").text("<?php echo $this->lang->line('BTN_RESET');?>").bind("click", function(e) {
+									$span.replaceWith($fileInput);
+									applyAjaxFileUpload($fileInput, filesName);
+									$("input[name="+filePath+"]").val('');
+								}).appendTo($span);
+							$("input[name="+filePath+"]").val(response.path);
+						}
 					}
 				});
 			}
+
+			applyAjaxFileUpload("#pic", "pic", "picPath");
+		});
+		
+		function subEditRestaurant(){
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('HongQiao/editRestaurant').'?id='.$this->input->get('id');?>",
+					data:$('#editRestaurant-form').serialize(),
+					success:function(data){
+						if (data.status == '0') {
+							window.location.href = "<?php echo site_url('HongQiao/restaurantList').'?p='.$this->input->get('p');?>";
+							return true;
+						}
+
+						alert(data.msg);
+						return false;
+					}
+				});
+		}
+
+		function returnLast(){
+			window.location.href = "<?php echo site_url('HongQiao/restaurantList').'?p='.$this->input->get('p');?>"
+		}
+
 		</script>
 
 	</body>

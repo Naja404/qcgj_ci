@@ -9,6 +9,7 @@ $lang = array(
 	'TITLE_ADD_BRAND'             => '添加品牌',
 	'TITLE_ADD_SHOP'              => '添加店铺',
 	'TITLE_EDIT_SHOP'			  => '编辑店铺',
+	'TITLE_EDIT_BRAND'			  => '编辑品牌',
 	
 	'TEXT_NAME_EN'                => '品牌英文名',
 	'TEXT_NAME_ZH'                => '品牌中文名',
@@ -45,6 +46,7 @@ $lang = array(
 	'TEXT_SHOP_BRANDNAME'		  => '品牌名',
 	'TEXT_SHOP_FLOOR'			  => '楼层',
 	'TEXT_SHOP_BRANCH_NAME'		  => '分店名',
+	'TEXT_PIC_URL'				  => '品牌宣传图',
 
 	'PLACEHOLDER_NAME_ZH'         => '请输入品牌中文名',
 	'PLACEHOLDER_NAME_EN'         => '请输入品牌英文名',

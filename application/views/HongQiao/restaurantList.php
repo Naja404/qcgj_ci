@@ -73,49 +73,42 @@
 											<table id="rolelist-table" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
-														<th><?php echo $this->lang->line('TEXT_LOGO');?></th>
-														<th><?php echo $this->lang->line('TEXT_PIC_URL');?></th>
-														<th><?php echo $this->lang->line('TEXT_NAME_EN');?></th>
-														<th><?php echo $this->lang->line('TEXT_NAME_ZH');?></th>
-														<th style="width:200px;"><?php echo $this->lang->line('TEXT_DESCRIPTION');?></th>
-														<th><?php echo $this->lang->line('TEXT_CREATED_TIME');?></th>
-														<th><?php echo $this->lang->line('TEXT_UPDATED_TIME');?></th>
-														<th><?php echo $this->lang->line('TEXT_OPERATION_USER');?></th>
+														<th>店名</th>
+														<th>地址</th>
+														<th>电话</th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
 												</thead>
 
 												<tbody>
-													<?php foreach ($brandList as $v):?>
+													<?php foreach ($list as $v):?>
 													<tr>
 														<td>
-															<img src="<?php echo config_item('image_url').$v->logo_url;?>" width="100px">
+															<a href="http://www.dianping.com<?php echo $v->url;?>" target="_blank">
+																<?php echo $v->name;?>
+															</a>
 														</td>
 														<td>
-															<?php $pic = explode(',', $v->pic_url);?>
-															<?php foreach($pic as $j => $m):?>
-																<?php if ($m) { $m = explode('|', $m);?>
-																<a href="<?php echo config_item('image_url').$m[0];?>" target="_blank">图<?php echo $j+1;?></a>
-																<?php }?>
-															<?php endforeach;?>
+															<?php echo $v->address;?>
 														</td>
-														<td><?php echo $v->name_zh;?></td>
-														<td><?php echo $v->name_en;?></td>
-														<td><?php echo $v->summary;?></td>
-														<td><?php echo $v->create_time;?></td>
-														<td><?php echo $v->update_time;?></td>
-														<td><?php echo $v->oper;?></td>
+														<td>
+															<?php echo $v->tel;?>
+														</td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 
-																<button class="btn btn-xs btn-info">
-																	<a href="<?php echo site_url('Brand/editBrand').'?=brandId='.strEncrypt($v->id).'&p='.$this->input->get('p');?>"><i class="icon-edit bigger-120"></i></a>
+																<!-- <button class="btn btn-xs btn-info"> -->
+																	<a href="<?php echo site_url('HongQiao/editRestaurant').'?id='.strEncrypt($v->id).'&p='.$this->input->get('p');?>"><i class="icon-edit bigger-120">编辑</i></a>
+																<!-- </button> -->
+																<?php if($v->update == 1){?>
+																<button>
+																		已编辑
 																</button>
-
-																<button class="btn btn-xs btn-danger" onclick="delBrand('<?php echo $v->id;?>');">
-																	<i class="icon-trash bigger-120"></i>
+																<?php }elseif ($v->update == 2) {?>
+																<button class="btn btn-danger">
+																		需作图
 																</button>
-
+																<?php }?>
 															</div>
 
 														</td>

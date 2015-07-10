@@ -509,7 +509,7 @@
 				data:$('#editShop-form').serialize(),
 				success:function(data){
 					if (data.status == '0') {
-						window.location.href = "<?php echo site_url('Brand/shopList');?>";
+						window.location.href = "<?php echo site_url('Brand/shopList').'?p='.$this->input->get('p');?>";
 						return true;
 					}
 

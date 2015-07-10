@@ -66,6 +66,7 @@ class BrandModel extends CI_Model {
 					name_en, 
 					name_zh, 
 					logo_url, 
+					pic_url,
 					create_time, 
 					update_time, 
 					LEFT(description, 50) AS summary, 
@@ -85,7 +86,7 @@ class BrandModel extends CI_Model {
 				'list'       => $queryRes,
 				'pagination' => $pagination,
 			);
-
+		
 		return $returnRes;
 	}
 
@@ -180,7 +181,7 @@ class BrandModel extends CI_Model {
 	public function delShop($shopId = false){
 		$where = array('id' => $shopId);
 
-		return $this->db->delete(tname('mall'), $where);
+		return $this->db->delete(tname('brand_mall'), $where);
 	}
 
 	/**
@@ -352,8 +353,8 @@ class BrandModel extends CI_Model {
 				'id'          => makeUUID(),
 				'name_zh'     => $reqData['nameZh'],
 				'name_en'     => $reqData['nameEn'],
-				// 'logo_url' => $reqData['logo_url'],
-				// 'pic_url'  => $reqData['pic_url'],
+				'logo_url'    => $reqData['brandLogoPath'],
+				'pic_url'     => $reqData['brandShowPath'],
 				'create_time' => currentTime(),
 				'update_time' => currentTime(),
 				'description' => $reqData['summary'],
@@ -381,22 +382,22 @@ class BrandModel extends CI_Model {
 			}
 		} 
 
-		// 添加品牌店铺
-		if (isset($reqData['mallId']) && count($reqData['mallId'])) {
-			foreach ($reqData['mallId'] as $k => $v) {
+		// // 添加品牌店铺
+		// if (isset($reqData['mallId']) && count($reqData['mallId'])) {
+		// 	foreach ($reqData['mallId'] as $k => $v) {
 				
-				$mall = array(
-						'id'		  => makeUUID(),
-						'tb_brand_id' => $brand['id'],
-						'tb_mall_id'  => $v,
-						'create_time' => currentTime(),
-						'update_time' => currentTime(),
-						'address'     => $reqData['floor'][$k],
-					);
+		// 		$mall = array(
+		// 				'id'		  => makeUUID(),
+		// 				'tb_brand_id' => $brand['id'],
+		// 				'tb_mall_id'  => $v,
+		// 				'create_time' => currentTime(),
+		// 				'update_time' => currentTime(),
+		// 				'address'     => $reqData['floor'][$k],
+		// 			);
 
-				$this->db->insert(tname('brand_mall'), $mall);
-			}
-		}
+		// 		$this->db->insert(tname('brand_mall'), $mall);
+		// 	}
+		// }
 
 		// 添加风格
 		if (isset($reqData['style']) && count($reqData['style'])) {
@@ -667,7 +668,7 @@ class BrandModel extends CI_Model {
 
 		if (!isset($reqData['category']) || count($reqData['category']) <= 0) return $this->lang->line('ERR_CATEGORY'); 
 
-		if (!isset($reqData['mallId']) || count($reqData['mallId']) <= 0) return $this->lang->line('ERR_MALL'); 
+		// if (!isset($reqData['mallId']) || count($reqData['mallId']) <= 0) return $this->lang->line('ERR_MALL'); 
 
 		// 验证品牌名是否存在
 		if ($this->existsBrandName($reqData['nameZh'], $reqData['nameEn'])) return $this->lang->line('ERR_EXISTS_BRAND_NAME');
@@ -787,6 +788,19 @@ class BrandModel extends CI_Model {
 		return count($queryRes) == 1 ? true : false;
 	}
 
+	/**
+	 * 检测是否有权限编辑品牌
+	 * @param string $brandId 品牌id
+	 */
+	public function checkEditBrand($brandId = false){
+		$where = array(
+				'id' => $shopId,
+			);
+
+		$queryRes = $this->db->get_where(tname('brand_mall'), $where)->result();
+
+		return count($queryRes) == 1 ? true : false;
+	}
 
 	/**
 	 * 添加品牌店铺

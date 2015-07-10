@@ -50,7 +50,7 @@
 							<li>
 								<a href="<?php echo site_url('Brand/listView');?>"><?php echo $this->lang->line('TITLE_BRAND_MANAGER');?></a>
 							</li>
-							<li class="active"><?php echo $this->lang->line('TITLE_ADD_BRAND');?></li>
+							<li class="active"><?php echo $this->lang->line('TITLE_EDIT_BRAND');?></li>
 						</ul>
 
 					</div>
@@ -62,7 +62,7 @@
 
 						<div class="row">
 							<div class="col-xs-12">
-								<form class="form-horizontal" role="form" id="addBrand-form">
+								<form class="form-horizontal" role="form" id="editBrand-form">
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right" for="nameZh"> <?php echo $this->lang->line('TEXT_NAME_ZH');?> </label>
 
@@ -173,7 +173,7 @@
 
 									<div class="clearfix form-actions">
 										<div class="col-md-offset-3 col-md-9">
-											<button class="btn btn-info" type="button" onclick="subAddBrand()">
+											<button class="btn btn-info" type="button" onclick="subEditBrand()">
 												<i class="icon-ok bigger-110"></i>
 												<?php echo $this->lang->line('BTN_SUBMIT');?>
 											</button>
@@ -304,37 +304,7 @@
 
 			jQuery(function($) {
 
-				$("#searchMall").keyup(function(){
-					$.ajax({
-			      		type:"POST",
-			      		url:"<?php echo site_url('Brand/searchMall');?>",
-			      		data:{mall:$("#searchMall").val()},
-			      		success:function(data){
-			      			if (data.status != 0) { return false;}
-			      			
-			      			var sourceData = new Array();
-			      				mallHtml = '';
-
-			      			$.each(data.list, function(k, v){
-			      				sourceData.push(v);
-			      			});
-
-						    $( "#searchMall" ).autocomplete({
-						      source: sourceData,
-						      select:function(event, ui){
-						      		mallHtml = '<div id="mall_'+ui.item.id+'"><label><span class="ace">'+ui.item.label+'</span></label><input type="hidden" name="mallId[]" value="'+ui.item.id+'"><input type="text" class="ace" name="floor[]" placeholder="<?php echo $this->lang->line("PLACEHOLDER_FLOOR");?>"><a onclick="delMall(\'mall_'+ui.item.id+'\')"><?php echo $this->lang->line("BTN_DELETE");?></a><br><br></div>';
-						      		$("#searchMallRes").append(mallHtml);
-						      },
-						      close:function(event, ui){
-						      	$('#searchMall').val("");
-						      }
-						  });
-						
-			      		}
-					});
-				});
-
-				$('#addBrand-form').validate({
+				$('#editBrand-form').validate({
 					errorElement: 'div',
 					errorClass: 'help-block',
 					focusInvalid: false,
@@ -368,24 +338,20 @@
 				});
 
 			});
-			
-			function delMall(id){
-				$("#"+id).remove();
-			}
 
-			function subAddBrand(){
+			function subEditBrand(){
 				
-				if(!$('#addBrand-form').valid()){
+				if(!$('#editBrand-form').valid()){
 					return false;
 				}
 
 				$.ajax({
 					type:"POST",
-					url:"<?php echo site_url('Brand/addBrand');?>",
-					data:$('#addBrand-form').serialize(),
+					url:"<?php echo site_url('Brand/editBrand');?>",
+					data:$('#editBrand-form').serialize(),
 					success:function(data){
 						if (data.status == '0') {
-							window.location.href = "<?php echo site_url('Brand/listView');?>";
+							window.location.href = "<?php echo site_url('Brand/listView').'?p='.$this->input->get('p');?>";
 							return true;
 						}
 

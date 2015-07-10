@@ -115,7 +115,7 @@
 
 										<div class="col-sm-9">
 											<input type="file" name="shopImg" id="fileImage" />
-											<input type="hidden" name="shopImgPath" value="what1111">
+											<input type="hidden" name="shopImgPath" value="">
 										</div>
 									</div>
 

@@ -22,73 +22,6 @@ class Brand extends WebBase {
 	 *
 	 */
 	public function listView(){
-		
-		$i = 0;
-
-		$sql = "SELECT 
-					e.id AS mallId,
-					a.tb_brand_id AS brandId,
-					b.name_zh AS brandName,
-					d.name AS cateName,
-					e.name_zh AS mallName,
-					e.address AS address,
-					e.city_name AS cityName 
-
-					FROM 
-					tb_qcgj_brand_mall AS a 
-					LEFT JOIN tb_qcgj_brand AS b ON b.id = a.tb_brand_id
-					LEFT JOIN tb_qcgj_mall AS e ON e.id = a.tb_mall_id
-					LEFT JOIN tb_qcgj_brand_category AS c ON c.tb_brand_id = b.id
-					LEFT JOIN tb_qcgj_category AS d ON d.id = c.tb_category_id
-
-					WHERE d.name IN ('服饰鞋包', '珠宝饰品', '孕产用品', '男士礼服', '黄金珠宝', '流行饰品', '家纺/床上用品', '儿童服饰', '更多家居用品', '宝宝用品', '化妆品', '运动户外', '家具', '美甲', '美容/SPA', '家具家居')";
-
-		$mall = $this->db->query($sql)->result_array();
-
-		foreach ($mall as $k => $v) {
-			$where = array(
-					'brandName' => $v['brandName'],
-					'mallName' => $v['mallName'],
-					'address' => $v['address'],
-				);
-
-			$result = $this->db->get_where(tname('new_mall_s'), $where)->result();
-
-			if (count($result) > 0) {
-				continue;
-			}
-
-			$insert = $this->db->insert(tname('new_mall_s'), $v);
-
-			if ($insert) {
-				$i++;
-			}
-		}
-
-		echo $i;exit();
-
-		// $sql = "SELECT 
-		// 			e.id AS mallId,
-		// 			a.tb_brand_id AS brandId,
-		// 			b.name_zh AS brandName,
-		// 			d.name AS cateName,
-		// 			e.name_zh AS mallName,
-		// 			e.address AS address,
-		// 			e.city_name AS cityName 
-
-		// 			FROM 
-		// 			tb_brand_mall AS a 
-		// 			LEFT JOIN tb_brand AS b ON b.id = a.tb_brand_id
-		// 			LEFT JOIN tb_mall AS e ON e.id = a.tb_mall_id
-		// 			LEFT JOIN tb_brand_category AS c ON c.tb_brand_id = b.id
-		// 			LEFT JOIN tb_category AS d ON d.id = c.tb_category_id
-		// 			WHERE b.name_zh != ''";
-		// $mall = $this->db->query($sql)->result_array();
-
-		// foreach ($mall as $k => $v) {
-		// 	$v['mark'] = 1;
-		// 	$this->db->insert(tname('old_mall'), $v);
-		// }
 
 		$this->outData['pageTitle'] = $this->lang->line('TITLE_BRAND_LIST');
 		
@@ -146,6 +79,33 @@ class Brand extends WebBase {
 	}
 
 	/**
+	 * 编辑品牌
+	 *
+	 */
+	public function editBrand(){
+
+		$brandId = strDecrypt($this->input->get('brandId'));
+
+		if (!$this->BrandModel->checkEditBrand($brandId)) {
+			$outData = array(
+					'errLang' => $this->lang->line('ERR_AUTH_EDIT_BRAND'),
+					'url'     => site_url('Brand/listView'),
+				);
+			$this->load->view('Public/error', $outData);
+		}
+
+		if ($this->input->is_ajax_request()) return $this->_editBrandForm(); 
+
+		$this->outData['pageTitle']  = $this->lang->line('TITLE_EDIT_BRAND');
+		$this->outData['brandCate']  = $this->BrandModel->getBrandCategory();
+		$this->outData['brandStyle'] = $this->BrandModel->getBrandStyle();
+		$this->outData['brandAge']   = $this->BrandModel->getBrandAge();
+		$this->outData['brandPrice'] = $this->BrandModel->getBrandPrice();
+
+		$this->load->view('Brand/editBrand', $this->outData);
+	}
+
+	/**
 	 * 添加店铺
 	 *
 	 */ 
@@ -183,7 +143,7 @@ class Brand extends WebBase {
 		$this->outData['cityList']     = $this->BrandModel->getCityList();
 		$this->outData['shop']         = $this->BrandModel->getShopInfo($shopId);
 		$this->outData['selectCity']   = $this->BrandModel->getCityNameById($this->outData['shop']->cityId);
-		$this->outData['districtList'] = $this->BrandModel->getDistrictList($this->outData['cityList'][0]->id);
+		$this->outData['districtList'] = $this->BrandModel->getDistrictList($this->outData['shop']->cityId);
 
 		$this->load->view('Brand/editShop', $this->outData);
 	}
@@ -308,17 +268,23 @@ class Brand extends WebBase {
 		}
 
 		$uploadConf = config_item('FILE_UPLOAD');
-
-		$uploadConf['upload_path']   = './uploadtemp/mall/';
-		$uploadConf['file_name']     = 'mall_'.md5(currentTime('MICROTIME'));
-		$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_sj/mall/';
-
+		$filesName = $this->input->get('filesName');
+		
+		if ($filesName == 'shopImg') {
+			$uploadConf['upload_path']   = './uploadtemp/mall/';
+			$uploadConf['file_name']     = 'mall_'.md5(currentTime('MICROTIME'));
+			$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_sj/mall/';
+		}else{
+			$uploadConf['upload_path']   = './uploadtemp/brand/';
+			$uploadConf['file_name']     = 'brand_'.md5(currentTime('MICROTIME'));
+			$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_sj/brand/';
+		}
 
 		$this->load->library('upload');
 
 		$this->upload->initialize($uploadConf);
 
-		if (!$this->upload->do_upload($this->input->get('filesName'))){
+		if (!$this->upload->do_upload($filesName)){
 			$this->ajaxRes['msg'] = $this->upload->display_errors();
 		}else{
 			$this->ajaxRes = array(
