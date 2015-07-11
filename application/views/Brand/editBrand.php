@@ -67,7 +67,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="nameZh"> <?php echo $this->lang->line('TEXT_NAME_ZH');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="nameZh" id="nameZh" placeholder="<?php echo $this->lang->line('PLACEHOLDER_NAME_ZH');?>"/>
+											<input type="text" name="nameZh" id="nameZh" placeholder="<?php echo $this->lang->line('PLACEHOLDER_NAME_ZH');?>" value="<?php echo $brand->name_zh;?>" >
 										</div>
 									</div>
 
@@ -75,7 +75,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="nameEn"> <?php echo $this->lang->line('TEXT_NAME_EN');?> </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="nameEn" id="nameEn" placeholder="<?php echo $this->lang->line('PLACEHOLDER_NAME_EN');?>"/>
+											<input type="text" name="nameEn" id="nameEn" placeholder="<?php echo $this->lang->line('PLACEHOLDER_NAME_EN');?>" value="<?php echo $brand->name_en;?>">
 										</div>
 									</div>
 
@@ -83,8 +83,14 @@
 										<label class="col-sm-3 control-label no-padding-right" for="brandLogo"> <?php echo $this->lang->line('TEXT_LOGO');?> </label>
 
 										<div class="col-sm-9">
+
+											<?php if (isset($brand->logo_url) && !empty($brand->logo_url)) {?>
+											<span id="brandLogoSpan">
+												<img src="<?php echo config_item('image_url').$brand->logo_url;?>" style="width: 200px;"><a onclick="removeFileImg('brandLogoSpan');">重置</a>
+											</span>
+											<?php } ?>
 											<input type="file" name="brandLogo" id="brandLogo" />
-											<input type="hidden" name="brandLogoPath" id="brandLogoPath" />
+											<input type="hidden" name="brandLogoPath" id="brandLogoPath" value="<?php echo $brand->logo_url;?>"/>
 										</div>
 									</div>
 
@@ -92,8 +98,13 @@
 										<label class="col-sm-3 control-label no-padding-right" for="brandShow"> <?php echo $this->lang->line('TEXT_LOGO_SHOW');?> </label>
 
 										<div class="col-sm-9">
+											<?php if (isset($brand->pic_url) && !empty($brand->pic_url)) {?>
+											<span id="brandShowSpan">
+												<img src="<?php echo config_item('image_url').$brand->pic_url;?>" style="width: 200px;"><a onclick="removeFileImg('brandShowSpan');">重置</a>
+											</span>
+											<?php } ?>
 											<input type="file" name="brandShow" id="brandShow" />
-											<input type="hidden" name="brandShowPath" id="brandShowPath" />
+											<input type="hidden" name="brandShowPath" id="brandShowPath" value="<?php echo $brand->pic_url;?>"/>
 										</div>
 									</div>
 
@@ -101,7 +112,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="summary"> <?php echo $this->lang->line('TEXT_DESCRIPTION');?> </label>
 
 										<div class="col-sm-9">
-											<textarea name="summary" id="summary"></textarea>
+											<textarea name="summary" id="summary"><?php echo $brand->description;?></textarea>
 										</div>
 									</div>
 
@@ -111,7 +122,7 @@
 										<div class="col-sm-9">
 												<?php foreach ($brandCate as $k => $v) :?>
 												<label>
-													<input type="checkbox" name="category[]" class="ace" value="<?php echo $v->id;?>">
+													<input type="checkbox" name="category[]" class="ace" value="<?php echo $v->id;?>" <?php echo in_array($v->id, $brand->category) ? 'checked' : '';?>>
 													<span class="lbl"><?php echo $v->name;?></span>
 												</label>&nbsp;&nbsp;
 												<?php if (($k+1) % 4 == 0) echo '<br>';?>
@@ -125,7 +136,7 @@
 										<div class="col-sm-9">
 												<?php foreach ($brandStyle as $k => $v) :?>
 												<label>
-													<input type="checkbox" name="style[]" class="ace" value="<?php echo $v->id;?>">
+													<input type="checkbox" name="style[]" class="ace" value="<?php echo $v->id;?>" <?php echo in_array($v->id, $brand->style) ? 'checked' : '';?>>
 													<span class="lbl"><?php echo $v->name;?></span>
 												</label>&nbsp;&nbsp;
 												<?php if (($k+1) % 4 == 0) echo '<br>';?>
@@ -140,7 +151,7 @@
 												<select name="age">
 													<option></option>
 												<?php foreach ($brandAge as $k => $v) :?>
-													<option value="<?php echo $v->id;?>"><?php echo $v->name;?></option>
+													<option value="<?php echo $v->id;?>" <?php echo $brand->tb_age_id == $v->id ? 'selected' : ''; ?>><?php echo $v->name;?></option>
 												<?php endforeach; ?>
 												</select>
 										</div>
@@ -153,7 +164,7 @@
 												<select name="price">
 													<option></option>
 												<?php foreach ($brandPrice as $k => $v) :?>
-													<option value="<?php echo $v->id;?>"><?php echo $v->name;?></option>
+													<option value="<?php echo $v->id;?>" <?php echo $brand->tb_price_id == $v->id ? 'selected' : ''; ?>><?php echo $v->name;?></option>
 												<?php endforeach; ?>
 												</select>
 										</div>
@@ -170,7 +181,7 @@
 												<br>
 										</div>
 									</div> -->
-
+									<input type="hidden" name="brandRelation" value="<?php echo $brand->id;?>">
 									<div class="clearfix form-actions">
 										<div class="col-md-offset-3 col-md-9">
 											<button class="btn btn-info" type="button" onclick="subEditBrand()">
@@ -179,9 +190,9 @@
 											</button>
 
 											&nbsp; &nbsp; &nbsp;
-											<button class="btn" type="reset">
+											<button class="btn" type="button" onclick="history.back(-1)">
 												<i class="icon-undo bigger-110"></i>
-												<?php echo $this->lang->line('BTN_RESET');?>
+												返回
 											</button>
 										</div>
 									</div>
@@ -243,7 +254,7 @@
 		$(document).ready(function() {
 			var interval;
 
-			function applyAjaxFileUpload(element, filesName, filePath) {
+			function applyAjaxFileUpload(element, filesName, filePath, fileSpan) {
 				$(element).AjaxFileUpload({
 					action: "<?php echo site_url('Brand/uploadPic');?>?filesName="+filesName,
 					onChange: function(filename) {
@@ -286,6 +297,9 @@
 
 							return;
 						}else{
+							if (fileSpan) {
+								$('#'+fileSpan).html('');
+							}
 							$("<img />").attr("src", response.url).css("width", 200).appendTo($span);
 							$("<a />").attr("href", "#").text("<?php echo $this->lang->line('BTN_RESET');?>").bind("click", function(e) {
 									$span.replaceWith($fileInput);
@@ -298,8 +312,8 @@
 				});
 			}
 
-			applyAjaxFileUpload("#brandLogo", "brandLogo", "brandLogoPath");
-			 applyAjaxFileUpload("#brandShow", "brandShow", "brandShowPath");
+			applyAjaxFileUpload("#brandLogo", "brandLogo", "brandLogoPath", "brandLogoSpan");
+			 applyAjaxFileUpload("#brandShow", "brandShow", "brandShowPath", "brandShowSpan");
 		});
 
 			jQuery(function($) {
@@ -347,7 +361,7 @@
 
 				$.ajax({
 					type:"POST",
-					url:"<?php echo site_url('Brand/editBrand');?>",
+					url:"<?php echo site_url('Brand/editBrand').'?brandId='.$this->input->get('brandId');?>",
 					data:$('#editBrand-form').serialize(),
 					success:function(data){
 						if (data.status == '0') {
@@ -359,6 +373,14 @@
 						return false;
 					}
 				});
+			}
+
+			function removeFileImg(element){
+				$('#'+element).html('');
+			}
+
+			function returnLast(){
+				window.location.history(-1);
 			}
 		</script>
 

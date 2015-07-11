@@ -94,13 +94,14 @@ class Brand extends WebBase {
 			$this->load->view('Public/error', $outData);
 		}
 
-		if ($this->input->is_ajax_request()) return $this->_editBrandForm(); 
+		if ($this->input->is_ajax_request()) return $this->_editBrandForm($brandId); 
 
 		$this->outData['pageTitle']  = $this->lang->line('TITLE_EDIT_BRAND');
 		$this->outData['brandCate']  = $this->BrandModel->getBrandCategory();
 		$this->outData['brandStyle'] = $this->BrandModel->getBrandStyle();
 		$this->outData['brandAge']   = $this->BrandModel->getBrandAge();
 		$this->outData['brandPrice'] = $this->BrandModel->getBrandPrice();
+		$this->outData['brand'] = $this->BrandModel->getBrandInfo($brandId);
 
 		$this->load->view('Brand/editBrand', $this->outData);
 	}
@@ -273,11 +274,11 @@ class Brand extends WebBase {
 		if ($filesName == 'shopImg') {
 			$uploadConf['upload_path']   = './uploadtemp/mall/';
 			$uploadConf['file_name']     = 'mall_'.md5(currentTime('MICROTIME'));
-			$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_sj/mall/';
+			$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_v400/mall/';
 		}else{
-			$uploadConf['upload_path']   = './uploadtemp/brand/';
+			// $uploadConf['upload_path']   = './uploadtemp/brand/';
 			$uploadConf['file_name']     = 'brand_'.md5(currentTime('MICROTIME'));
-			$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_sj/brand/';
+			// $uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_v400/brand/';
 		}
 
 		$this->load->library('upload');
@@ -380,6 +381,38 @@ class Brand extends WebBase {
 
 		if (is_string($addRes) && !empty($addRes)) {
 			$this->ajaxRes['msg'] = $addRes;
+		}else{
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 编辑品牌
+	 * 
+	 */
+	private function _editBrandForm($brandId = false){
+		
+		$reqData = $this->input->post();
+
+		if ($brandId !== $reqData['brandRelation']) jsonReturn($this->ajaxRes);
+
+		$rule = $this->lang->line('ADD_BRAND_VALIDATION');
+
+		$validateRes = $this->BrandModel->validateAddBrand($rule, $reqData, $brandId);
+
+		if (is_string($validateRes) && !empty($validateRes)) {
+			$this->ajaxRes['msg'] = $validateRes;
+			jsonReturn($this->ajaxRes);
+		}
+
+		$editRes = $this->BrandModel->editBrand($reqData);
+
+		if (is_string($editRes) && !empty($editRes)) {
+			$this->ajaxRes['msg'] = $editRes;
 		}else{
 			$this->ajaxRes = array(
 					'status' => 0,

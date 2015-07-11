@@ -16,6 +16,38 @@ class BrandModel extends CI_Model {
 	}
 
 	/**
+	 * 根据id获取品牌信息
+	 * @param string $brandId 品牌id
+	 */
+	public function getBrandInfo($brandId = false){
+		$where = array(
+				'id' => $brandId,
+			);
+		
+		$brandRes = $this->db->get_where(tname('brand'), $where)->first_row();
+
+		$whereCate = array(
+				'tb_brand_id' => $brandId,
+			);
+
+		$category = $this->db->get_where(tname('brand_category'), $whereCate)->result();
+
+		$style = $this->db->get_where(tname('brand_style'), $whereCate)->result();
+
+		foreach ($category as $k => $v) {
+			$brandRes->category[] = $v->tb_category_id;
+		}
+
+		foreach ($style as $k => $v) {
+			$brandRes->style[] = $v->tb_style_id;
+		}
+
+		$brandRes->pic_url = $this->getBrandMainPicWithSingle($brandRes->pic_url);
+
+		return $brandRes;
+	}
+
+	/**
 	 * 根据id获取店铺信息
 	 * @param string $shopId 店铺id
 	 */
@@ -60,7 +92,7 @@ class BrandModel extends CI_Model {
 	 */
 	public function getBrandList($where = NULL, $p = 1){
 
-		$limit = "LIMIT ".page($p, 25);
+		$limit = "ORDER BY create_time DESC LIMIT ".page($p, 25);
 		
 		$field = " 	id, 
 					name_en, 
@@ -533,6 +565,72 @@ class BrandModel extends CI_Model {
 	}
 
 	/**
+	 * 编辑品牌
+	 * @param array $reqData 品牌数据内容
+	 */
+	public function editBrand($reqData = array()){
+		
+		$brand = array(
+				'name_zh'     => $reqData['nameZh'],
+				'name_en'     => $reqData['nameEn'],
+				'logo_url'    => $reqData['brandLogoPath'],
+				'pic_url'     => $reqData['brandShowPath'],
+				'update_time' => currentTime(),
+				'description' => $reqData['summary'],
+				'tb_age_id'   => isset($reqData['age']) ? $reqData['age'] : '',
+				'tb_price_id' => isset($reqData['price']) ? $reqData['price'] : '',
+				'oper'        => $this->userInfo->user_id,
+			);
+		
+		$updateRes = $this->db->where(array('id' => $reqData['brandRelation']))->update(tname('brand'), $brand);
+
+		if(!$updateRes) return $this->lang->line('ERR_EDIT_BRAND_FAILURE');
+
+		$whereCate = array(
+				'tb_brand_id' => $reqData['brandRelation'],
+			);
+
+		// 添加品牌分类
+		if (isset($reqData['category']) && count($reqData['category'])) {
+
+			$this->db->where($whereCate)->delete(tname('brand_category'));
+
+			foreach ($reqData['category'] as $k => $v) {
+				$category = array(
+						'id'             => makeUUID(),
+						'create_time'    => currentTime(),
+						'update_time'    => currentTime(),
+						'tb_brand_id'    => $reqData['brandRelation'],
+						'tb_category_id' => $v,
+					);
+
+				$this->db->insert(tname('brand_category'), $category);
+			}
+		} 
+
+		// 添加风格
+		if (isset($reqData['style']) && count($reqData['style'])) {
+
+			$this->db->where($whereCate)->delete(tname('brand_style'));
+
+			foreach ($reqData['style'] as $k => $v) {
+				$style = array(
+						'id' => makeUUID(),
+						'create_time' => currentTime(),
+						'update_time' => currentTime(),
+						'tb_brand_id' => $reqData['brandRelation'],
+						'tb_style_id' => $v,
+					);	
+
+				$this->db->insert(tname('brand_style'), $style);
+			}
+
+		}
+
+		return true;
+	}
+
+	/**
 	 * 获取店铺id
 	 * @param string $shopId 关联店铺id
 	 */
@@ -660,8 +758,9 @@ class BrandModel extends CI_Model {
 	 * 添加品牌验证
 	 * @param array $validateRule 验证规则
 	 * @param arary $reqData 待验证数据
+	 * @param string $option 
 	 */
-	public function validateAddBrand($validateRule = array(), $reqData = array()){
+	public function validateAddBrand($validateRule = array(), $reqData = array(), $option = false){
 		$this->form_validation->set_rules($validateRule);
 
 		if (!$this->form_validation->run()) return validation_errors();
@@ -671,7 +770,7 @@ class BrandModel extends CI_Model {
 		// if (!isset($reqData['mallId']) || count($reqData['mallId']) <= 0) return $this->lang->line('ERR_MALL'); 
 
 		// 验证品牌名是否存在
-		if ($this->existsBrandName($reqData['nameZh'], $reqData['nameEn'])) return $this->lang->line('ERR_EXISTS_BRAND_NAME');
+		if ($this->existsBrandName($reqData['nameZh'], $reqData['nameEn'], $option)) return $this->lang->line('ERR_EXISTS_BRAND_NAME');
 
 		return true;
 	}
@@ -760,12 +859,15 @@ class BrandModel extends CI_Model {
 	 * 是否存在品牌
 	 * @param string $nameZh 品牌中文名
 	 * @param string $nameEn 品牌英文名
+	 * @param string $brandId 验证条件
 	 */
-	public function existsBrandName($nameZh = false, $nameEn = false){
+	public function existsBrandName($nameZh = false, $nameEn = false, $brandId = false){
 		
 		$where = "name_zh = '".$nameZh."' ";
 		
 		if (!empty($nameEn)) $where .= " AND name_en = '".$nameEn."'";
+
+		if($brandId !== false) $where .= " AND id != '".$brandId."' ";
 
 		$sql = "SELECT COUNT(*) AS total FROM ".tname('brand')." WHERE ".$where;
 
@@ -794,10 +896,10 @@ class BrandModel extends CI_Model {
 	 */
 	public function checkEditBrand($brandId = false){
 		$where = array(
-				'id' => $shopId,
+				'id' => $brandId,
 			);
 
-		$queryRes = $this->db->get_where(tname('brand_mall'), $where)->result();
+		$queryRes = $this->db->get_where(tname('brand'), $where)->result();
 
 		return count($queryRes) == 1 ? true : false;
 	}
@@ -825,5 +927,24 @@ class BrandModel extends CI_Model {
 			$branchRes = $this->db->insert(tname('brand_mall'), $branchShop);
 
 		return $branchRes ? true : $this->lang->line('ERR_ADD_FAILURE');
+	}
+
+	/**
+	 * 获取品牌宣传图 单张图片
+	 * @param string $picUrl 品牌宣传图
+	 */
+	public function getBrandMainPicWithSingle($picUrl = false){
+		if (empty($picUrl)) return '';
+
+		$picArr = explode(',', $picUrl);
+
+		foreach($picArr as $j => $m){
+			if ($m) { 
+				$m = explode('|', $m);
+				return $m[0];
+			}
+		}
+
+		return '';
 	}
 }

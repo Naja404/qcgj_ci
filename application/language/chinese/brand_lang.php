@@ -72,6 +72,7 @@ $lang = array(
 	'ERR_SHOP_BRANDNAME'		  => '请正确填写品牌名',
 	'ERR_SHOP_TYPE_MALL'		  => '商场/门店地址有误',
 	'ERR_AUTH_EDIT_SHOP'		  => '您没有权限编辑该信息',
+	'ERR_EDIT_BRAND_FAILURE'	  => '更新品牌失败',
 	
 	'ERR_SHOP_NAMEZH'             => '请正确填写门店中文名',
 	'ERR_SHOP_LNG'                => '请正确填写门店经度',
