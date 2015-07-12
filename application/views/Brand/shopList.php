@@ -66,6 +66,31 @@
 
 						<div class="row">
 							<div class="col-xs-12">
+								<form method="get" action="<?php echo site_url('Brand/shopList');?>">
+									<?php echo $this->lang->line('TEXT_SELECT_CITY');?>:
+									<select name="city" id="citySelect">
+											<option value="">城市</option>
+										<?php foreach($cityList as $city){?>
+											<option value="<?php echo $city->name;?>" <?php echo $city->name == $this->input->get('city') ? 'selected' : '' ;?>><?php echo $city->name;?></option>
+										<?php }?>
+									</select>
+
+									<select name="district" id="districtSelect">
+											<option value="">区域</option>
+										<?php foreach($districtList as $v){?>
+											<option value="<?php echo $v->name;?>" <?php echo $v->name == $this->input->get('district') ? 'selected' : '' ;?>><?php echo $v->name;?></option>
+										<?php }?>
+									</select>
+
+									<?php echo $this->lang->line('TEXT_SHOP_BRANDNAME');?>:<input type="text" name="brand" value="<?php echo $this->input->get('brand');?>"/>
+
+									<?php echo $this->lang->line('TEXT_SHOP_NAME');?>:<input type="text" name="shop" value="<?php echo $this->input->get('shop');?>"/>
+
+									<?php echo $this->lang->line('TEXT_SHOP_ADDRESS');?>:<input type="text" name="address" value="<?php echo $this->input->get('address');?>"/>
+									<button type="submit"><?php echo $this->lang->line('BTN_SEARCH');?></button>
+								</form>
+							</div>
+							<div class="col-xs-12">
 								<div class="row">
 									<div class="col-xs-12">
 										<div class="table-responsive">
@@ -167,6 +192,19 @@
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 
 		<script type="text/javascript">
+			jQuery(function($) {
+				$('#citySelect').on('change', function(){
+					$.ajax({
+						type:"POST",
+						url:"<?php echo site_url('Brand/getDistrictByCity');?>",
+						data:{city:this.value},
+						success:function(data){
+							$('#districtSelect').html(data.html);
+						}
+					});
+				});
+			});
+
 			function delShop(shopId){
 				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DELSHOP');?>")) {
 					return false;

@@ -65,7 +65,14 @@
 						</div>
 
 						<div class="row">
+							<div class="col-xs-12">
+								<form method="get" action="<?php echo site_url('Brand/listView');?>">
 
+									<?php echo $this->lang->line('TEXT_SHOP_BRANDNAME');?>:<input type="text" name="brand" value="<?php echo $this->input->get('brand');?>"/>
+
+									<button type="submit"><?php echo $this->lang->line('BTN_SEARCH');?></button>
+								</form>
+							</div>
 							<div class="col-xs-12">
 								<div class="row">
 									<div class="col-xs-12">

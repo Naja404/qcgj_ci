@@ -145,14 +145,14 @@ class BrandModel extends CI_Model {
 					FROM tb_brand_mall AS a 
 					LEFT JOIN tb_brand AS b ON b.id = a.tb_brand_id
 					LEFT JOIN tb_mall AS c ON c.id = a.tb_mall_id
-					WHERE c.address != ''
+					WHERE c.address != '' %s 
 					ORDER BY a.update_time ASC ";
 
-		$queryTotal = $this->db->query(sprintf($sql, $countField))->first_row();
+		$queryTotal = $this->db->query(sprintf($sql, $countField, $where))->first_row();
 
 		$pagination = $this->setPagination(site_url('Brand/shopList'), $queryTotal->total, 25);
 
-		$queryRes = $this->db->query(sprintf($sql, $field).$limit)->result();
+		$queryRes = $this->db->query(sprintf($sql, $field, $where).$limit)->result();
 
 		$returnRes = array(
 				'list'       => $queryRes,
@@ -681,6 +681,32 @@ class BrandModel extends CI_Model {
 	}
 
 	/**
+	 * 根据城市名获取区域内容
+	 * @param string $city 城市名
+	 * @param string $format 输出格式 html json
+	 */
+	public function getDistrictByCity($cityName = false, $format = 'html'){
+		$cityId = $this->_getCityIdByName($cityName);
+
+		$list = $this->getDistrictList($cityId);
+
+		$returnRes = '';
+
+		if ($format == 'html') {
+			$returnRes .= '<option value="">区域</option>';
+			foreach ($list as $k => $v) {
+				$returnRes .= '<option value="'.$v->name.'">'.$v->name.'</option>';
+			}
+		}
+
+		if ($format == 'obj') {
+			$returnRes = $list;
+		}
+
+		return $returnRes;
+	}
+
+	/**
 	 * 获取商场列表
 	 * @param string $cityId 城市id
 	 */
@@ -809,9 +835,9 @@ class BrandModel extends CI_Model {
 	 * @param string $nameEn 商场/门店英文名
 	 */
 	public function existsShopName($nameZh = false, $nameEn = false){
-		$where = " name_zh = '".$nameZh."' ";
+		$where = " name_zh = '".addslashes($nameZh)."' ";
 
-		if (!empty($nameEn)) $where .= " AND name_en = '".$nameEn."'";
+		if (!empty($nameEn)) $where .= " AND name_en = '".addslashes($nameEn)."'";
 
 		$sql = "SELECT COUNT(*) AS total FROM ".tname('mall')." WHERE ".$where;
 
@@ -863,9 +889,9 @@ class BrandModel extends CI_Model {
 	 */
 	public function existsBrandName($nameZh = false, $nameEn = false, $brandId = false){
 		
-		$where = "name_zh = '".$nameZh."' ";
+		$where = "name_zh = '".addslashes($nameZh)."' ";
 		
-		if (!empty($nameEn)) $where .= " AND name_en = '".$nameEn."'";
+		if (!empty($nameEn)) $where .= " AND name_en = '".addslashes($nameEn)."'";
 
 		if($brandId !== false) $where .= " AND id != '".$brandId."' ";
 
@@ -946,5 +972,21 @@ class BrandModel extends CI_Model {
 		}
 
 		return '';
+	}
+
+	/**
+	 * 根据城市名获取城市id
+	 * @param string $cityName 城市名
+	 */
+	private function _getCityIdByName($cityName = false){
+		if (empty($cityName) || !$cityName) return false;
+
+		$where = array(
+				'name_zh' => $cityName,
+			);
+
+		$cityRes = $this->db->get_where(tname('city'), $where)->first_row();
+
+		return $cityRes->id ? $cityRes->id : false;
 	}
 }

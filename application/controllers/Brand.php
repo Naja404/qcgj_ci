@@ -26,9 +26,10 @@ class Brand extends WebBase {
 		$this->outData['pageTitle'] = $this->lang->line('TITLE_BRAND_LIST');
 		
 		$where = NULL;
-		$brandName = $this->input->get('brand');
+
+		$brandName = addslashes($this->input->get('brand'));
 		
-		if ($brandName) $where = " name_zh LIKE '%".$brandName."%' OR name_en LIKE '%".$brandName."%' ";
+		if ($brandName) $where = " WHERE name_zh LIKE '%".$brandName."%' OR name_en LIKE '%".$brandName."%' ";
 
 		$brandList = $this->BrandModel->getBrandList($where, $this->p);
 
@@ -46,17 +47,18 @@ class Brand extends WebBase {
 	public function shopList(){
 
 		$this->outData['pageTitle'] = $this->lang->line('TITLE_SHOP_MALL_LIST');
-		
-		$where = NULL;
-		$shopName = $this->input->get('shop');
-		
-		if ($shopName) $where = " name_zh LIKE '%".$shopName."%' OR name_en LIKE '%".$shopName."%' ";
+
+		$where = $this->_shopListWhere();
 
 		$shopList = $this->BrandModel->getShopList($where, $this->p);
 
 		$this->outData['pagination'] = $shopList['pagination'];
 
 		$this->outData['shopList'] = $shopList['list'];	
+
+		$this->outData['cityList']     = $this->BrandModel->getCityList();
+
+		$this->outData['districtList'] = $this->BrandModel->getDistrictByCity($this->input->get('city'), 'obj');
 
 		$this->load->view('Brand/shopList', $this->outData);
 	}
@@ -162,6 +164,21 @@ class Brand extends WebBase {
 				'list' => $this->BrandModel->getDistrictList($this->input->post('cityId')),
 				'city' => $this->BrandModel->getCityNameById($this->input->post('cityId')),
 				// 'mall' => $this->BrandModel->getMallList($this->input->post('cityId'), 'html'),
+			);
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 根据城市名获取城市去列表
+	 * @param string $city 城市名
+	 */
+	public function getDistrictByCity(){
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes); 
+
+		$this->ajaxRes = array(
+				'status' => 0,
+				'html' => $this->BrandModel->getDistrictByCity($this->input->post('city')),
 			);
 
 		jsonReturn($this->ajaxRes);
@@ -276,9 +293,9 @@ class Brand extends WebBase {
 			$uploadConf['file_name']     = 'mall_'.md5(currentTime('MICROTIME'));
 			$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_v400/mall/';
 		}else{
-			// $uploadConf['upload_path']   = './uploadtemp/brand/';
+			$uploadConf['upload_path']   = './uploadtemp/brand/';
 			$uploadConf['file_name']     = 'brand_'.md5(currentTime('MICROTIME'));
-			// $uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_v400/brand/';
+			$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_v400/brand/';
 		}
 
 		$this->load->library('upload');
@@ -420,5 +437,28 @@ class Brand extends WebBase {
 		}
 
 		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 店铺筛选条件
+	 *
+	 */
+	public function _shopListWhere(){
+
+		$reqData = $this->input->get();
+
+		$where = NULL;
+
+		if (!empty($reqData['city'])) $where .= " AND c.city_name = '".$reqData['city']."' ";
+
+		if (!empty($reqData['district'])) $where .= " AND c.district_name = '".$reqData['district']."' ";
+
+		if (!empty($reqData['brand'])) $where .= " AND (b.name_zh LIKE '%".addslashes($reqData['brand'])."%' OR b.name_en LIKE '%".addslashes($reqData['brand'])."%')";
+
+		if (!empty($reqData['shop'])) $where .= " AND c.name_zh LIKE '%".$reqData['shop']."%' "; 
+
+		if (!empty($reqData['address'])) $where .= " AND c.address LIKE '%".$reqData['address']."%' ";
+
+		return $where;
 	}
 }
