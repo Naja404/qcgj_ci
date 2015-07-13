@@ -95,6 +95,33 @@ class HongQiaoModel extends CI_Model {
 	}
 
 	/**
+	 * 餐厅地址列表
+	 *
+	 */
+	public function getRestaurantAddressList($where = NULL, $p = 1){
+		$limit = "LIMIT ".page($p, 25);
+		
+		$field = " * ";
+
+		$sql = "SELECT %s FROM ".tname('mall')." WHERE level = 4  %s %s ";
+
+		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, ''))->first_row();
+
+		$pagination = $this->setPagination(site_url('HongQiao/restaurantAddressList'), $queryTotal->total, 25);
+
+		$sql = sprintf($sql, $field, $where, $limit);
+
+		$queryRes = $this->db->query($sql)->result();
+
+		$returnRes = array(
+				'list'       => $queryRes,
+				'pagination' => $pagination,
+			);
+		
+		return $returnRes;
+	}
+
+	/**
 	 * 获取景点详细内容
 	 * @param string $id
 	 */
@@ -119,6 +146,23 @@ class HongQiaoModel extends CI_Model {
 			);
 
 		$queryRes = $this->db->get_where(tname('restaurant'), $where)->first_row();
+
+		return $queryRes;
+	}
+
+	/**
+	 * 获取店铺详细内容
+	 * @param string $id 店铺id
+	 * @param int $type 1=商场 2=街边店 4=餐厅 5=影院 6=景点
+	 */
+	public function getMallDetail($id = false, $type = 1){
+
+		$where = array(
+				'id'   => $id,
+				'level' => $type,
+			);
+
+		$queryRes = $this->db->get_where(tname('mall'), $where)->first_row();
 
 		return $queryRes;
 	}
@@ -160,6 +204,22 @@ class HongQiaoModel extends CI_Model {
 	}
 
 	/**
+	 * 检测店铺权限
+	 * @param string $id 店铺id
+	 * @param int $type 1=商场 2=街边店 4=餐厅 5=影院 6=景点
+	 */
+	public function checkEditMall($id = false, $type){
+		$where = array(
+				'id'    => $id,
+				'level' => $type,
+			);
+
+		$queryRes = $this->db->get_where(tname('mall'), $where)->first_row();
+
+		return count($queryRes) > 0 ? true : false;		
+	}
+
+	/**
 	 * 检测景点id权限
 	 * @param string $id 景点id
 	 */
@@ -185,6 +245,21 @@ class HongQiaoModel extends CI_Model {
 		$queryRes = $this->db->get_where(tname('cinema'), $where)->first_row();
 
 		return count($queryRes) > 0 ? true : false;	
+	}
+
+	/**
+	 * 获取分类
+	 * @param int $type 分类类型
+	 */
+	public function getMallCate($type = 1){
+
+		$where = array(
+				'type' => $type,
+			);
+
+		$queryRes = $this->db->select('id, name')->get_where(tname('category'), $where)->result();
+
+		return $queryRes;
 	}
 
 }

@@ -130,6 +130,22 @@ class HongQiao extends WebBase {
 	}
 
 	/**
+	 * 餐厅地址列表
+	 *
+	 */
+	public function restaurantAddressList(){
+		$where = '';
+
+		$list = $this->HongQiaoModel->getRestaurantAddressList($where, $this->p);
+
+		$this->outData['pageTitle'] = '餐厅地址列表';
+		$this->outData['list'] = $list['list'];
+		$this->outData['pagination'] = $list['pagination'];
+
+		$this->load->view('HongQiao/restaurantAddressList', $this->outData);
+	}
+
+	/**
 	 * 编辑餐厅
 	 *
 	 */
@@ -157,6 +173,32 @@ class HongQiao extends WebBase {
 		}
 
 		$this->load->view('HongQiao/editRestaurant', $this->outData);
+	}
+
+	/**
+	 * 编辑餐厅
+	 *
+	 */
+	public function editRestaurantAddress(){
+		$id = strDecrypt($this->input->get('id'));
+
+		if (!$this->HongQiaoModel->checkEditMall($id, 4)) {
+			$outData = array(
+					'errLang' => $this->lang->line('ERR_AUTH_EDIT_BRAND'),
+					'url'     => site_url('HongQiao/restaurantAddressList'),
+				);	
+			$this->load->view('Public/error', $outData);
+		}
+
+		if ($this->input->is_ajax_request()) return $this->_editRestaurantAddressForm($id); 
+
+		$this->outData['pageTitle'] = '编辑餐厅地址';
+
+		$this->outData['detail'] = $this->HongQiaoModel->getMallDetail($id, 4);
+
+		$this->outData['category'] = $this->HongQiaoModel->getMallCate(4);
+
+		$this->load->view('HongQiao/editRestaurantAddress', $this->outData);
 	}
 
 	/**
@@ -310,5 +352,13 @@ class HongQiao extends WebBase {
 		}
 
 		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 编辑餐厅地址
+	 * @param string $id 餐厅id
+	 */
+	public function _editRestaurantAddressForm($id = false){
+
 	}
 }
