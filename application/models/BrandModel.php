@@ -33,10 +33,14 @@ class BrandModel extends CI_Model {
 		$category = $this->db->get_where(tname('brand_category'), $whereCate)->result();
 
 		$style = $this->db->get_where(tname('brand_style'), $whereCate)->result();
+		
+		$brandRes->category = array();
 
 		foreach ($category as $k => $v) {
 			$brandRes->category[] = $v->tb_category_id;
 		}
+
+		$brandRes->style = array();
 
 		foreach ($style as $k => $v) {
 			$brandRes->style[] = $v->tb_style_id;
@@ -83,6 +87,42 @@ class BrandModel extends CI_Model {
 		$queryRes = $this->db->query($sql)->first_row();
 
 		return $queryRes;
+	}
+
+	/**
+	 * 获取1005品牌列表
+	 * @param string $where 查询条件
+	 * @param int $p 页数
+	 */
+	public function getHadBrandList($where = NULL, $p = 1){
+		$limit = "ORDER BY create_time DESC LIMIT ".page($p, 25);
+		
+		$field = " 	id, 
+					name_en, 
+					name_zh, 
+					logo_url, 
+					pic_url,
+					create_time, 
+					update_time, 
+					LEFT(description, 50) AS summary, 
+					oper ";
+
+		$sql = "SELECT %s FROM ".tname('brand')." %s %s ";
+
+		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, ''))->first_row();
+
+		$pagination = $this->setPagination(site_url('Brand/hadBrandList'), $queryTotal->total, 25);
+
+		$sql = sprintf($sql, $field, $where, $limit);
+
+		$queryRes = $this->db->query($sql)->result();
+
+		$returnRes = array(
+				'list'       => $queryRes,
+				'pagination' => $pagination,
+			);
+		
+		return $returnRes;
 	}
 
 	/**
@@ -146,7 +186,7 @@ class BrandModel extends CI_Model {
 					LEFT JOIN tb_brand AS b ON b.id = a.tb_brand_id
 					LEFT JOIN tb_mall AS c ON c.id = a.tb_mall_id
 					WHERE c.address != '' %s 
-					ORDER BY a.update_time ASC ";
+					ORDER BY a.create_time ASC ";
 
 		$queryTotal = $this->db->query(sprintf($sql, $countField, $where))->first_row();
 
@@ -573,8 +613,8 @@ class BrandModel extends CI_Model {
 		$brand = array(
 				'name_zh'     => $reqData['nameZh'],
 				'name_en'     => $reqData['nameEn'],
-				'logo_url'    => $reqData['brandLogoPath'],
-				'pic_url'     => $reqData['brandShowPath'],
+				// 'logo_url'    => $reqData['brandLogoPath'],
+				// 'pic_url'     => $reqData['brandShowPath'],
 				'update_time' => currentTime(),
 				'description' => $reqData['summary'],
 				'tb_age_id'   => isset($reqData['age']) ? $reqData['age'] : '',

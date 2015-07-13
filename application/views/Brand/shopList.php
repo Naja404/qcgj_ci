@@ -102,6 +102,7 @@
 														<th><?php echo $this->lang->line('TEXT_SHOP_NAMEZH');?></th>
 														<th><?php echo $this->lang->line('TEXT_SHOP_DISTRICT');?></th>
 														<th><?php echo $this->lang->line('TEXT_SHOP_ADDRESS');?></th>
+														<th>状态</th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
 												</thead>
@@ -117,18 +118,16 @@
 														<td><?php echo $v->cityName.' '.$v->district;?></td>
 														<td><?php echo $v->address;?></td>
 														<td>
+																<?php if (!empty($v->shopPic)) {?>
+																<button class="btn">已编辑</button>
+																<?php }?>
+														</td>
+														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-
-																<button class="btn btn-xs btn-info">
-																	<a href="<?php echo site_url('Brand/editShop').'?shopId='.strEncrypt($v->id).'&p='.$this->input->get('p');?>"><i class="icon-edit bigger-120"></i></a>
-																</button>
-
+																	<a href="<?php echo site_url('Brand/editShop').'?shopId='.strEncrypt($v->id).'&p='.$this->input->get('p');?>"><i class="icon-edit bigger-120"></i>编辑</a>
 																<button class="btn btn-xs btn-danger" onclick="delShop('<?php echo $v->id;?>');">
 																	<i class="icon-trash bigger-120"></i>
 																</button>
-																<?php if (strtotime($v->updateTime) >= strtotime('2015-07-09')) {?>
-																<button class="btn">已编辑</button>
-																<?php }?>
 															</div>
 
 														</td>

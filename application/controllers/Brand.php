@@ -18,6 +18,28 @@ class Brand extends WebBase {
 	}
 
 	/**
+	 * 1005品牌列表
+	 *
+	 */
+	public function hadBrandList(){
+		$this->outData['pageTitle'] = '1005品牌审核';
+		
+		$where = " WHERE mark = 1 ";
+
+		$brandName = addslashes($this->input->get('brand'));
+		
+		if ($brandName) $where .= " AND name_zh LIKE '%".$brandName."%' OR name_en LIKE '%".$brandName."%' ";
+
+		$brandList = $this->BrandModel->getHadBrandList($where, $this->p);
+
+		$this->outData['pagination'] = $brandList['pagination'];
+
+		$this->outData['brandList'] = $brandList['list'];
+
+		$this->load->view('Brand/hadBrandList', $this->outData);
+	}
+
+	/**
 	 * 品牌列表
 	 *
 	 */

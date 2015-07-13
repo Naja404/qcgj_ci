@@ -23,9 +23,19 @@ class HongQiao extends WebBase {
 
 		$list = $this->HongQiaoModel->getCinemaList($this->p);
 
+		$this->outData['pageTitle'] = '电影院列表';
+
 		$this->outData['list'] = $list['list'];
 
 		$this->load->view('HongQiao/cinemaList', $this->outData);
+
+	}
+
+	/**
+	 * 电影院地址列表
+	 *
+	 */
+	public function cinemaAddressList(){
 
 	}
 

@@ -65,7 +65,9 @@
 						</div>
 
 						<div class="row">
-
+							<div class="col-xs-12">
+								店名：<?php echo $detail->name;?>
+							</div>
 							<div class="col-xs-12">
 								<div class="row">
 
@@ -111,8 +113,13 @@
 										<label class="col-sm-3 control-label no-padding-right" for="pic"> 上传图片 </label>
 
 										<div class="col-sm-9">
+											<?php if (isset($detail->picPath) && !empty($detail->picPath)) {?>
+											<span id="brandShowSpan">
+												<img src="<?php echo config_item('shop_image_url').$detail->picPath;?>" style="width: 200px;"><a onclick="removeFileImg('brandShowSpan');">重置</a>
+											</span>
+											<?php } ?>
 											<input type="file" name="pic" id="pic" >
-											<input type="hidden" name="picPath" id="picPath">
+											<input type="hidden" name="picPath" id="picPath" value="<?php echo isset($detail->picPath) && !empty($detail->picPath) ? $detail->picPath : '';?>" >
 										</div>
 									</div>
 
@@ -192,6 +199,7 @@
 
 		<script type="text/javascript">
 		$(document).ready(function() {
+
 			var interval;
 
 			function applyAjaxFileUpload(element, filesName, filePath) {
@@ -237,6 +245,7 @@
 
 							return;
 						}else{
+							$('#brandShowSpan').html('');
 							$("<img />").attr("src", response.url).css("width", 200).appendTo($span);
 							$("<a />").attr("href", "#").text("<?php echo $this->lang->line('BTN_RESET');?>").bind("click", function(e) {
 									$span.replaceWith($fileInput);
@@ -259,7 +268,7 @@
 					data:$('#editRestaurant-form').serialize(),
 					success:function(data){
 						if (data.status == '0') {
-							window.location.href = "<?php echo site_url('HongQiao/restaurantList').'?p='.$this->input->get('p');?>";
+							window.location.href = "<?php echo site_url('HongQiao/restaurantList').'?p='.$this->input->get('p').'#'.$this->input->get('mark');?>";
 							return true;
 						}
 
@@ -271,6 +280,10 @@
 
 		function returnLast(){
 			window.location.href = "<?php echo site_url('HongQiao/restaurantList').'?p='.$this->input->get('p');?>"
+		}
+
+		function removeFileImg(id){
+			$('#'+id).html('');
 		}
 
 		</script>

@@ -115,9 +115,9 @@
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 
-																<button class="btn btn-xs btn-info">
-																	<a href="<?php echo site_url('Brand/editBrand').'?brandId='.strEncrypt($v->id).'&p='.$this->input->get('p');?>"><i class="icon-edit bigger-120"></i></a>
-																</button>
+																<!-- <button class="btn btn-xs btn-info"> -->
+																	<a href="<?php echo site_url('Brand/editBrand').'?brandId='.strEncrypt($v->id).'&p='.$this->input->get('p');?>"><i class="icon-edit bigger-120"></i>编辑</a>
+																<!-- </button> -->
 
 																<button class="btn btn-xs btn-danger" onclick="delBrand('<?php echo $v->id;?>');">
 																	<i class="icon-trash bigger-120"></i>

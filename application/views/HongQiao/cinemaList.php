@@ -76,6 +76,7 @@
 														<th>图片</th>
 														<th>店名</th>
 														<th>地址</th>
+														<th>状态</th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
 												</thead>
@@ -94,12 +95,6 @@
 														</td>
 
 														<td>
-															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-
-																<!-- <button class="btn btn-xs btn-info"> -->
-																	<a href="<?php echo site_url('HongQiao/editCinema').'?id='.strEncrypt($v->id).'&p='.$this->input->get('p');?>"><i class="icon-edit bigger-120">编辑</i></a>
-																<!-- </button> -->	
-
 																<?php if($v->update == 1){?>
 																<button>
 																		已编辑
@@ -109,6 +104,15 @@
 																		需作图
 																</button>
 																<?php }?>
+														</td>
+
+														<td>
+															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
+
+																<!-- <button class="btn btn-xs btn-info"> -->
+																	<a href="<?php echo site_url('HongQiao/editCinema').'?id='.strEncrypt($v->id).'&p='.$this->input->get('p');?>"><i class="icon-edit bigger-120">编辑</i></a>
+																<!-- </button> -->	
+
 															</div>
 
 														</td>

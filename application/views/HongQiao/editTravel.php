@@ -65,7 +65,9 @@
 						</div>
 
 						<div class="row">
-
+							<div class="col-xs-12">
+								店名：<?php echo $detail->name;?>
+							</div>
 							<div class="col-xs-12">
 								<div class="row">
 

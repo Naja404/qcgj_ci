@@ -365,7 +365,13 @@
 					data:$('#editBrand-form').serialize(),
 					success:function(data){
 						if (data.status == '0') {
-							window.location.href = "<?php echo site_url('Brand/listView').'?p='.$this->input->get('p');?>";
+							var hrefType = "<?php echo $this->input->get('had');?>"
+							if (hrefType == '1005') {
+								window.location.href = "<?php echo site_url('Brand/hadBrandList').'?p='.$this->input->get('p');?>";
+							}else{
+								window.location.href = "<?php echo site_url('Brand/listView').'?p='.$this->input->get('p');?>";
+							}
+							
 							return true;
 						}
 
