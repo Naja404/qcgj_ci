@@ -17,6 +17,55 @@ class HongQiaoModel extends CI_Model {
 	}
 
 	/**
+	 * 品牌店铺列表
+	 *
+	 */	
+	public function getBrandShopList($p = 1){
+		$where = " WHERE image != 'null' ";
+
+		$limit = "LIMIT ".page($p, 25);
+		
+		$field = " * ";
+
+		$sql = "SELECT %s FROM ".tname('brand_rel')." %s %s ";
+
+		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, ''))->first_row();
+
+		$pagination = $this->setPagination(site_url('HongQiao/brandShopList'), $queryTotal->total, 25);
+
+		$sql = sprintf($sql, $field, $where, $limit);
+
+		$queryRes = $this->db->query($sql)->result();
+
+		$returnRes = array(
+				'list'       => $queryRes,
+				'pagination' => $pagination,
+			);
+
+		return $returnRes;
+
+	}
+
+	/**
+	 * 获取品牌店铺详情
+	 * @param string $brandId 品牌id
+	 */
+	public function getBrandShopDetail($brandId = false){
+		
+		$where = array(
+				'brand_id' => $brandId,
+			);
+
+		$queryRes = $this->db->get_where(tname('brand_rel'), $where)->first_row();
+
+		if (count($queryRes) <= 0) return false;
+
+		$queryRes->pic = json_decode($queryRes->image, true);
+
+		return $queryRes;
+	}
+
+	/**
 	 * 电影院列表
 	 * @param int $p 页码
 	 */
@@ -103,7 +152,7 @@ class HongQiaoModel extends CI_Model {
 		
 		$field = " * ";
 
-		$sql = "SELECT %s FROM ".tname('mall')." WHERE level = 4  %s %s ";
+		$sql = "SELECT %s FROM ".tname('mall')." WHERE level = 4  %s ORDER BY update_time ASC %s ";
 
 		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, ''))->first_row();
 
@@ -260,6 +309,48 @@ class HongQiaoModel extends CI_Model {
 		$queryRes = $this->db->select('id, name')->get_where(tname('category'), $where)->result();
 
 		return $queryRes;
+	}
+
+	/**
+	 * 更新餐厅地址内容
+	 * @param array $reqData 更新数组
+	 */
+	public function editRestaurantAddress($reqData = array()){
+		
+		$update = array(
+				'name_zh'     => $reqData['mallName'],
+				'branch_name' => $reqData['branchName'],
+				'floor'       => $reqData['floor'],
+				'address'     => $reqData['address'],
+				'longitude'   => $reqData['lng'],
+				'latitude'    => $reqData['lat'],
+				'tel'         => $reqData['tel'],
+				'update_time' => currentTime(),
+			);
+
+		$where = array(
+				'id' => $reqData['mallId'],
+			);
+
+		$updateRes = $this->db->where($where)->update(tname('mall'), $update);
+
+		return $updateRes ? true : false;
+	}
+
+	/**
+	 * 删除mall 数据
+	 * @param string $mallId
+	 * @param int $type 
+	 */
+	public function delMall($mallId = false, $type = 0){
+		$where = array(
+				'id'    => $mallId,
+				'level' => $type,
+			);
+
+		$delRes = $this->db->where($where)->delete(tname('mall'));
+
+		return $delRes ? true : false;
 	}
 
 }

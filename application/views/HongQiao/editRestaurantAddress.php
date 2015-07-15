@@ -48,9 +48,9 @@
 							</li>
 
 							<li>
-								<a href="<?php echo site_url('Brand/listView');?>"><?php echo $this->lang->line('TITLE_BRAND_MANAGER');?></a>
+								<a href="<?php echo site_url('HongQiao/restaurantAddressList');?>"><?php echo $this->lang->line('TITLE_HONGQIAO');?></a>
 							</li>
-							<li class="active"><?php echo $this->lang->line('TITLE_ADD_SHOP');?></li>
+							<li class="active"><?php echo $this->lang->line('TITLE_EDIT_RESTAURANT_ADDRESS');?></li>
 						</ul>
 
 					</div>
@@ -84,20 +84,6 @@
 
 										<div class="col-sm-9">
 											<input type="text" name="branchName" id="branchName" placeholder="" value="<?php echo !empty($detail->branch_name) ? $detail->branch_name : '';?>"/>
-										</div>
-									</div>
-
-									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="category"> 分类 </label>
-
-										<div class="col-sm-9">
-												<?php foreach ($category as $k => $v) :?>
-												<label>
-													<input type="radio" name="category[]" class="ace" value="<?php echo $v->id;?>" <?php echo $v->id == $detail->tb_category_id ? 'checked' : '';?>>
-													<span class="lbl"><?php echo $v->name;?></span>
-												</label>&nbsp;&nbsp;
-												<br>
-												<?php endforeach; ?>
 										</div>
 									</div>
 
@@ -142,13 +128,13 @@
 											</button>
 
 											&nbsp; &nbsp; &nbsp;
-											<button class="btn" type="reset">
+											<button class="btn" type="button" onclick="window.location.href=document.referrer; ">
 												<i class="icon-undo bigger-110"></i>
-												<?php echo $this->lang->line('BTN_RESET');?>
+												返回
 											</button>
 										</div>
 									</div>
-									<input type="hidden" name="shopBrandId" id="shopBrandId" value="" >
+									<input type="hidden" name="mallId" id="mallId" value="<?php echo $detail->id; ?>" >
 								</form>
 							</div>
 						</div><!-- /.row -->
@@ -206,6 +192,52 @@
 
 
 		<script type="text/javascript">
+			jQuery(function($) {
+				$('#editMall-form').validate({
+					errorElement: 'div',
+					errorClass: 'help-block',
+					focusInvalid: false,
+					rules: {
+						mallName: {
+							required:true
+						},
+						lng: {
+							required:true
+						},
+						lat:{
+							required:true
+						}
+					},
+			
+					messages: {
+						mallName: {
+							required:"<?php echo $this->lang->line('ERR_MALL_NAME');?>"
+						},
+						lng: {
+							required:"<?php echo $this->lang->line('ERR_MALL_LNG');?>"
+						},
+						lat:{
+							required:"<?php echo $this->lang->line('ERR_MALL_LAT');?>"
+						}
+					},
+			
+					invalidHandler: function (event, validator) { //display error alert on form submit   
+						$('.alert-danger', $('.login-form')).show();
+					},
+					highlight: function (e) {
+						$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+					},
+			
+					success: function (e) {
+						$(e).closest('.form-group').removeClass('has-error').addClass('has-info');
+						$(e).remove();
+					},
+					errorPlacement: function (error, element) {
+						console.log(error);
+						error.insertAfter(element.parent().children());
+					}
+				});
+			});
 
 		function getLngLat(){
 			var myGeo = new BMap.Geocoder();
@@ -235,7 +267,8 @@
 				data:$('#editMall-form').serialize(),
 				success:function(data){
 					if (data.status == '0') {
-						window.location.href = "<?php echo site_url('HongQiao/restaurantAddressList').'?p='.$this->input->get('p');?>";
+						// window.location.href = "<?php echo site_url('HongQiao/restaurantAddressList').'?p='.$this->input->get('p');?>";
+						window.location.href=document.referrer;
 						return true;
 					}
 

@@ -52,9 +52,9 @@
 							</li>
 
 							<li>
-								<a href="<?php echo site_url('HongQiao/restaurantList');?>"><?php echo $this->lang->line('TITLE_HONGQIAO');?></a>
+								<a>大虹桥</a>
 							</li>
-							<li class="active"><?php echo $this->lang->line('TITLE_RESTAURANT_ADDRESS_LIST');?></li>
+							<li class="active">品牌店铺列表</li>
 						</ul>
 
 					</div>
@@ -73,9 +73,7 @@
 											<table id="rolelist-table" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
-														<th>店名</th>
-														<th>地址</th>
-														<th>电话</th>
+														<th>品牌名</th>
 														<th>状态</th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
@@ -83,31 +81,30 @@
 
 												<tbody>
 													<?php foreach ($list as $v):?>
-													<tr >
+													<tr>
 														<td id="<?php echo $v->id;?>">
-																<?php echo $v->name_zh;?>
-																<?php echo $v->branch_name ? '-'.$v->branch_name : '';?>
+																<?php echo $v->name_zh.' '.$v->name_en;?>
 														</td>
+
 														<td>
-															<?php echo $v->address;?>
+ 																<?php if($v->update == 1){?>
+																<button>
+																		已编辑
+																</button>
+																<?php }elseif ($v->update == 2) {?>
+																<button class="btn btn-danger">
+																		需作图
+																</button>
+																<?php }?>
 														</td>
-														<td>
-															<?php echo isset($v->tel) ? $v->tel : '' ;?>
-														</td>
-														<td>
-															<?php if (!empty($v->update_time)) {?>
-																<button class="btn">已编辑</button>
-															<?php }?>
-														</td>
+
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 
 																<!-- <button class="btn btn-xs btn-info"> -->
-																	<a href="<?php echo site_url('HongQiao/editRestaurantAddress').'?id='.strEncrypt($v->id).'&p='.$this->input->get('p').'&mark='.$v->id;?>"><i class="icon-edit bigger-120">编辑</i></a>
-																<!-- </button> -->
-																<button class="btn btn-xs btn-danger" onclick="delMall('<?php echo $v->id;?>');">
-																	<i class="icon-trash bigger-120"></i>
-																</button>
+																	<a href="<?php echo site_url('HongQiao/editBrandShop').'?id='.strEncrypt($v->brand_id).'&p='.$this->input->get('p').'&mark='.$v->id;?>"><i class="icon-edit bigger-120">编辑</i></a>
+																<!-- </button> -->	
+
 
 															</div>
 
@@ -175,21 +172,6 @@
 			$(document).ready(function() {
 				$(window.location.hash).css('background-color', '#f2849f');
 			});
-			
-			function delMall(mallId){
-				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DELBRAND');?>")) {
-					return false;
-				}
-
-				$.ajax({
-					type:"POST",
-					url:"<?php echo site_url('HongQiao/delMall');?>",
-					data:{mallId:mallId},
-					success:function(data){
-						window.location.reload();
-					}
-				});
-			}
 		</script>
 
 	</body>

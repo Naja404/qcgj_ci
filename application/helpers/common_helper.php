@@ -333,4 +333,53 @@ function page($page = 1, $count = 25){
 	return ($page - 1)*$count.','.$count;
 }
 
+/**
+ * 获取文件夹目录
+ * @param string $dir 文件夹路径
+ * @return mixed
+ */
+function get_dir($dir, $page = 1, $pagesize = 10) {
+
+	$dirArray = array();
+
+	if (false != ($handle = opendir ( $dir ))) {
+		$dirNum = 0;
+		while ( false !== ($file = readdir ( $handle )) ) {
+
+			//去掉"“.”、“..”以及带“.xxx”后缀的文件
+			if ($file != "." && $file != "..") {
+				if (opendir($dir.'/'.$file) || is_dir($file)) {
+					$dirArray[filemtime($dir.'/'.$file)+$dirNum] = array(
+									'path'   => $file,
+									'create' => filectime($dir.'/'.$file),
+									'modify' => filemtime($dir.'/'.$file),
+									'type'   => 'dir',
+						);
+					$dirNum++;
+				}
+			}
+		}
+		//关闭句柄
+		closedir($handle);
+	}
+
+	krsort($dirArray, SORT_NUMERIC);
+
+	foreach ($dirArray as $k => $v) {
+		$tmpDirArr[] = $v;
+	}
+
+
+	for ($i = $pagesize * ($page - 1); $i < $pagesize * $page; $i++) {
+		if ($tmpDirArr[$i]) {
+			$result['data'][] = $tmpDirArr[$i];
+		}else{
+			break;
+		}
+	}
+
+	$result['count'] = count($tmpDirArr);
+
+	return $result;
+}
 ?>

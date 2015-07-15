@@ -16,6 +16,47 @@ class HongQiao extends WebBase {
 	}
 
 	/**
+	 * 品牌店铺图片筛选
+	 *
+	 */
+	public function brandShopList(){
+		$list = $this->HongQiaoModel->getBrandShopList($this->p);
+
+		$this->outData['pageTitle'] = '品牌店铺列表';
+
+		$this->outData['list']       = $list['list'];
+
+		$this->outData['pagination'] = $list['pagination'];
+
+		$this->load->view('HongQiao/brandShopList', $this->outData);
+	}
+
+	/**
+	 * 编辑品牌店铺图片
+	 *
+	 */
+	public function editBrandShop(){
+
+		$id = strDecrypt($this->input->get('id'));
+
+		$this->outData['detail'] = $this->HongQiaoModel->getBrandShopDetail($id);
+
+		if ($this->outData['detail'] == false) {
+			$outData = array(
+					'errLang' => $this->lang->line('ERR_AUTH_EDIT_BRAND'),
+					'url'     => site_url('HongQiao/brandShopList'),
+				);	
+			$this->load->view('Public/error', $outData);
+		}
+
+		if ($this->input->is_ajax_request()) return $this->_editBrandShopFrom($id); 
+
+		$this->outData['pageTitle'] = '编辑品牌店铺';
+
+		$this->load->view('HongQiao/editBrandShop', $this->outData);
+	}
+
+	/**
 	 * 电影院列表
 	 *
 	 */
@@ -143,6 +184,29 @@ class HongQiao extends WebBase {
 		$this->outData['pagination'] = $list['pagination'];
 
 		$this->load->view('HongQiao/restaurantAddressList', $this->outData);
+	}
+
+	/**
+	 * 删除餐厅地址
+	 *
+	 */
+	public function delMall(){
+
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$mallId = $this->input->post('mallId');
+
+		$delRes = $this->HongQiaoModel->delMall($mallId, 4);
+
+		if ($delRes) {
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}else{
+			$this->ajaxRes['msg'] = '数据删除失败';
+		}
+
+		jsonReturn($this->ajaxRes);
 	}
 
 	/**
@@ -360,5 +424,60 @@ class HongQiao extends WebBase {
 	 */
 	public function _editRestaurantAddressForm($id = false){
 
+		$reqData = $this->input->post();
+		
+		if ($id != $reqData['mallId']) jsonReturn($this->ajaxRes);
+
+		$updateRes = $this->HongQiaoModel->editRestaurantAddress($reqData);
+
+		if ($updateRes) {
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}else{
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_UPDATE_FAILURE');
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 
+	 * @param string $brandId 品牌id
+	 */
+	public function _editBrandShopFrom($brandId = false){
+		$reqData = $this->input->post();
+
+		$update = array();
+
+		if (isset($reqData['path']) && !empty($reqData['path'])) {
+			$update['path'] = $reqData['path'];
+		}
+
+		if (isset($reqData['picPath']) && !empty($reqData['picPath'])) {
+			$update['picPath'] = $reqData['picPath'];
+		}
+
+		$update['update'] = isset($reqData['hasMake']) && $reqData['hasMake'] ? 2 : 1;
+		$update['update_time'] = currentTime();
+		$update['user'] = $this->userInfo->user_id;
+
+		$where = array(
+				'brand_id' => $brandId,
+			);
+
+
+
+		$updateRes = $this->db->where($where)->update(tname('brand_rel'), $update);
+
+		if ($updateRes) {
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}else{
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_UPDATE_FAILURE');
+		}
+
+		jsonReturn($this->ajaxRes);
 	}
 }

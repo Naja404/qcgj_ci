@@ -232,6 +232,65 @@ class Coupon extends WebBase {
 	 *
 	 */
 	public function analysis(){
+		$name = array(
+				"麦当劳",
+				"食其家",
+				"面包新语",
+				"避风塘",
+				"超级鸡车",
+				"赛百味",
+				"豪大大香鸡排",
+				"西树泡芙",
+				"苹果花园",
+				"芬尔塔蛋糕",
+				"肯德基",
+				"老盛兴苏州汤包馆",
+				"紫燕百味鸡",
+				"精品牛肉面",
+				"立丰食品",
+				"福荣祥烧腊",
+				"福建千里香馄饨王",
+				"真功夫",
+				"留夫鸭",
+				"牛奶棚",
+				"满记甜品",
+				"沙县小吃",
+				"沃歌斯",
+				"永和大王",
+				"星巴克2",
+				"星巴克1",
+				"早陆晚玖",
+				"快乐柠檬",
+				"必胜客",
+				"必胜宅急送",
+				"张记油条",
+				"巴贝隆自助烤肉",
+				"巴比馒头",
+				"好想你",
+				"哈根达斯",
+				"味千拉面",
+				"周黑鸭",
+				"吉祥馄饨",
+				"动力鸡车",
+				"克莉丝汀",
+				"久久丫",
+				"scgra3mf",
+				"McCafé",
+				"COSTA COFFEE",
+				"CoCo都可茶饮",
+				"85度C",
+				"1点点"
+			);
+
+		foreach ($name as $k => $v) {
+			$where = array(
+					'name_s' => $v,
+				);
+			$queryRes = $this->db->get_where(tname('restaurant'), $where)->result();
+
+			echo '<pre>';
+			print_r($queryRes);exit;
+		}
 
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_COUPON_TITLE_ANALYSIS');
 

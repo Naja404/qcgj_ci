@@ -52,9 +52,9 @@
 							</li>
 
 							<li>
-								<a href="<?php echo site_url('HongQiao/restaurantList');?>"><?php echo $this->lang->line('TITLE_HONGQIAO');?></a>
+								<a href="">大虹桥</a>
 							</li>
-							<li class="active"><?php echo $this->lang->line('TITLE_RESTAURANT_ADDRESS_LIST');?></li>
+							<li class="active">编辑品牌店铺</li>
 						</ul>
 
 					</div>
@@ -65,63 +65,88 @@
 						</div>
 
 						<div class="row">
-
+							<div class="col-xs-12">
+								品牌名：<?php echo $detail->name_zh.'  '.$detail->name_en;?>
+							</div>
 							<div class="col-xs-12">
 								<div class="row">
+
+									<form role="form" id="editBrandShop-form">
+
 									<div class="col-xs-12">
 										<div class="table-responsive">
 											<table id="rolelist-table" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
-														<th>店名</th>
-														<th>地址</th>
-														<th>电话</th>
-														<th>状态</th>
+														
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
+														<th>图片</th>	
 													</tr>
 												</thead>
 
 												<tbody>
-													<?php foreach ($list as $v):?>
-													<tr >
-														<td id="<?php echo $v->id;?>">
-																<?php echo $v->name_zh;?>
-																<?php echo $v->branch_name ? '-'.$v->branch_name : '';?>
-														</td>
-														<td>
-															<?php echo $v->address;?>
-														</td>
-														<td>
-															<?php echo isset($v->tel) ? $v->tel : '' ;?>
-														</td>
-														<td>
-															<?php if (!empty($v->update_time)) {?>
-																<button class="btn">已编辑</button>
-															<?php }?>
-														</td>
+													<?php foreach ($detail->pic as $v):?>
+													<tr>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-
-																<!-- <button class="btn btn-xs btn-info"> -->
-																	<a href="<?php echo site_url('HongQiao/editRestaurantAddress').'?id='.strEncrypt($v->id).'&p='.$this->input->get('p').'&mark='.$v->id;?>"><i class="icon-edit bigger-120">编辑</i></a>
-																<!-- </button> -->
-																<button class="btn btn-xs btn-danger" onclick="delMall('<?php echo $v->id;?>');">
-																	<i class="icon-trash bigger-120"></i>
-																</button>
-
+																<input type="radio" name="path" value="<?php echo $v; ?>">
 															</div>
 
 														</td>
+														<td>
+															<img src="<?php echo $v;?>">
+														</td>
 													</tr>
 													<?php endforeach;?>
+													<tr>
+														<td><input type="checkbox" name="hasMake"></td>
+														<td>是否需要作图</td>
+													</tr>
 												</tbody>
 											</table>
 										</div><!-- /.table-responsive -->
 
 									</div><!-- /span -->
+
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="pic"> 上传图片 </label>
+
+										<div class="col-sm-9">
+											<?php if (isset($detail->picPath) && !empty($detail->picPath)) {?>
+											<span id="brandShowSpan">
+												<img src="<?php echo config_item('shop_image_url').$detail->picPath;?>" style="width: 200px;"><a onclick="removeFileImg('brandShowSpan');">重置</a>
+											</span>
+											<?php } ?>
+											<input type="file" name="pic" id="pic" >
+											<input type="hidden" name="picPath" id="picPath" value="<?php echo isset($detail->picPath) && !empty($detail->picPath) ? $detail->picPath : '';?>" >
+										</div>
+									</div>
+
+
+
+									<br>
+									<br>
+
+									<div class="clearfix form-actions">
+										<div class="col-md-offset-3 col-md-9">
+											<button class="btn btn-info" type="button" onclick="subEditBrandShop()">
+												<i class="icon-ok bigger-110"></i>
+												<?php echo $this->lang->line('BTN_SUBMIT');?>
+											</button>
+
+											&nbsp; &nbsp; &nbsp;
+											<button class="btn" type="button" onclick="window.location.href=document.referrer;">
+												<i class="icon-undo bigger-110"></i>
+												返回
+											</button>
+										</div>
+									</div>
+
+									</form>
+
 								</div>
 							</div><!-- /.col -->
-							<?php echo $pagination;?>
 						</div><!-- /.row -->
 
 					</div><!-- /.page-content -->
@@ -170,26 +195,93 @@
 
 		<script src="<?php echo config_item('html_url');?>js/ace-elements.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
+		<script type="text/javascript" src="<?php echo config_item('html_url');?>js/jquery.ajaxfileupload.js"></script>
 
 		<script type="text/javascript">
-			$(document).ready(function() {
-				$(window.location.hash).css('background-color', '#f2849f');
-			});
-			
-			function delMall(mallId){
-				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DELBRAND');?>")) {
-					return false;
-				}
+		$(document).ready(function() {
 
-				$.ajax({
-					type:"POST",
-					url:"<?php echo site_url('HongQiao/delMall');?>",
-					data:{mallId:mallId},
-					success:function(data){
-						window.location.reload();
+			var interval;
+
+			function applyAjaxFileUpload(element, filesName, filePath) {
+				$(element).AjaxFileUpload({
+					action: "<?php echo site_url('HongQiao/uploadPic');?>?filesName="+filesName,
+					onChange: function(filename) {
+						var $span = $("<span />")
+							.attr("class", $(this).attr("id"))
+							.text("Uploading")
+							.insertAfter($(this));
+
+						$(this).remove();
+
+						interval = window.setInterval(function() {
+							var text = $span.text();
+							if (text.length < 13) {
+								$span.text(text + ".");
+							} else {
+								$span.text("Uploading");
+							}
+						}, 200);
+					},
+					onSubmit: function(filename) {
+						return true;
+					},
+					onComplete: function(filename, response) {
+						window.clearInterval(interval);
+						console.log(response);
+						var $span = $("span." + $(this).attr("id")).text(filename + " "),
+							$fileInput = $("<input />")
+								.attr({
+									type: "file",
+									name: $(this).attr("name"),
+									id: $(this).attr("id")
+								});
+
+						if (response.status) {
+							$span.replaceWith($fileInput);
+
+							applyAjaxFileUpload($fileInput, filesName);
+
+							alert(response.msg);
+
+							return;
+						}else{
+							$('#brandShowSpan').html('');
+							$("<img />").attr("src", response.url).css("width", 200).appendTo($span);
+							$("<a />").attr("href", "#").text("<?php echo $this->lang->line('BTN_RESET');?>").bind("click", function(e) {
+									$span.replaceWith($fileInput);
+									applyAjaxFileUpload($fileInput, filesName);
+									$("input[name="+filePath+"]").val('');
+								}).appendTo($span);
+							$("input[name="+filePath+"]").val(response.path);
+						}
 					}
 				});
 			}
+
+			applyAjaxFileUpload("#pic", "pic", "picPath");
+		});
+		
+		function subEditBrandShop(){
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('HongQiao/editBrandShop').'?id='.$this->input->get('id');?>",
+					data:$('#editBrandShop-form').serialize(),
+					success:function(data){
+						if (data.status == '0') {
+							window.location.href = "<?php echo site_url('HongQiao/brandShopList').'?p='.$this->input->get('p').'#'.$this->input->get('mark');?>";
+							return true;
+						}
+
+						alert(data.msg);
+						return false;
+					}
+				});
+		}
+
+		function removeFileImg(id){
+			$('#'+id).html('');
+		}
+
 		</script>
 
 	</body>
