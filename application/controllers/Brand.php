@@ -565,13 +565,13 @@ class Brand extends WebBase {
 				'update_time'    => currentTime(),
 			);
 
-		if (!empty($reqData['shopImgPath'])) {
+		// if (!empty($reqData['shopImgPath'])) {
 			$update['pic_url'] = $reqData['shopImgPath'];
-		}
+		// }
 
-		if (!empty($reqData['shopThumbImgPath'])) {
+		// if (!empty($reqData['shopThumbImgPath'])) {
 			$update['thumb_url'] = $reqData['shopThumbImgPath'];
-		}
+		// }
 
 		$updateRes = $this->BrandModel->editMall($update, $where);
 

@@ -136,8 +136,8 @@
 
 										<div class="col-sm-9">
 											<?php if (isset($detail->pic_url) && !empty($detail->pic_url)) {?>
-											<span id="fileImageSpan">
-												<img src="<?php echo config_item('image_url').''.$detail->pic_url;?>" style="width: 200px;"><a onclick="removeFileImg();">重置</a>
+											<span id="shopImgPathSpan">
+												<img src="<?php echo config_item('image_url').''.$detail->pic_url;?>" style="width: 200px;"><a onclick="removeFileImg('shopImgPathSpan', 'shopImgPath');">重置</a>
 											</span>
 											<?php } ?>
 											<input type="file" name="shopImg" id="fileImage" />
@@ -150,8 +150,8 @@
 
 										<div class="col-sm-9">
 											<?php if (isset($detail->thumb_url) && !empty($detail->thumb_url)) {?>
-											<span id="fileImageSpan">
-												<img src="<?php echo config_item('image_url').''.$detail->thumb_url;?>" style="width: 200px;"><a onclick="removeFileImg();">重置</a>
+											<span id="shopThumbImgPathSpan">
+												<img src="<?php echo config_item('image_url').''.$detail->thumb_url;?>" style="width: 200px;"><a onclick="removeFileImg('shopThumbImgPathSpan', 'shopThumbImgPath');">重置</a>
 											</span>
 											<?php } ?>
 											<input type="file" name="shopThumbImg" id="ThumbImg" />
@@ -380,6 +380,11 @@
 				}
 			}, "上海市");
 		}
+
+			function removeFileImg(element,filePath){
+				$('#'+element).html('');
+				$("input[name="+filePath+"]").val('');
+			}
 	
 		function subEditMall(){
 			if(!$('#editMall-form').valid()){
