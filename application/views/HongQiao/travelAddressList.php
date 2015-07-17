@@ -52,9 +52,9 @@
 							</li>
 
 							<li>
-								<a href="<?php echo site_url('Brand/listView');?>"><?php echo $this->lang->line('TITLE_BRAND_MANAGER');?></a>
+								<a >大虹桥</a>
 							</li>
-							<li class="active"><?php echo $this->lang->line('TITLE_BRAND_LIST');?></li>
+							<li class="active">景点地址列表</li>
 						</ul>
 
 					</div>
@@ -65,14 +65,7 @@
 						</div>
 
 						<div class="row">
-							<div class="col-xs-12">
-								<form method="get" action="<?php echo site_url('Brand/listView');?>">
 
-									<?php echo $this->lang->line('TEXT_SHOP_BRANDNAME');?>:<input type="text" name="brand" value="<?php echo $this->input->get('brand');?>"/>
-
-									<button type="submit"><?php echo $this->lang->line('BTN_SEARCH');?></button>
-								</form>
-							</div>
 							<div class="col-xs-12">
 								<div class="row">
 									<div class="col-xs-12">
@@ -80,46 +73,35 @@
 											<table id="rolelist-table" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
-														<th><?php echo $this->lang->line('TEXT_LOGO');?></th>
-														<th><?php echo $this->lang->line('TEXT_PIC_URL');?></th>
-														<th><?php echo $this->lang->line('TEXT_NAME_ZH');?></th>
-														<th><?php echo $this->lang->line('TEXT_NAME_EN');?></th>
-														<th style="width:200px;"><?php echo $this->lang->line('TEXT_DESCRIPTION');?></th>
-														<th><?php echo $this->lang->line('TEXT_CREATED_TIME');?></th>
-														<th><?php echo $this->lang->line('TEXT_UPDATED_TIME');?></th>
-														<th><?php echo $this->lang->line('TEXT_OPERATION_USER');?></th>
+														<th>店名</th>
+														<th>地址</th>
+														<th>状态</th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
 												</thead>
 
 												<tbody>
-													<?php foreach ($brandList as $v):?>
-													<tr>
-														<td>
-															<img src="<?php echo config_item('image_url').$v->logo_url;?>" width="100px">
+													<?php foreach ($list as $v):?>
+													<tr >
+														<td id="<?php echo $v->id;?>">
+																<?php echo $v->name_zh;?>
 														</td>
 														<td>
-															<?php $pic = explode(',', $v->pic_url);?>
-															<?php foreach($pic as $j => $m):?>
-																<?php if ($m) { $m = explode('|', $m);?>
-																<a href="<?php echo config_item('image_url').$m[0];?>" target="_blank">图<?php echo $j+1;?></a>
-																<?php }?>
-															<?php endforeach;?>
+															<?php echo $v->address;?>
 														</td>
-														<td><?php echo $v->name_zh;?></td>
-														<td><?php echo $v->name_en;?></td>
-														<td><?php echo $v->summary;?></td>
-														<td><?php echo $v->create_time;?></td>
-														<td><?php echo $v->update_time;?></td>
-														<td><?php echo $v->oper;?></td>
+
+														<td>
+															<?php if (!empty($v->update_time)) {?>
+																<button class="btn">已编辑</button>
+															<?php }?>
+														</td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 
 																<!-- <button class="btn btn-xs btn-info"> -->
-																	<a href="<?php echo site_url('Brand/editBrand').'?brandId='.strEncrypt($v->id).'&p='.$this->input->get('p');?>"><i class="icon-edit bigger-120"></i>编辑</a>
+																	<a href="<?php echo site_url('HongQiao/editTravelAddress').'?id='.strEncrypt($v->id).'&p='.$this->input->get('p').'&mark='.$v->id;?>"><i class="icon-edit bigger-120">编辑</i></a>
 																<!-- </button> -->
-
-																<button class="btn btn-xs btn-danger" onclick="delBrand('<?php echo $v->id;?>');">
+																<button class="btn btn-xs btn-danger" onclick="delMall('<?php echo $v->id;?>');">
 																	<i class="icon-trash bigger-120"></i>
 																</button>
 
@@ -186,15 +168,19 @@
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 
 		<script type="text/javascript">
-			function delBrand(brandId){
+			$(document).ready(function() {
+				$(window.location.hash).css('background-color', '#f2849f');
+			});
+			
+			function delMall(mallId){
 				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DELBRAND');?>")) {
 					return false;
 				}
 
 				$.ajax({
 					type:"POST",
-					url:"<?php echo site_url('Brand/delBrand');?>",
-					data:{brandId:brandId},
+					url:"<?php echo site_url('HongQiao/delMall');?>",
+					data:{mallId:mallId},
 					success:function(data){
 						window.location.reload();
 					}

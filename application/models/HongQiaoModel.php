@@ -17,6 +17,36 @@ class HongQiaoModel extends CI_Model {
 	}
 
 	/**
+	 * 获取店铺列表
+	 * @param int $p 页码
+	 * @param int $type 
+	 */
+	public function getMallList($p = 1, $type = 0, $url = ''){
+
+		$limit = "LIMIT ".page($p, 25);
+		
+		$field = " * ";
+
+		$sql = "SELECT %s FROM ".tname('mall')." WHERE level = ".$type."  ORDER BY update_time ASC %s ";
+
+		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', ''))->first_row();
+
+		$pagination = $this->setPagination(site_url($url), $queryTotal->total, 25);
+
+		$sql = sprintf($sql, $field, $limit);
+
+		$queryRes = $this->db->query($sql)->result();
+
+		$returnRes = array(
+				'list'       => $queryRes,
+				'pagination' => $pagination,
+			);
+		
+		return $returnRes;
+
+	}
+
+	/**
 	 * 品牌店铺列表
 	 *
 	 */	
@@ -331,6 +361,18 @@ class HongQiaoModel extends CI_Model {
 		$where = array(
 				'id' => $reqData['mallId'],
 			);
+
+		$updateRes = $this->db->where($where)->update(tname('mall'), $update);
+
+		return $updateRes ? true : false;
+	}
+
+	/**
+	 * 编辑地址
+	 * @param array $update 更新内容
+	 * @param array $where 更新条件
+	 */
+	public function editMallAddress($update = array(), $where = array()){
 
 		$updateRes = $this->db->where($where)->update(tname('mall'), $update);
 

@@ -12,7 +12,24 @@ class HongQiao extends WebBase {
 	public function __construct(){
 		parent::__construct();
 		$this->load->model('HongQiaoModel');
+		$this->load->model('BrandModel');
 		$this->lang->load('hongqiao');
+	}
+
+	/**
+	 * 商场列表
+	 *
+	 */
+	public function mallList(){
+		$list = $this->HongQiaoModel->getBrandShopList($this->p);
+
+		$this->outData['pageTitle']  = '商场列表';
+
+		$this->outData['list']       = $list['list'];
+
+		$this->outData['pagination'] = $list['pagination'];
+
+		$this->load->view('HongQiao/mallList', $this->outData);
 	}
 
 	/**
@@ -78,6 +95,42 @@ class HongQiao extends WebBase {
 	 */
 	public function cinemaAddressList(){
 
+		$list = $this->HongQiaoModel->getMallList($this->p, 5, 'HongQiao/cinemaAddressList');
+
+		$this->outData['pageTitle'] = '电影院地址列表';
+
+		$this->outData['list'] = $list['list'];
+
+		$this->outData['pagination'] = $list['pagination'];
+
+		$this->load->view('HongQiao/cinemaAddressList', $this->outData);
+	}
+
+	/**
+	 * 编辑电影院地址
+	 *
+	 */
+	public function editCinemaAddress(){
+		$id = strDecrypt($this->input->get('id'));
+
+		if (!$this->HongQiaoModel->checkEditMall($id, 5)) {
+			$outData = array(
+					'errLang' => $this->lang->line('ERR_AUTH_EDIT_BRAND'),
+					'url'     => site_url('HongQiao/cinemaAddressList'),
+				);	
+			$this->load->view('Public/error', $outData);
+		}
+
+		if ($this->input->is_ajax_request()) return $this->_editCinemaAddress($id); 
+
+		$this->outData['pageTitle'] = '编辑电影院地址';
+
+		$this->outData['detail'] = $this->HongQiaoModel->getMallDetail($id, 5);
+
+		// $this->outData['district'] = $this->BrandModel->getDistrictList('391db7b8fdd211e3b2bf00163e000dce');
+
+
+		$this->load->view('HongQiao/editCinemaAddress', $this->outData);		
 	}
 
 	/**
@@ -124,6 +177,50 @@ class HongQiao extends WebBase {
 	}
 
 	/**
+	 * 景点列表
+	 *
+	 */
+	public function travelAddressList(){
+
+		$list = $this->HongQiaoModel->getMallList($this->p, 6, 'HongQiao/travelAddressList');
+
+		$this->outData['pageTitle'] = '景点地址列表';
+
+		$this->outData['list'] = $list['list'];
+
+		$this->outData['pagination'] = $list['pagination'];
+
+		$this->load->view('HongQiao/travelAddressList', $this->outData);
+	}
+
+	/**
+	 * 编辑景点地址
+	 *
+	 */
+	public function editTravelAddress(){
+		$id = strDecrypt($this->input->get('id'));
+
+		if (!$this->HongQiaoModel->checkEditMall($id, 6)) {
+			$outData = array(
+					'errLang' => $this->lang->line('ERR_AUTH_EDIT_BRAND'),
+					'url'     => site_url('HongQiao/travelAddressList'),
+				);	
+			$this->load->view('Public/error', $outData);
+		}
+
+		if ($this->input->is_ajax_request()) return $this->_editTravelForm($id); 
+
+		$this->outData['pageTitle'] = '编辑景点地址';
+
+		$this->outData['detail'] = $this->HongQiaoModel->getMallDetail($id, 6);
+
+		$this->outData['district'] = $this->BrandModel->getDistrictList('391db7b8fdd211e3b2bf00163e000dce');
+
+
+		$this->load->view('HongQiao/editTravelAddress', $this->outData);
+	}
+
+	/**
 	 * 编辑景点
 	 *
 	 */
@@ -159,7 +256,7 @@ class HongQiao extends WebBase {
 	 */
 	public function restaurantList(){
 
-		$where = ' WHERE mark = 1 ';
+		$where = ' WHERE mark = 2 ';
 
 		$list = $this->HongQiaoModel->getRestaurantList($where, $this->p);
 
@@ -469,6 +566,79 @@ class HongQiao extends WebBase {
 
 
 		$updateRes = $this->db->where($where)->update(tname('brand_rel'), $update);
+
+		if ($updateRes) {
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}else{
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_UPDATE_FAILURE');
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 编辑景点内容
+	 * @param string $id 
+	 */
+	public function _editTravelForm($id = false){
+		$reqData = $this->input->post();
+		
+		if ($id != $reqData['mallId']) jsonReturn($this->ajaxRes);
+
+		$where = array(
+				'id' => $reqData['mallId'],
+				'level' => 6,
+			);
+
+		$update = array(
+				'name_zh'        => $reqData['mallName'],
+				'address'        => $reqData['address'],
+				'tb_district_id' => $reqData['districtId'],
+				'longitude'      => $reqData['lng'],
+				'latitude'       => $reqData['lat'],
+				'tel'            => $reqData['tel'],
+				'update_time'    => currentTime(),
+			);
+
+		$updateRes = $this->HongQiaoModel->editMallAddress($update, $where);
+
+		if ($updateRes) {
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}else{
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_UPDATE_FAILURE');
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 编辑电影院内容
+	 * @param string $id
+	 */
+	public function _editCinemaAddress($id = false){
+		$reqData = $this->input->post();
+		
+		if ($id != $reqData['mallId']) jsonReturn($this->ajaxRes);
+
+		$where = array(
+				'id' => $reqData['mallId'],
+				'level' => 5,
+			);
+
+		$update = array(
+				'name_zh'        => $reqData['mallName'],
+				'address'        => $reqData['address'],
+				'longitude'      => $reqData['lng'],
+				'latitude'       => $reqData['lat'],
+				'tel'            => $reqData['tel'],
+				'update_time'    => currentTime(),
+			);
+
+		$updateRes = $this->HongQiaoModel->editMallAddress($update, $where);
 
 		if ($updateRes) {
 			$this->ajaxRes = array(

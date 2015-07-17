@@ -16,6 +16,53 @@ class BrandModel extends CI_Model {
 	}
 
 	/**
+	 * 获取商场列表
+	 * @param string $where 查询条件
+	 * @param int $p 页码
+	 * @param int $level 类型
+	 * @param string $url 分页url
+	 */
+	public function getMall($where = null, $p = 1, $level = 0, $url = false){
+
+		$limit = "LIMIT ".page($p, 25);
+		
+		$field = " * ";
+
+		$sql = "SELECT %s FROM ".tname('mall')." WHERE level = ".$level." %s  ORDER BY update_time ASC %s ";
+
+		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, ''))->first_row();
+
+		$pagination = $this->setPagination(site_url($url), $queryTotal->total, 25);
+
+		$sql = sprintf($sql, $field, $where, $limit);
+
+		$queryRes = $this->db->query($sql)->result();
+
+		$returnRes = array(
+				'list'       => $queryRes,
+				'pagination' => $pagination,
+			);
+		
+		return $returnRes;
+	}
+
+	/**
+	 * 获取商场详细
+	 * @param string $id 商场id
+	 * @param int $level 
+	 */
+	public function getMallDetail($id = false, $level = 0){
+		$where = array(
+				'id' => $id,
+				'level' => $level,
+			);
+
+		$queryRes = $this->db->get_where(tname('mall'), $where)->first_row();
+
+		return $queryRes;
+	}
+
+	/**
 	 * 根据id获取品牌信息
 	 * @param string $brandId 品牌id
 	 */
@@ -668,6 +715,18 @@ class BrandModel extends CI_Model {
 		}
 
 		return true;
+	}
+
+	/**
+	 * 编辑商场
+	 * @param array $update 更新内容
+	 * @param array $where 更新条件
+	 */
+	public function editMall($update = array(), $where = array()){
+
+		$updateRes = $this->db->where($where)->update(tname('mall'), $update);
+
+		return $updateRes ? true : false;
 	}
 
 	/**

@@ -18,6 +18,60 @@ class Brand extends WebBase {
 	}
 
 	/**
+	 * 商场列表
+	 *
+	 */
+	public function mallList(){
+		$this->outData['pageTitle'] = '商场列表';
+			
+		$where = $this->_mallListWhere();
+
+		$list = $this->BrandModel->getMall($where, $this->p, 1, 'Brand/mallList');
+
+		$this->outData['pagination']   = $list['pagination'];
+		
+		$this->outData['mallList']     = $list['list'];
+		
+		$this->outData['cityList']     = $this->BrandModel->getCityList();
+		
+		$this->outData['districtList'] = $this->BrandModel->getDistrictByCity($this->input->get('city'), 'obj');
+
+		$this->load->view('Brand/mallList', $this->outData);
+	}
+
+	/**
+	 * 编辑商场
+	 *
+	 */
+	public function editMall(){
+		
+		$id = strDecrypt($this->input->get('id'));
+		
+		$detail = $this->BrandModel->getMallDetail($id, 1);
+
+		if (count($detail) <= 0) {
+			$outData = array(
+					'errLang' => $this->lang->line('ERR_AUTH_EDIT_BRAND'),
+					'url'     => site_url('Brand/mallList'),
+				);	
+			$this->load->view('Public/error', $outData);
+		}
+
+		if ($this->input->is_ajax_request()) return $this->_editMall($id); 
+
+
+		$this->outData['pageTitle'] = '编辑商场';
+
+		$this->outData['detail'] = $detail;
+
+		$this->outData['city'] = $this->BrandModel->getCityList();
+
+		$this->outData['district'] = $this->BrandModel->getDistrictList($detail->tb_city_id);
+
+		$this->load->view('Brand/editMall', $this->outData);
+	}
+
+	/**
 	 * 1005品牌列表
 	 *
 	 */
@@ -482,5 +536,75 @@ class Brand extends WebBase {
 		if (!empty($reqData['address'])) $where .= " AND c.address LIKE '%".$reqData['address']."%' ";
 
 		return $where;
+	}
+
+	/**
+	 * 编辑商场表单
+	 * @param string $id 
+	 */
+	public function _editMall($id = false){
+		$reqData = $this->input->post();
+		
+		if ($id != $reqData['mallId']) jsonReturn($this->ajaxRes);
+
+		$where = array(
+				'id'    => $reqData['mallId'],
+				'level' => 1,
+			);
+
+		$update = array(
+				'name_zh'        => $reqData['mallName'],
+				'address'        => $reqData['address'],
+				'tb_city_id'	 => $reqData['cityId'],
+				'city_name'		 => $this->BrandModel->getCityNameById($reqData['cityId']),
+				'tb_district_id' => $reqData['districtId'],
+				'district_name'	 => $this->BrandModel->getDistrictNameById($reqData['districtId']),
+				'longitude'      => $reqData['lng'],
+				'latitude'       => $reqData['lat'],
+				'tel'            => $reqData['tel'],
+				'update_time'    => currentTime(),
+			);
+
+		if (!empty($reqData['shopImgPath'])) {
+			$update['pic_url'] = $reqData['shopImgPath'];
+		}
+
+		if (!empty($reqData['shopThumbImgPath'])) {
+			$update['thumb_url'] = $reqData['shopThumbImgPath'];
+		}
+
+		$updateRes = $this->BrandModel->editMall($update, $where);
+
+		if ($updateRes) {
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}else{
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_UPDATE_FAILURE');
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 商场列表查询条件
+	 *
+	 */
+	public function _mallListWhere(){
+
+		$reqData = $this->input->get();
+
+		$where = NULL;
+
+		if (!empty($reqData['city'])) $where .= " AND city_name = '".$reqData['city']."' ";
+
+		if (!empty($reqData['district'])) $where .= " AND district_name = '".$reqData['district']."' ";
+
+		if (!empty($reqData['shop'])) $where .= " AND name_zh LIKE '%".$reqData['shop']."%' "; 
+
+		if (!empty($reqData['address'])) $where .= " AND address LIKE '%".$reqData['address']."%' ";
+
+		return $where;
+
 	}
 }
