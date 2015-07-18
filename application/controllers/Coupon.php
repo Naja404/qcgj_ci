@@ -13,6 +13,7 @@ class Coupon extends WebBase {
 		parent::__construct();
 
 		$this->load->model('CouponModel');
+		$this->load->library('snoopy');
 		$this->outData['currentModule'] = __CLASS__;
 	}
 
@@ -40,12 +41,20 @@ class Coupon extends WebBase {
 	 *
 	 */
 	public function saleCoupon(){
+
+
+
 		if (!$this->input->is_ajax_request()) {
 			jsonReturn($this->ajaxRes);
 		}
 
 		$couponId = strDecrypt($this->input->post('couponId'));
 		$couponStatus = $this->input->post('status');
+
+		// 银联验劵
+		$setRes = $this->CouponModel->setUnionPay($couponId, $couponStatus);
+
+		if (!$setRes) jsonReturn($this->ajaxRes);
 
 		$updateRes = $this->CouponModel->saleCoupon($couponId, $couponStatus);
 
@@ -58,6 +67,8 @@ class Coupon extends WebBase {
 						'couponStatus' => $couponStatus == 1 ? 2 : 1,
 						'class'        => $updateRes['class'],
 						);
+
+
 		}
 
 		jsonReturn($this->ajaxRes);

@@ -17,6 +17,120 @@ class HongQiaoModel extends CI_Model {
 	}
 
 	/**
+	 * 获取爬虫店铺数据
+	 * @param string $where 查询条件
+	 * 
+	 */
+	public function getMall2W($where = NULL, $p = 1, $url = false){
+
+		$limit = "LIMIT ".page($p, 25);
+		
+		$field = " * ";
+
+		$sql = "SELECT %s FROM ".tname('new_mall_s')." WHERE status = 1 %s  ORDER BY update_time ASC %s ";
+
+		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, ''))->first_row();
+
+		$pagination = $this->setPagination(site_url($url), $queryTotal->total, 25);
+
+		$sql = sprintf($sql, $field, $where, $limit);
+
+		$queryRes = $this->db->query($sql)->result();
+
+		$returnRes = array(
+				'list'       => $queryRes,
+				'pagination' => $pagination,
+			);
+		
+		return $returnRes;
+	}
+
+	/**
+	 * 获取爬虫数据详情
+	 * @param string $id
+	 */
+	public function getMall2wDetail($id =  false){
+		$where = array(
+				'id' => $id,
+			);
+
+		$queryRes = $this->db->get_where(tname('new_mall_s'), $where)->first_row();
+
+		$searchName = addslashes($queryRes->brandName);
+
+		$queryRes->brandInfo = $this->db->select('id, name_zh, name_en')
+											->where(array('name_zh' => $searchName))
+											->or_where(array('name_en' => $searchName))
+											->get(tname('brand'))
+											->first_row();
+
+		$queryRes->mall = $this->getMallList2w($queryRes->mallName, $queryRes->address, $queryRes->cityName, 'html');
+
+		return count($queryRes) ? $queryRes : false;
+	}
+
+	/**
+	 * 获取商场内容
+	 * @param string $mallName
+	 * @param string $address
+	 * @param string $city
+	 */
+	public function getMallList2w($mall = false, $address = false, $city = false, $format = 'array'){
+		
+		$queryRes = $this->db->like('name_zh', $mall)
+								->or_like('address', $address)
+								->get_where(tname('mall'), array('city_name' => $city))
+								->result();
+
+		$returnRes = $queryRes;
+
+		if ($format == 'html') {
+			$returnRes = '';
+			foreach ($queryRes as $k => $v) {
+				$html = '<input type="radio" name="mallId_s[]" id="mall_%s" value="%s"><label for="mall_%s">%s(%s)</label><br>';
+				$returnRes .= sprintf($html, $v->id, $v->id, $v->id, $v->name_zh, $v->address);
+			}
+		}
+
+		return $returnRes ? $returnRes : false;
+	}
+
+	/**
+	 * 搜索品牌
+	 * @param string $brandName
+	 */
+	public function searchBrand($brandName = false){
+		if (!$brandName) return false;
+
+		$cacheRes = $this->cache->get(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName));
+		
+		if ($cacheRes) return $cacheRes; 
+
+		$list = $this->db->select('id, name_zh, name_en')
+						 ->like('name_zh', $brandName)
+						 ->or_like('name_en', $brandName)
+						 ->order_by('name_en, name_zh ASC')
+						 ->limit(20)
+						 ->get(tname('brand'))
+						 ->result();
+
+		$returnList = array();
+
+		foreach ($list as $k => $v) {
+			$tmp = array(
+					'label' => $v->name_en.'_'.$v->name_zh,
+					'value' => $v->name_zh,
+					'id' => $v->id,
+				);
+			array_push($returnList, $tmp);
+		}
+
+		if (count($returnList)) $this->cache->save(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName), $returnList, 3600); 
+
+		return $returnList;
+	}
+
+	/**
 	 * 获取店铺列表
 	 * @param int $p 页码
 	 * @param int $type 

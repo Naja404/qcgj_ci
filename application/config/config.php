@@ -23,6 +23,14 @@ $config['shop_image_url'] = 'http://shop.dev.gjla.com/';
 $config['html_url']  = $config['base_url'].'html/';
 $config['db_prefix'] = 'tb_';
 
+/**
+ * 银联接口相关配置
+ */
+$config['UNIONPAY'] = array(
+		'CREATE_EVENT' => 'http://api.dev.gjla.com/app_admin/api/unionpay/createSpEvent',
+		'CANCEL_EVENT' => 'http://api.dev.gjla.com/app_admin/api/unionpay/cancelSpEvent',
+	);
+
 /*
 |--------------------------------------------------------------------------
 | Index File

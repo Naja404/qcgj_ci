@@ -17,6 +17,134 @@ class HongQiao extends WebBase {
 	}
 
 	/**
+	 * 2万条数据列表
+	 *
+	 */
+	public function mall2w(){
+
+		$where = NULL;
+
+		$list = $this->HongQiaoModel->getMall2W($where, $this->p, 'HongQiao/mall2w');
+
+		$this->outData['pageTitle']  = '爬虫数据列表';
+
+		$this->outData['list']       = $list['list'];
+
+		$this->outData['pagination'] = $list['pagination'];
+
+		$this->load->view('HongQiao/mall2w', $this->outData);
+	}
+
+	/**
+	 * 编辑爬虫数据
+	 *
+	 */
+	public function editMall2w(){
+		$id = strDecrypt($this->input->get('id'));
+
+		$detail = $this->HongQiaoModel->getMall2wDetail($id);
+
+		if (count($detail) <= 0) {
+			$outData = array(
+					'errLang' => $this->lang->line('ERR_AUTH_EDIT_BRAND'),
+					'url'     => site_url('HongQiao/mall2w').'?p='.$this->input->get('p'),
+				);	
+			$this->load->view('Public/error', $outData);
+		}
+
+		if ($this->input->is_ajax_request()) return $this->_editMall2wForm($id); 
+
+		$this->outData['pageTitle'] = '编辑爬虫数据s';
+
+		$this->outData['detail'] = $detail;
+
+		$this->load->view('HongQiao/editMall2w', $this->outData);		
+	}
+
+	/**
+	 * 搜索品牌
+	 *
+	 */
+	public function searchBrand(){
+		
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$brandName = $this->input->post('brand');
+		
+		if (empty($brandName)) jsonReturn($this->ajaxRes); 
+
+		$list = $this->HongQiaoModel->searchBrand($brandName);
+
+		$this->ajaxRes = array(
+				'status' => 0,
+				'list' => $list,
+			);
+
+		jsonReturn($this->ajaxRes);
+
+	}
+
+	/**
+	 * 获取商场列表
+	 *
+	 */
+	public function getMallList(){
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$mallName = $this->input->post('mall');
+		$cityName = $this->input->post('city');
+		
+		if (empty($mallName)) jsonReturn($this->ajaxRes); 
+
+		$list = $this->HongQiaoModel->getMallList2w($mallName, $mallName, $cityName, 'html');
+
+		$this->ajaxRes = array(
+				'status' => 0,
+				'list' => $list,
+			);
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 编辑爬虫数据表单
+	 * @param int $id 
+	 */
+	public function _editMall2wForm($id = false){
+
+		$reqData = $this->input->post();
+		echo '<pre>';
+		print_r($reqData);exit;
+		if ($id != $reqData['mallId']) jsonReturn($this->ajaxRes);
+
+		$where = array(
+				'id' => $reqData['mallId'],
+				'level' => 5,
+			);
+
+		$update = array(
+				'name_zh'        => $reqData['mallName'],
+				'address'        => $reqData['address'],
+				'longitude'      => $reqData['lng'],
+				'latitude'       => $reqData['lat'],
+				'tel'            => $reqData['tel'],
+				'update_time'    => currentTime(),
+			);
+
+		$updateRes = $this->HongQiaoModel->editMallAddress($update, $where);
+
+		if ($updateRes) {
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}else{
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_UPDATE_FAILURE');
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
 	 * 商场列表
 	 *
 	 */

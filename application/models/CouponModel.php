@@ -373,9 +373,10 @@ class CouponModel extends CI_Model {
 	/**
 	 * 获取优惠券信息
 	 * @param string $couponId 优惠券id
+	 * @param bool $isAdmin 是否管理员
 	 */
-	public function getCouponById($couponId = false){
-		if (!$this->checkAuthCoupon($couponId)) {
+	public function getCouponById($couponId = false, $isAdmin = false){
+		if (!$this->checkAuthCoupon($couponId, $isAdmin)) {
 			return false;
 		}
 
@@ -383,6 +384,8 @@ class CouponModel extends CI_Model {
 				'id'          => $couponId,
 				'tb_brand_id' => $this->userInfo->brand_id,
 			);
+
+		if ($isAdmin === true) unset($where['tb_brand_id']);
 
 		$couponRes = $this->db->get_where(tname('coupon'), $where)->first_row();
 
@@ -479,13 +482,16 @@ class CouponModel extends CI_Model {
 	/**
 	 * 验证优惠券编辑权限
 	 * @param string $couponId
+	 * @param string $isAdmin 是否管理员
 	 */
-	public function checkAuthCoupon($couponId = false){
+	public function checkAuthCoupon($couponId = false, $isAdmin = false){
 		$where = array(
 				'id'          => $couponId,
 				'tb_brand_id' => $this->userInfo->brand_id,
-				'on_sale'     => 0,
+				// 'on_sale'     => 0,
 			);
+
+		if ($isAdmin === true) unset($where['tb_brand_id']); 
 
 		$queryRes = $this->db->get_where(tname('coupon'),$where)->result();
 
@@ -506,6 +512,55 @@ class CouponModel extends CI_Model {
 		$updateRes = $this->db->where($where)->update(tname('coupon'), $update);
 
 		return $updateRes ? true : false;
+	}
+
+	/**
+	 * 创建银联优惠券
+	 * @param string $couponId 
+	 * @param int $couponStatus 1.上架 2.下架
+	 */
+	public function setUnionPay($couponId = false, $couponStatus = false){
+		if (!$couponId || empty($couponId)) return false;
+
+		if (!in_array($couponStatus, array(1, 2))) return false;
+
+		$coupon = $this->getCouponById($couponId, true);
+
+		if (count($coupon) <= 0 || empty($coupon)) return false;
+
+		// todo 查询门店id
+
+		$form = array(
+				'event_no'       => $couponId,
+				'shop_no'        => '086310100000000622',
+				'event_title'    => $coupon->name,
+				'event_desc'     => '',
+				'begin_date'     => currentTime('DATE_1', strtotime($coupon->begin_date)),
+				'end_date'       => currentTime('DATE_1', strtotime($coupon->end_date)),
+				'event_link'     => $coupon->external_link,
+				'event_rule'     => $coupon->coupon_desc ? $coupon->coupon_desc : '活动规则',
+				'rule_desc'      => $coupon->recommend_desc ? $coupon->recommend_desc : '规则描述',
+				'spec_bank_flag' => 1,
+				'event_status'   => 1,
+			);
+
+		$url = config_item('UNIONPAY.CREATE_EVENT');
+
+		if ($couponStatus == 2) {
+			$form = array(
+					'event_no' => $couponId,
+					'shop_no' => '086310100000000622',
+				);
+
+			$url = config_item('UNIONPAY.CANCEL_EVENT');
+		}
+
+		$postRes = $this->Snoopy->submit($url, $form);
+
+		$result = json_decode($postRes->results, true);
+
+		return $result['errcode'] == '0' ? true : false;
+
 	}
 
 	/**

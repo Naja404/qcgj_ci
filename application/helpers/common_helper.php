@@ -173,6 +173,10 @@ function currentTime($format = '', $timestamp = 0){
 
 			$currentTime = $microtime[1]+$microtime[0];
 			break;
+		case 'DATE_1':
+			$timestamp = $timestamp > 0 ? $timestamp : time();
+			$currentTime = date('YmdHis', $timestamp);
+			break;
 		default:
 			$timestamp = $timestamp > 0 ? $timestamp : time();
 			$currentTime = date('Y-m-d H:i:s', $timestamp);
