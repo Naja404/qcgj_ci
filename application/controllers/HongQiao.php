@@ -54,7 +54,7 @@ class HongQiao extends WebBase {
 
 		if ($this->input->is_ajax_request()) return $this->_editMall2wForm($id); 
 
-		$this->outData['pageTitle'] = '编辑爬虫数据s';
+		$this->outData['pageTitle'] = '编辑爬虫数据';
 
 		$this->outData['detail'] = $detail;
 
@@ -113,25 +113,23 @@ class HongQiao extends WebBase {
 	public function _editMall2wForm($id = false){
 
 		$reqData = $this->input->post();
-		echo '<pre>';
-		print_r($reqData);exit;
+
 		if ($id != $reqData['mallId']) jsonReturn($this->ajaxRes);
+
+		$brandStatus = $this->HongQiaoModel->checkBrand($reqData['brandNameZh_s'], $reqData['brandNameEn_s'], $reqData['brandId_s']);
+
+		$update = array(
+				'tb_brand_id' => is_string($brandStatus) ? $brandStatus : '',
+				'tb_mall_id'  => $reqData['mallId_s'],
+				'update_time' => currentTime(),
+				'user'        => $this->userInfo->user_id,
+			);
 
 		$where = array(
 				'id' => $reqData['mallId'],
-				'level' => 5,
 			);
 
-		$update = array(
-				'name_zh'        => $reqData['mallName'],
-				'address'        => $reqData['address'],
-				'longitude'      => $reqData['lng'],
-				'latitude'       => $reqData['lat'],
-				'tel'            => $reqData['tel'],
-				'update_time'    => currentTime(),
-			);
-
-		$updateRes = $this->HongQiaoModel->editMallAddress($update, $where);
+		$updateRes = $this->db->where($where)->update(tname('new_mall_s'), $update);
 
 		if ($updateRes) {
 			$this->ajaxRes = array(
@@ -142,6 +140,20 @@ class HongQiao extends WebBase {
 		}
 
 		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 标记删除爬虫数据
+	 *
+	 */
+	public function delMall2w(){
+		$where = array(
+				'id' => $this->input->post('mallId'),
+			);
+
+		$this->db->where($where)->update(tname('new_mall_s'), array('status' => '0'));
+
+		jsonReturn(array('status' => 0));
 	}
 
 	/**

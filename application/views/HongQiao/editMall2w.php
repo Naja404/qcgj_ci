@@ -83,7 +83,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="brandNameEn_s"> 品牌英文(匹配) </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="brandNameEn_s" id="brandNameEn_s" placeholder="" value="<?php echo !empty($detail->brandInfo->name_en) ? $detail->brandInfo->name_en : '';?>"/>
+											<input type="text" name="brandNameEn_s" id="brandNameEn_s" placeholder="" value="<?php echo !empty($detail->brandInfo->name_en) ? $detail->brandInfo->name_en : '';?>" />
 										</div>
 									</div>
 
@@ -202,12 +202,15 @@
 			jQuery(function($) {
 
 				$("#brandNameZh_s").keyup(function(){
+					
+					$("#brandId_s").val('');
+
 					$.ajax({
 			      		type:"POST",
 			      		url:"<?php echo site_url('HongQiao/searchBrand');?>",
 			      		data:{brand:$("#brandNameZh_s").val()},
 			      		success:function(data){
-			      			if (data.status != 0) { $("#brandId_s").val(''); return false;}
+			      			if (data.status != 0) { return false;}
 			      			
 			      			var sourceData = new Array();
 
@@ -218,7 +221,7 @@
 						    $( "#brandNameZh_s" ).autocomplete({
 						      source: sourceData,
 						      select:function(event, ui){
-									var brandName = ui.item.value.split('_');
+									var brandName = ui.item.label.split('_');
 
 									$("#brandNameEn_s").val(brandName[0]);
 									$("#brandNameZh_s").val(brandName[1]);
@@ -229,45 +232,6 @@
 						
 			      		}
 					});
-				});
-
-				$('#editMall-form').validate({
-					errorElement: 'div',
-					errorClass: 'help-block',
-					focusInvalid: false,
-					rules: {
-						lng: {
-							required:true
-						},
-						lat:{
-							required:true
-						}
-					},
-			
-					messages: {
-						lng: {
-							required:"<?php echo $this->lang->line('ERR_MALL_LNG');?>"
-						},
-						lat:{
-							required:"<?php echo $this->lang->line('ERR_MALL_LAT');?>"
-						}
-					},
-			
-					invalidHandler: function (event, validator) { //display error alert on form submit   
-						$('.alert-danger', $('.login-form')).show();
-					},
-					highlight: function (e) {
-						$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
-					},
-			
-					success: function (e) {
-						$(e).closest('.form-group').removeClass('has-error').addClass('has-info');
-						$(e).remove();
-					},
-					errorPlacement: function (error, element) {
-						console.log(error);
-						error.insertAfter(element.parent().children());
-					}
 				});
 			});
 	
@@ -306,8 +270,17 @@
 		}
 	
 		function subEditMall(){
-			if(!$('#editMall-form').valid()){
+
+			if ($('input:radio[name="mallId_s"]:checked').val() == null) {
+				alert('请选择商场');
 				return false;
+			}
+
+			if ($('#brandId_s').val() == '') {
+				if ($('#brandNameZh_s').val() == '') {
+					alert('请填写品牌中文');
+					return false;
+				};
 			}
 
 			$.ajax({
@@ -328,7 +301,7 @@
 		}
 
 		function delMall(mallId){
-			if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DELBRAND');?>")) {
+			if (!confirm("是否确认删除该数据")) {
 				return false;
 			}
 
@@ -337,7 +310,7 @@
 				url:"<?php echo site_url('HongQiao/delMall2w');?>",
 				data:{mallId:mallId},
 				success:function(data){
-					window.location.reload();
+						window.location.href=document.referrer;
 				}
 			});
 		}

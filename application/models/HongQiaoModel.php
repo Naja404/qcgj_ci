@@ -77,18 +77,27 @@ class HongQiaoModel extends CI_Model {
 	 */
 	public function getMallList2w($mall = false, $address = false, $city = false, $format = 'array'){
 		
-		$queryRes = $this->db->like('name_zh', $mall)
+		$queryRes = $this->db->group_start()
+								->like('name_zh', $mall)
 								->or_like('address', $address)
+								->group_end()
 								->get_where(tname('mall'), array('city_name' => $city))
 								->result();
-
+								
 		$returnRes = $queryRes;
 
 		if ($format == 'html') {
 			$returnRes = '';
 			foreach ($queryRes as $k => $v) {
-				$html = '<input type="radio" name="mallId_s[]" id="mall_%s" value="%s"><label for="mall_%s">%s(%s)</label><br>';
-				$returnRes .= sprintf($html, $v->id, $v->id, $v->id, $v->name_zh, $v->address);
+				
+				if ($k == 0) {
+					$checked = 'checked';
+				}else{
+					$checked = '';
+				}
+
+				$html = '<input type="radio" name="mallId_s" id="mall_%s" value="%s" %s><label for="mall_%s">%s(%s)</label><br>';
+				$returnRes .= sprintf($html, $v->id, $v->id, $checked, $v->id, $v->name_zh, $v->address);
 			}
 		}
 
@@ -128,6 +137,42 @@ class HongQiaoModel extends CI_Model {
 		if (count($returnList)) $this->cache->save(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName), $returnList, 3600); 
 
 		return $returnList;
+	}
+
+	/**
+	 *  检测品牌
+	 * @param string $brandZh 品牌中文
+	 * @param string $brandEn 品牌英文
+	 * @param string $brandId 品牌id
+	 */
+	public function checkBrand($brandZh = false, $brandEn = false, $brandId = false){
+
+		if (!$brandId || empty($brandId)) {
+			$insert = array(
+					'id'          => makeUUID(),
+					'name_zh'     => !empty($brandZh) ? $brandZh : '',
+					'name_en'     => !empty($brandEn) ? $brandEn : '',
+					'create_time' => currentTime(),
+					'update_time' => currentTime(),
+					'oper'        => $this->userInfo->user_id,
+					'mark'        => 102,
+				);
+
+			$insertRes = $this->db->insert(tname('brand'), $insert);
+
+			return $insertRes ? $insert['id'] : false;
+		}
+
+		$where = array(
+				'name_zh' => $brandZh,
+				'name_en' => $brandEn,
+				'id' => $brandId,
+			);
+
+		$queryRes = $this->db->get_where(tname('brand'), $where)->first_row();
+
+		return $queryRes->id ? $queryRes->id : false;
+ 
 	}
 
 	/**
