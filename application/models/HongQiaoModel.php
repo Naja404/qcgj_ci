@@ -58,11 +58,15 @@ class HongQiaoModel extends CI_Model {
 
 		$searchName = addslashes($queryRes->brandName);
 
-		$queryRes->brandInfo = $this->db->select('id, name_zh, name_en')
-											->where(array('name_zh' => $searchName))
-											->or_where(array('name_en' => $searchName))
-											->get(tname('brand'))
-											->first_row();
+		if (!empty($queryRes->tb_brand_id)) {
+			$queryRes->brandInfo = $this->db->get_where(tname('brand'), array('id' => $queryRes->tb_brand_id))->first_row();
+		}else{
+			$queryRes->brandInfo = $this->db->select('id, name_zh, name_en')
+												->where(array('name_zh' => $searchName))
+												->or_where(array('name_en' => $searchName))
+												->get(tname('brand'))
+												->first_row();
+		}
 
 		$queryRes->mall = $this->getMallList2w($queryRes->mallName, $queryRes->address, $queryRes->cityName, 'html');
 
@@ -81,7 +85,7 @@ class HongQiaoModel extends CI_Model {
 								->like('name_zh', $mall)
 								->or_like('address', $address)
 								->group_end()
-								->get_where(tname('mall'), array('city_name' => $city))
+								->get_where(tname('mall'), array('city_name' => $city, 'level' => 1))
 								->result();
 								
 		$returnRes = $queryRes;

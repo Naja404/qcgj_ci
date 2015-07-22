@@ -559,6 +559,8 @@ class CouponModel extends CI_Model {
 
 		$result = json_decode($postRes->results, true);
 
+		if ($result['errcode'] != '0') log_message('info', 'couponModel 562 line - setUrl error \n\r'.var_export($result, true));
+
 		return $result['errcode'] == '0' ? true : false;
 
 	}

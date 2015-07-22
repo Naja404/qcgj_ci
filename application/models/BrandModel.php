@@ -80,6 +80,10 @@ class BrandModel extends CI_Model {
 		$category = $this->db->get_where(tname('brand_category'), $whereCate)->result();
 
 		$style = $this->db->get_where(tname('brand_style'), $whereCate)->result();
+
+		$age = $this->db->get_where(tname('brand_age'), $whereCate)->result();
+
+		$price = $this->db->get_where(tname('brand_price'), $whereCate)->result();
 		
 		$brandRes->category = array();
 
@@ -91,6 +95,18 @@ class BrandModel extends CI_Model {
 
 		foreach ($style as $k => $v) {
 			$brandRes->style[] = $v->tb_style_id;
+		}
+
+		$brandRes->age = array();
+
+		foreach ($age as $k => $v) {
+			$brandRes->age[] = $v->tb_age_id;
+		}
+
+		$brandRes->price = array();
+
+		foreach ($price as $k => $v) {
+			$brandRes->price[] = $v->tb_price_id;
 		}
 
 		$brandRes->pic_url = $this->getBrandMainPicWithSingle($brandRes->pic_url);
@@ -310,6 +326,7 @@ class BrandModel extends CI_Model {
 	public function getBrandCategory(){
 		$where = array(
 				'level' => 1,
+				'type' => 1,
 			);
 
 		$queryRes = $this->db->select('id, name')->get_where(tname('category'), $where)->result();
@@ -664,8 +681,6 @@ class BrandModel extends CI_Model {
 				// 'pic_url'     => $reqData['brandShowPath'],
 				'update_time' => currentTime(),
 				'description' => $reqData['summary'],
-				'tb_age_id'   => isset($reqData['age']) ? $reqData['age'] : '',
-				'tb_price_id' => isset($reqData['price']) ? $reqData['price'] : '',
 				'oper'        => $this->userInfo->user_id,
 			);
 		
@@ -678,9 +693,9 @@ class BrandModel extends CI_Model {
 			);
 
 		// 添加品牌分类
-		if (isset($reqData['category']) && count($reqData['category'])) {
+		$this->db->where($whereCate)->delete(tname('brand_category'));
 
-			$this->db->where($whereCate)->delete(tname('brand_category'));
+		if (isset($reqData['category']) && count($reqData['category'])) {
 
 			foreach ($reqData['category'] as $k => $v) {
 				$category = array(
@@ -693,12 +708,12 @@ class BrandModel extends CI_Model {
 
 				$this->db->insert(tname('brand_category'), $category);
 			}
-		} 
+		}
 
 		// 添加风格
-		if (isset($reqData['style']) && count($reqData['style'])) {
+		$this->db->where($whereCate)->delete(tname('brand_style'));
 
-			$this->db->where($whereCate)->delete(tname('brand_style'));
+		if (isset($reqData['style']) && count($reqData['style'])) {
 
 			foreach ($reqData['style'] as $k => $v) {
 				$style = array(
@@ -710,6 +725,44 @@ class BrandModel extends CI_Model {
 					);	
 
 				$this->db->insert(tname('brand_style'), $style);
+			}
+
+		}
+
+		// 更新年龄层
+		$this->db->where($whereCate)->delete(tname('brand_age'));
+
+		if (isset($reqData['age']) && count($reqData['age'])) {
+
+			foreach ($reqData['age'] as $k => $v) {
+				$age = array(
+						'id' => makeUUID(),
+						'create_time' => currentTime(),
+						'update_time' => currentTime(),
+						'tb_brand_id' => $reqData['brandRelation'],
+						'tb_age_id' => $v,
+					);	
+
+				$this->db->insert(tname('brand_age'), $age);
+			}
+
+		}
+
+		// 更新消费层
+		$this->db->where($whereCate)->delete(tname('brand_price'));
+		
+		if (isset($reqData['price']) && count($reqData['price'])) {
+
+			foreach ($reqData['price'] as $k => $v) {
+				$price = array(
+						'id' => makeUUID(),
+						'create_time' => currentTime(),
+						'update_time' => currentTime(),
+						'tb_brand_id' => $reqData['brandRelation'],
+						'tb_price_id' => $v,
+					);	
+
+				$this->db->insert(tname('brand_price'), $price);
 			}
 
 		}
@@ -890,7 +943,7 @@ class BrandModel extends CI_Model {
 
 		if (!$this->form_validation->run()) return validation_errors();
 
-		if (!isset($reqData['category']) || count($reqData['category']) <= 0) return $this->lang->line('ERR_CATEGORY'); 
+		// if (!isset($reqData['category']) || count($reqData['category']) <= 0) return $this->lang->line('ERR_CATEGORY'); 
 
 		// if (!isset($reqData['mallId']) || count($reqData['mallId']) <= 0) return $this->lang->line('ERR_MALL'); 
 

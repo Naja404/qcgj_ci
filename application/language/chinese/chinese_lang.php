@@ -59,4 +59,9 @@ $lang = array(
 		// 文件上传错误提示
 		'upload_file_exceeds_limit'      => '文件尺寸过大',
 		'upload_file_exceeds_form_limit' => '文件尺寸过大',
+
+		'pagination_first_link' => '',
+		'pagination_next_link'  => '',
+		'pagination_prev_link'  => '',
+		'pagination_last_link'  => '',
 	);

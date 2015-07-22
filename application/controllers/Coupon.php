@@ -13,7 +13,7 @@ class Coupon extends WebBase {
 		parent::__construct();
 
 		$this->load->model('CouponModel');
-		$this->load->library('snoopy');
+		$this->load->library('Snoopy');
 		$this->outData['currentModule'] = __CLASS__;
 	}
 
@@ -41,8 +41,6 @@ class Coupon extends WebBase {
 	 *
 	 */
 	public function saleCoupon(){
-
-
 
 		if (!$this->input->is_ajax_request()) {
 			jsonReturn($this->ajaxRes);

@@ -148,12 +148,14 @@
 										<label class="col-sm-3 control-label no-padding-right" for="age"> <?php echo $this->lang->line('TEXT_AGE');?> </label>
 
 										<div class="col-sm-9">
-												<select name="age">
-													<option></option>
+
 												<?php foreach ($brandAge as $k => $v) :?>
-													<option value="<?php echo $v->id;?>" <?php echo $brand->tb_age_id == $v->id ? 'selected' : ''; ?>><?php echo $v->name;?></option>
+												<label>
+													<input type="checkbox" name="age[]" class="ace" value="<?php echo $v->id;?>" <?php echo in_array($v->id, $brand->age) ? 'checked' : '';?>>
+													<span class="lbl"><?php echo $v->name;?></span>
+												</label>&nbsp;&nbsp;
+												<?php if (($k+1) % 4 == 0) echo '<br>';?>
 												<?php endforeach; ?>
-												</select>
 										</div>
 									</div>
 
@@ -161,12 +163,13 @@
 										<label class="col-sm-3 control-label no-padding-right" for="price"> <?php echo $this->lang->line('TEXT_PRICE');?> </label>
 
 										<div class="col-sm-9">
-												<select name="price">
-													<option></option>
 												<?php foreach ($brandPrice as $k => $v) :?>
-													<option value="<?php echo $v->id;?>" <?php echo $brand->tb_price_id == $v->id ? 'selected' : ''; ?>><?php echo $v->name;?></option>
+												<label>
+													<input type="checkbox" name="price[]" class="ace" value="<?php echo $v->id;?>" <?php echo in_array($v->id, $brand->price) ? 'checked' : '';?>>
+													<span class="lbl"><?php echo $v->name;?></span>
+												</label>&nbsp;&nbsp;
+												<?php if (($k+1) % 4 == 0) echo '<br>';?>
 												<?php endforeach; ?>
-												</select>
 										</div>
 									</div>
 
