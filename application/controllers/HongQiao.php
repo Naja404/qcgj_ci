@@ -22,7 +22,7 @@ class HongQiao extends WebBase {
 	 */
 	public function mall2w(){
 
-		$where = NULL;
+		$where = " ";
 
 		$list = $this->HongQiaoModel->getMall2W($where, $this->p, 'HongQiao/mall2w');
 
@@ -116,7 +116,7 @@ class HongQiao extends WebBase {
 
 		if ($id != $reqData['mallId']) jsonReturn($this->ajaxRes);
 
-		$brandStatus = $this->HongQiaoModel->checkBrand($reqData['brandNameZh_s'], $reqData['brandNameEn_s'], $reqData['brandId_s']);
+		$brandStatus = $this->HongQiaoModel->checkBrand($reqData['brandNameZh_s'], $reqData['brandNameEn_s'], $reqData['brandId_s'], $reqData['brandLogoPath']);
 
 		$update = array(
 				'tb_brand_id' => is_string($brandStatus) ? $brandStatus : '',
@@ -514,9 +514,16 @@ class HongQiao extends WebBase {
 
 		$uploadConf = config_item('FILE_UPLOAD');
 		$filesName = $this->input->get('filesName');
-		
-		$uploadConf['upload_path']   = './uploadtemp/canting/';
-		$uploadConf['file_name']     = 'mall_'.md5(currentTime('MICROTIME'));
+		$pathType = $this->input->get('pathType');
+
+		if ($pathType == 'mall2w') {
+			$uploadConf['upload_path'] = './uploadtemp/mall2w/';
+			$uploadConf['file_name']     = 'brand_'.md5(currentTime('MICROTIME'));
+			$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_v400/mall2w/';
+		}else{
+			$uploadConf['upload_path']   = './uploadtemp/canting/';
+			$uploadConf['file_name']     = 'mall_'.md5(currentTime('MICROTIME'));
+		}
 
 		$this->load->library('upload');
 
@@ -530,6 +537,9 @@ class HongQiao extends WebBase {
 					'url'    => config_item('shop_image_url').$this->upload->data('relative_path'),
 					'path'   => $this->upload->data('relative_path'),
 				);
+			if ($pathType == 'mall2w') {
+				$this->ajaxRes['url'] = config_item('image_url').$this->upload->data('relative_path');
+			}
 		}
 
 		echo json_encode($this->ajaxRes);exit;

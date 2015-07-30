@@ -27,7 +27,7 @@ class HongQiaoModel extends CI_Model {
 		
 		$field = " * ";
 
-		$sql = "SELECT %s FROM ".tname('new_mall_s')." WHERE status = 1 %s  ORDER BY update_time ASC %s ";
+		$sql = "SELECT %s FROM ".tname('new_mall_s')." WHERE status NOT IN (0, 101) %s  ORDER BY update_time ASC %s ";
 
 		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, ''))->first_row();
 
@@ -148,14 +148,16 @@ class HongQiaoModel extends CI_Model {
 	 * @param string $brandZh 品牌中文
 	 * @param string $brandEn 品牌英文
 	 * @param string $brandId 品牌id
+	 * @param string $brandPath 品牌logo路径
 	 */
-	public function checkBrand($brandZh = false, $brandEn = false, $brandId = false){
+	public function checkBrand($brandZh = false, $brandEn = false, $brandId = false, $brandPath = ''){
 
 		if (!$brandId || empty($brandId)) {
 			$insert = array(
 					'id'          => makeUUID(),
 					'name_zh'     => !empty($brandZh) ? $brandZh : '',
 					'name_en'     => !empty($brandEn) ? $brandEn : '',
+					'logo_url'    => !empty($brandPath) ? $brandPath : '',
 					'create_time' => currentTime(),
 					'update_time' => currentTime(),
 					'oper'        => $this->userInfo->user_id,
@@ -174,6 +176,14 @@ class HongQiaoModel extends CI_Model {
 			);
 
 		$queryRes = $this->db->get_where(tname('brand'), $where)->first_row();
+
+		if ($queryRes->id == $brandId && !empty($brandPath)) {
+			$update = array(
+					'logo_url'    => $brandPath,
+					'update_time' => currentTime(),
+				);
+			$this->db->where($where)->update(tname('brand'), $update);
+		}
 
 		return $queryRes->id ? $queryRes->id : false;
  

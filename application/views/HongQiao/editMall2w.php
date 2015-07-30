@@ -88,6 +88,20 @@
 									</div>
 
 									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="brandLogo"> 缩略图 </label>
+
+										<div class="col-sm-9">
+											<?php if (isset($detail->brandInfo->logo_url) && !empty($detail->brandInfo->logo_url)) {?>
+											<span id="brandLogoDiv">
+												<img src="<?php echo config_item('image_url').''.$detail->brandInfo->logo_url;?>" style="width: 200px;"><a onclick="removeFileImg('brandLogoDiv', 'brandLogoPath');">重置</a>
+											</span>
+											<?php } ?>
+											<input type="file" name="brandLogo" id="brandLogo" />
+											<input type="hidden" name="brandLogoPath" value="<?php echo $detail->brandInfo->logo_url;?>">
+										</div>
+									</div>
+
+									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right" for=""> 所属城市 </label>
 
 										<div class="col-sm-9">
@@ -196,9 +210,75 @@
 
 		<script src="http://api.map.baidu.com/api?v=1.5&ak=C06d8528dd571c548c6f862391f97d9f" type="text/javascript"></script>
 		<script src="http://api.gjla.com:80/app_admin_v330/res/baidumap/scripts/bmap.js" type="text/javascript"></script>
-
+		<script type="text/javascript" src="<?php echo config_item('html_url');?>js/jquery.ajaxfileupload.js"></script>
 
 		<script type="text/javascript">
+
+		$(document).ready(function() {
+			var interval;
+
+			function applyAjaxFileUpload(element, filesName, filePath, fileSpan) {
+				$(element).AjaxFileUpload({
+					action: "<?php echo site_url('HongQiao/uploadPic');?>?filesName="+filesName+"&pathType=mall2w",
+					onChange: function(filename) {
+						var $span = $("<span />")
+							.attr("class", $(this).attr("id"))
+							.text("Uploading")
+							.insertAfter($(this));
+
+						$(this).remove();
+
+						interval = window.setInterval(function() {
+							var text = $span.text();
+							if (text.length < 13) {
+								$span.text(text + ".");
+							} else {
+								$span.text("Uploading");
+							}
+						}, 200);
+					},
+					onSubmit: function(filename) {
+						return true;
+					},
+					onComplete: function(filename, response) {
+						window.clearInterval(interval);
+						console.log(response);
+						var $span = $("span." + $(this).attr("id")).text(filename + " "),
+							$fileInput = $("<input />")
+								.attr({
+									type: "file",
+									name: $(this).attr("name"),
+									id: $(this).attr("id")
+								});
+
+						if (response.status) {
+							$span.replaceWith($fileInput);
+
+							applyAjaxFileUpload($fileInput, filesName);
+
+							alert(response.msg);
+
+							return;
+						}else{
+							if (fileSpan) {
+								$('#'+fileSpan).html('');
+							}
+							$("<img />").attr("src", response.url).css("width", 200).appendTo($span);
+							$("<a />").attr("href", "#").text("<?php echo $this->lang->line('BTN_RESET');?>").bind("click", function(e) {
+									$span.replaceWith($fileInput);
+									applyAjaxFileUpload($fileInput, filesName);
+									$("input[name="+filePath+"]").val('');
+								}).appendTo($span);
+							$("input[name="+filePath+"]").val(response.path);
+						}
+					}
+				});
+			}
+
+			applyAjaxFileUpload("#brandLogo", "brandLogo", "brandLogoPath", "brandLogoDiv");
+		});
+
+
 			jQuery(function($) {
 
 				$("#brandNameZh_s").keyup(function(){
@@ -313,6 +393,11 @@
 						window.location.href=document.referrer;
 				}
 			});
+		}
+
+		function removeFileImg(element,filePath){
+			$('#'+element).html('');
+			$("input[name="+filePath+"]").val('');
 		}
 		</script>
 

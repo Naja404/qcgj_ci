@@ -47,6 +47,11 @@ $config = array(
 		'COUPON_REVIEWPASS' => array(1, 2, 3), // 1.审核通过后自动上架 2.设置上架时间 3.手动上架
 		// 店长Roleid
 		'SHOPMANAGER_ROLEID' => 3,
+
+		// 管理员RoleId
+		'AdminConf' => array(
+				'RoleId' => array(1),
+			),
 	);
 
 

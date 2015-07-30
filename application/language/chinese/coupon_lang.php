@@ -74,6 +74,9 @@ $lang = array(
 		'TEXT_RECOMMEND'                    => '推荐',
 		'TEXT_CANCEL_RECOMMEND'             => '取消推荐',
 		'TEXT_DEFAULT_STATUS'               => '默认',
+		'TEXT_COUPON_BRAND_ZH'              => '优惠券所属品牌(中文)',
+		'TEXT_COUPON_BRAND_EN'              => '优惠券所属品牌(英文)',
+		'TEXT_COUPON_BRAND_PLACEHOLDER'     => '请输入优惠券所属品牌名',
 		
 		'ERR_COUPON_MONEY_NUM'              => '请正确填写优惠券金额',
 		'ERR_COUPON_EXPIRE_DATE_FORMAT'     => '有效期开始日期不能大于结束日期',

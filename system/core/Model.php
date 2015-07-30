@@ -164,4 +164,15 @@ class CI_Model {
 		return isset($floor->address) ? $floor->address : false;
 	}
 
+	/**
+	 * 是否是管理员
+	 * @param int $roleId 角色id
+	 * @return bool
+	 */
+	public function isAdminUser($roleId = 0){
+		if (in_array($roleId, config_item('AdminConf.RoleId'))) return true;
+
+		return false;
+	}
+
 }
