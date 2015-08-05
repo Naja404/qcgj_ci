@@ -77,6 +77,7 @@ $lang = array(
 		'TEXT_COUPON_BRAND_ZH'              => '优惠券所属品牌(中文)',
 		'TEXT_COUPON_BRAND_EN'              => '优惠券所属品牌(英文)',
 		'TEXT_COUPON_BRAND_PLACEHOLDER'     => '请输入优惠券所属品牌名',
+		'TEXT_TITLE_BRAND_SELECT'			=> '选择优惠券品牌',
 		
 		'ERR_COUPON_MONEY_NUM'              => '请正确填写优惠券金额',
 		'ERR_COUPON_EXPIRE_DATE_FORMAT'     => '有效期开始日期不能大于结束日期',
@@ -89,6 +90,7 @@ $lang = array(
 		'ERR_COUPON_EVERYONE_LIMIT'         => '每人领取上限不能大于优惠券总数',
 		'ERR_AUTH_OPERTION'                 => '您无权限进行此操作',
 		'ERR_ONSALE_FAIL'                   => '上架失败,请刷新后重试',
+		'ERR_COUPON_EMPTY_BRAND'			=> '优惠券尚未绑定品牌,请重试',
 
 		'ADD_COUPON_VALIDATION' => array(
 				array(

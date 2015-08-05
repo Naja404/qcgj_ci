@@ -101,11 +101,11 @@ class Brand extends WebBase {
 
 		$this->outData['pageTitle'] = $this->lang->line('TITLE_BRAND_LIST');
 		
-		$where = NULL;
+		$where = " WHERE status = 1 ";
 
 		$brandName = addslashes($this->input->get('brand'));
 		
-		if ($brandName) $where = " WHERE name_zh LIKE '%".$brandName."%' OR name_en LIKE '%".$brandName."%' ";
+		if ($brandName) $where = " WHERE (name_zh LIKE '%".$brandName."%' OR name_en LIKE '%".$brandName."%') AND status = 1 ";
 
 		$brandList = $this->BrandModel->getBrandList($where, $this->p);
 

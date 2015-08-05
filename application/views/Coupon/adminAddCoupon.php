@@ -80,34 +80,6 @@
 														<div class="step-pane active" id="step1">
 
 															<form class="form-horizontal" id="addCoupon-form" method="post" enctype="multipart/form-data" >
-																
-																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="brandNameZh"><?php echo $this->lang->line('TEXT_COUPON_BRAND_ZH');?>:</label>
-
-																	<div class="col-xs-12 col-sm-9">
-																		<div class="clearfix">
-																			<input type="text" name="brandNameZh" id="brandNameZh" class="col-xs-12 col-sm-6" placeholder="<?php echo $this->lang->line('TEXT_COUPON_BRAND_PLACEHOLDER');?>"/>
-																		</div>
-																	</div>
-																</div>
-
-																<div class="form-group">
-																	<label class="col-sm-3 control-label no-padding-right" for="brandNameZh"> 品牌中文(匹配) </label>
-
-																	<div class="col-sm-9">
-																		<input type="text" name="brandNameZh" id="brandNameZh" />
-																	</div>
-																</div>
-
-																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="brandNameEn"><?php echo $this->lang->line('TEXT_COUPON_BRAND_EN');?>:</label>
-
-																	<div class="col-xs-12 col-sm-9">
-																		<div class="clearfix">
-																			<input type="text" name="brandNameEn" id="brandNameEn" class="col-xs-12 col-sm-6" />
-																		</div>
-																	</div>
-																</div>
 																<div class="form-group">
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponTitle"><?php echo $this->lang->line('TEXT_COUPON_TITLE');?>:</label>
 
@@ -268,16 +240,6 @@
 																</div>
 
 																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponNotice"><?php echo $this->lang->line('TEXT_COUPON_NOTICE');?>:</label>
-
-																	<div class="col-xs-12 col-sm-9">
-																		<div class="clearfix">
-																			<textarea class="input-xlarge" name="couponNotice" id="couponNotice" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"></textarea>
-																		</div>
-																	</div>
-																</div>
-
-																<div class="form-group">
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponVerification"><?php echo $this->lang->line('TEXT_COUPON_VERIFICATION');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
@@ -351,6 +313,24 @@
 																					</thead>
 
 																					<tbody id="shopListHTML">
+																						<?php foreach ($shopList as $k => $v):?>
+																						<tr>
+																							<td class="center">
+																								<label>
+																									<input type="checkbox" class="ace" name="mallID[]" value="<?php echo $v['mallID']?>"/>
+																									<span class="lbl"></span>
+																								</label>
+																							</td>
+																							<td><?php echo $v['cityName'];?></td>
+																							<td><?php echo $v['districtName'];?></td>
+																							<td>
+																								<a href="#"><?php echo $v['mallName'];?></a>
+																							</td>
+																							<td>
+																								<a href="#"><?php echo $v['address'];?></a>
+																							</td>
+																						</tr>
+																						<?php endforeach;?>
 																					</tbody>
 																				</table>
 																			</div><!-- /.table-responsive -->
@@ -393,7 +373,7 @@
 																		</div>
 																	</div>
 																</div>
-
+															<input type="hidden" name="brandId" value="<?php echo $brandId;?>" >
 															</form>
 														</div>
 
@@ -478,9 +458,22 @@
 		<script src="<?php echo config_item('html_url');?>js/ace-elements.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 
+		<script src="<?php echo config_item('html_url');?>Kindeditor/kindeditor.js"></script>
+
+
 		<!-- inline scripts related to this page -->
 		<script type="text/javascript" src="<?php echo config_item('html_url');?>js/jquery.ajaxfileupload.js"></script>
 		<script type="text/javascript">
+
+        // KindEditor.ready(function (K) {
+        //     window.editor = K.create('#couponUseGuide', {
+        //         afterBlur: function () { this.sync(); }
+        //     });
+
+        //     window.editor = K.create('#couponVerification', {
+        //         afterBlur: function () { this.sync(); }
+        //     });
+        // });
 
 		$(document).ready(function() {
 			var interval;
@@ -545,39 +538,62 @@
 		});
 
 			jQuery(function($) {
+				var areaSelect = '<?php echo json_encode($shopList);?>';
+					areaSelectValue = this.value;
 
+				$('#citySelect').on('change', function(){
+					var areaHTML_1 = '<?php echo $bjAreaList;?>';
+						areaHTML_2 = '<?php echo $shAreaList?>';
+						areaHTML_3 = '<?php echo $gzAreaList;?>';
+						areaHTML = '';
 
-				$("#brandNameZh").keyup(function(){
-					
-					$("#brandId").val('');
+					switch(this.value){
+						case ('1'):
+						areaHTML = areaHTML_1;
+						break;
+						case ('2'):
+						areaHTML = areaHTML_2;
+						break;
+						case ('3'):
+						areaHTML = areaHTML_3;
+						break;
+						default:
+						areaHTML = "<option><?php echo $this->lang->line('TEXT_SELECT_CITY_NAME');?></option>";
+						shopListHTML = '';
+						$.each($.parseJSON(areaSelect), function(k, v){
+							shopListHTML += '<tr><td class="center"><label><input type="checkbox" class="ace" name="mallID[]" value="'+v.mallID+'"><span class="lbl"></span></label><\/td>';
+							shopListHTML += '<td>'+v.cityName+'<\/td>';
+							shopListHTML += '<td>'+v.districtName+'</td>';
+							shopListHTML += '<td><a href="#">'+v.mallName+'</a></td>';
+							shopListHTML += '<td><a href="#">'+v.address+'</a></td>';
+							shopListHTML += '<\/tr>';
+						});
 
-					$.ajax({
-			      		type:"POST",
-			      		url:"<?php echo site_url('Coupon/searchBrand');?>",
-			      		data:{brand:$("#brandNameZh").val()},
-			      		success:function(data){
-			      			if (data.status != 0) { return false;}
-			      			
-			      			var sourceData = new Array();
+						$('#shopListHTML').html(shopListHTML);
+						break;
+					}
 
-			      			$.each(data.list, function(k, v){
-			      				sourceData.push(v);
-			      			});
+					$('#areaSelect').html(areaHTML);
+				});
 
-						    $( "#brandNameZh" ).autocomplete({
-						      source: sourceData,
-						      select:function(event, ui){
-									var brandName = ui.item.label.split('_');
+				$('#areaSelect').on('change', function(){
+					var areaSelectValue = this.value;
+						shopListHTML = '123';
 
-									$("#brandNameEn").val(brandName[0]);
-									$("#brandNameZh").val(brandName[1]);
+					$('#cityListCheck').attr("checked",false);
+					$.each($.parseJSON(areaSelect), function(k, v){
 
-						      		$("#brandId").val(ui.item.id);
-						      }
-						  });
-						
-			      		}
+						if (v.districtName == areaSelectValue) {
+							shopListHTML += '<tr><td class="center"><label><input type="checkbox" class="ace" name="mallID[]" value="'+v.mallID+'"><span class="lbl"></span></label><\/td>';
+							shopListHTML += '<td>'+v.cityName+'<\/td>';
+							shopListHTML += '<td>'+v.districtName+'</td>';
+							shopListHTML += '<td><a href="#">'+v.mallName+'</a></td>';
+							shopListHTML += '<td><a href="#">'+v.address+'</a></td>';
+							shopListHTML += '<\/tr>';
+						}
 					});
+
+					$('#shopListHTML').html(shopListHTML);
 				});
 
 				// 数字选择
@@ -736,6 +752,34 @@
 				$('#modal-wizard .modal-header').ace_wizard();
 				$('#modal-wizard .wizard-actions .btn[data-dismiss=modal]').removeAttr('disabled');
 			})
+
+			// KindEditor.ready(function(K) {
+			// 	editorGuide = K.create('textarea[name="couponUseGuide"]', {
+			// 		resizeType : 1,
+			// 		allowPreviewEmoticons : false,
+			// 		allowImageUpload : false,
+			// 		items : [
+			// 			'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+			// 			'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+			// 			'insertunorderedlist', '|']
+			// 	});
+
+			// 	$('.ke-container').width('400px');
+			// });
+
+			// KindEditor.ready(function(K) {
+			// 	editorVerification = K.create('textarea[name="couponVerification"]', {
+			// 		resizeType : 1,
+			// 		allowPreviewEmoticons : false,
+			// 		allowImageUpload : false,
+			// 		items : [
+			// 			'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+			// 			'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+			// 			'insertunorderedlist', '|']
+			// 	});
+
+			// 	$('.ke-container').width('400px');
+			// });
 
 			function subAddCouponForm(){
 				if(!$('#addCoupon-form').valid()){

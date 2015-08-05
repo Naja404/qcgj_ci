@@ -316,7 +316,7 @@
 																								</label>
 																							</th>
 																							<th><?php echo $this->lang->line('TEXT_CITY_NAME');?></th>
-																							<th><?php echo $this->lang->line('TEXT_AREA_NAME');?></th>
+																							<th>区域</th>
 																							<th><?php echo $this->lang->line('TEXT_MALL_NAME');?></th>
 																							<th><?php echo $this->lang->line('TEXT_ADDRESS');?></th>
 																						</tr>
@@ -332,7 +332,7 @@
 																								</label>
 																							</td>
 																							<td><?php echo $v['cityName'];?></td>
-																							<td><?php echo $v['areaName'];?></td>
+																							<td><?php echo $v['districtName'];?></td>
 																							<td>
 																								<a href="#"><?php echo $v['mallName'];?></a>
 																							</td>
@@ -560,7 +560,7 @@
 						$.each($.parseJSON(areaSelect), function(k, v){
 							shopListHTML += '<tr><td class="center"><label><input type="checkbox" class="ace" name="mallID[]" value="'+v.mallID+'"><span class="lbl"></span></label><\/td>';
 							shopListHTML += '<td>'+v.cityName+'<\/td>';
-							shopListHTML += '<td>'+v.areaName+'</td>';
+							shopListHTML += '<td>'+v.districtName+'</td>';
 							shopListHTML += '<td><a href="#">'+v.mallName+'</a></td>';
 							shopListHTML += '<td><a href="#">'+v.address+'</a></td>';
 							shopListHTML += '<\/tr>';
@@ -578,10 +578,10 @@
 						shopListHTML = '';
 					$('#cityListCheck').attr("checked",false);
 					$.each($.parseJSON(areaSelect), function(k, v){
-						if (v.areaName == areaSelectValue) {
+						if (v.districtName == areaSelectValue) {
 							shopListHTML += '<tr><td class="center"><label><input type="checkbox" class="ace" name="mallID[]" value="'+v.mallID+'"><span class="lbl"></span></label><\/td>';
 							shopListHTML += '<td>'+v.cityName+'<\/td>';
-							shopListHTML += '<td>'+v.areaName+'</td>';
+							shopListHTML += '<td>'+v.districtName+'</td>';
 							shopListHTML += '<td><a href="#">'+v.mallName+'</a></td>';
 							shopListHTML += '<td><a href="#">'+v.address+'</a></td>';
 							shopListHTML += '<\/tr>';

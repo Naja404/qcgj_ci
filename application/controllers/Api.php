@@ -55,6 +55,22 @@ class Api extends WebBase {
 	}
 
 	/**
+	 * 大虹桥分类列表
+	 * @param $type 分类
+	 *
+	 */
+	public function categoryList() {
+
+		$type = $this->input->get('type')?$this->input->get('type'):'';    //分类类型
+
+		$result = $this->ApiModel->getCategoryList($type);
+
+		$err = $this->_getErrMsg('0');
+
+		$this->_returnJsonData($err, $result);		//返回json数据		
+	}
+
+	/**
 	 * 大虹桥购物列表
 	 * level = 1
 	 *
@@ -89,20 +105,22 @@ class Api extends WebBase {
 	 */
 	public function shoppingDetail() {
 
-		$id = $this->input->get('id')?$this->input->get('id'):'';  //美食id
+		$id = $this->input->get('id')?$this->input->get('id'):'';  //商场id
+
+		$storeid = $this->input->get('storeid')?$this->input->get('storeid'):'';  //店铺id
 
 		$longitude = $this->input->get('longitude')?$this->input->get('longitude'):0; //当前经度
 
 		$latitude = $this->input->get('latitude')?$this->input->get('latitude'):0;    //当前纬度
 
-		if( empty($id) ) {
+		if( empty($id) || empty( $storeid )) {
 
 			$err = $this->_getErrMsg('1');
 
 			$this->_returnJsonData($err);    //参数缺失
 		}
 
-		$result = $this->ApiModel->getShoppingDetail($id, $longitude, $latitude);  //获取景点详细信息
+		$result = $this->ApiModel->getShoppingDetail($id, $storeid, $longitude, $latitude);  //获取景点详细信息
 
 		$err = $this->_getErrMsg($result['errcode']);
 

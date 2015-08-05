@@ -27,7 +27,7 @@ class HongQiaoModel extends CI_Model {
 		
 		$field = " * ";
 
-		$sql = "SELECT %s FROM ".tname('new_mall_s')." WHERE status NOT IN (0, 101) %s  ORDER BY update_time ASC %s ";
+		$sql = "SELECT %s FROM ".tname('new_mall_s')." WHERE status NOT IN (0, 101) %s  ORDER BY id ASC %s GROUP BY brandName ";
 
 		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, ''))->first_row();
 
@@ -158,6 +158,7 @@ class HongQiaoModel extends CI_Model {
 					'name_zh'     => !empty($brandZh) ? $brandZh : '',
 					'name_en'     => !empty($brandEn) ? $brandEn : '',
 					'logo_url'    => !empty($brandPath) ? $brandPath : '',
+					'status'	  => 0,
 					'create_time' => currentTime(),
 					'update_time' => currentTime(),
 					'oper'        => $this->userInfo->user_id,

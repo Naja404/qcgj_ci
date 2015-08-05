@@ -18,7 +18,8 @@ $config = array(
 				'BRAND_AGE'           => 'Normal:Brand:Age',
 				'BRAND_PRICE'         => 'Normal:Brand:Price',
 				'BRAND_DISTRICT'      => 'Normal:Brand:District:',
-				'CITY_NAME'			  => 'Normal:Brand:cityName',	
+				'CITY_NAME'			  => 'Normal:Brand:cityName',
+				'BRAND_SHOP'		  => 'Normal:BrandShop:',
 			),
 		// 用户缓存
 		'USER_CACHE' => array(

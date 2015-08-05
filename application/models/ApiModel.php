@@ -3,9 +3,12 @@
  * 品牌管理模型
  */
 
+define('EARTH_RADIUS', 6371);//地球半径，平均半径为6371km
+
 class ApiModel extends CI_Model {
 
 	protected $shoppingLevel;
+	protected $streetLevel;
 	protected $restaurantLevel;
 	protected $cinemaLevel;
 	protected $ktvLevel;
@@ -16,6 +19,7 @@ class ApiModel extends CI_Model {
 	public function __construct(){
 
 		$this->shoppingLevel = 1;     //购物
+		$this->streetLevel = 2;		  //街边店
 		$this->restaurantLevel = 4;   //美食
 		$this->cinemaLevel = 5;		  //影院
 		$this->travelLevel = 6;		  //景点
@@ -45,7 +49,7 @@ class ApiModel extends CI_Model {
 		// 					->where('pic_url IS NOT NULL')
 		// 					->get(tname('mall'))->result();
 
-		$sql = "SELECT *, `getDistance`('".$longitude."', '".$latitude."', longitude, latitude) as distance FROM `tb_mall` WHERE `tb_district_id` = 786 AND `level` = 1  AND status = 1 AND `pic_url` IS NOT NULL order by distance asc LIMIT 5";
+		$sql = "SELECT *, `getDistance`('".$longitude."', '".$latitude."', longitude, latitude) as distance FROM `tb_mall` WHERE `tb_district_id` = 786 AND `level` = 1  AND status = 1 AND `pic_url` IS NOT NULL order by distance ASC ";
 
 		$queryRes = $this->db->query($sql)->result();
 
@@ -76,7 +80,7 @@ class ApiModel extends CI_Model {
 		// 		 ->get(tname('subject'))->result_array();
 
 		$sql = "select 
-					b.id AS detailID, 
+					distinct b.id AS detailID, 
 					b.title, 
 					b.main_pic_url AS image, 
 					IF(b.status = 1, '1', '1') AS type 
@@ -85,8 +89,6 @@ class ApiModel extends CI_Model {
 						on b.id = a.tb_subject_id
 					where 
 						a.tb_district_id = 786 
-						and 
-						b.status = 1 
 					limit 10";
 
 		$queryRes = $this->db->query($sql)->result_array();
@@ -188,6 +190,27 @@ class ApiModel extends CI_Model {
 		return $returnRes;
 	}
 
+	/**
+	 * 获取分类列表
+	 * @param $type 1 - 购物  2 - 美食
+	 *
+	 */
+	public function getCategoryList( $type = '' ) {
+
+		$result = array();
+
+		if( empty( $type )) {
+
+			return $result;
+		}
+
+		$sql = 'Select distinct(name) from '.tname('category').' where type = '.$type;
+
+		$result = $this->db->query($sql)->result_array();
+
+		return $result;
+	}
+
 
 	/**
 	 * 获取购物列表
@@ -207,53 +230,72 @@ class ApiModel extends CI_Model {
 			$distanceCond = "'' as distance ";			
 		}
 
-		$field = "a.id,
-				a.name_en,
-				a.name_zh,
-				a.pic_url,
-				a.thumb_url,
-				c.name as category_name,
-				a.longitude,
-				a.latitude,
-				a.avg_rating,
-				a.avg_price,
-				count(b.tb_obj_id) as viewnum,
-				".$distanceCond;
-				//getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
+    	$field = "a.id,
+    			   b.id as storeid,
+			       CONCAT(d.name_en,'-',a.name_zh) AS name_zh,
+			       b.tb_brand_id,
+			       case when a.level = '2' then a.pic_url else b.pic_url end as pic_url,
+			       case when a.level = '2' then a.thumb_url else b.thumb_url end as thumb_url,
+			       a.longitude, 
+			       a.latitude,
+			       a.avg_rating,
+			       c.storeViewNum,
+			       ".$distanceCond;
 
-		$where = 'where a.status = 1 and a.level = '.$this->shoppingLevel;  //
+		$where = 'where a.tb_district_id = 786 and a.status = 1 and ( a.level = '.$this->shoppingLevel.' OR a.level = '.$this->streetLevel.') ';  //
+
+		$table_con = '';
 
 		if( $category != '' ) {
 
-			//$where .= " and a.category_name = '".$category."'";
-			$where .= " and a.id in ( SELECT tb_mall_id FROM (
-								SELECT DISTINCT(tb_mall_id) FROM tb_brand_mall 
-								 WHERE tb_brand_id IN ( SELECT tb_brand_id FROM ( SELECT tb_brand_id FROM tb_brand_category d INNER JOIN tb_category c ON d.tb_category_id = c.id WHERE c.name = '".$category."' ) AS bid )
-								 ) AS mallid )";
+			$table_con = ' LEFT JOIN '.tname('brand_category e').' ON e.tb_brand_id = b.`tb_brand_id` LEFT JOIN '.tname('category f').' ON f.id = e.tb_category_id ';
+			$where .= " and f.name = '".$category."'";
 		}
 
 		if( $distanceType > 0 ) {
 
 			$where .= $this->_getDistanceCondition($distanceType, $longitude, $latitude);
 		}
-		/*
-		SELECT a.id, a.name_en, a.name_zh, a.pic_url, a.category_name, a.longitude, a.latitude, a.avg_rating, a.avg_price, 
-		COUNT(b.tb_obj_id) AS viewnum, getDistance('','',a.latitude,a.longitude) AS distance FROM tb_mall a 
-		LEFT JOIN tb_view b ON a.id = b.tb_obj_id WHERE LEVEL = 1 GROUP BY a.id	ORDER BY viewnum DESC
-		*/
-		//$sql = "SELECT %s FROM ".tname('mall a')." %s %s ";
-		//$sql = "Select %s from ".tname('mall a')." LEFT JOIN ".tname('view b')." ON a.id = b.tb_obj_id %s %s ";
-		$sql = "Select %s from ".tname('mall a')." LEFT JOIN ".tname('view b')." ON a.id = b.tb_obj_id LEFT JOIN ".tname('category c')." ON c.id = a.tb_category_id %s %s ";
 
-		$orderby = $this->_sortByType($sortType);   //根据不同类型排序
+		$sql = "select %s FROM ".tname('mall a')." 
+				LEFT JOIN ".tname('brand_mall b')." ON a.id = b.tb_mall_id
+				LEFT JOIN (SELECT tb_obj_id objId, COUNT(*) storeViewNum FROM ".tname('view')." GROUP BY objId) c ON (a.id = c.objId OR b.id = c.objId)
+				LEFT JOIN ".tname('brand d')." ON b.tb_brand_id = d.id".$table_con." %s %s ";
 
-		$pagelimit = ' group by a.id '.$orderby."LIMIT ".page( $p, $limit );
+		$orderby = $this->_sortByType($sortType,'1');   //根据不同类型排序
+
+		//$pagelimit = ' group by a.id '.$orderby."LIMIT ".page( $p, $limit );
+		$pagelimit = $orderby."LIMIT ".page( $p, $limit );
 
 		$sql = sprintf($sql, $field, $where, $pagelimit);
 
 		//echo $sql;die;
 
 		$result = $this->db->query($sql)->result_array();
+
+		foreach( $result as $key=>$item ) {
+
+			$category_data = array();
+
+			if( strpos( $item['name_zh'],'店') === false ) {
+				$result[$key]['name_zh'] = $item['name_zh'].'店';
+			}
+
+			$brand_id = $item['tb_brand_id'];
+			$category_sql = "select distinct(c.name) from tb_brand_category b inner join tb_category c on c.id = b.tb_category_id 
+					where b.tb_brand_id = '".$brand_id."'";
+
+			$categorylist = $this->db->query($category_sql)->result_array();
+
+			if( !empty($categorylist )) {
+				foreach( $categorylist as $category ) {
+					if( !in_array( $category['name'], $category_data ) ) {
+						array_push( $category_data, $category['name'] );
+					}
+				}
+			}
+			$result[$key]['category_name'] = $category_data;
+		}
 
 		return $result;
 	}
@@ -265,7 +307,9 @@ class ApiModel extends CI_Model {
 	 * @param string $longitude 当前经度
 	 * @param string $latitude  当前纬度
 	 */
-	public function getShoppingDetail($id, $longitude = '0', $latitude = '0') {
+	public function getShoppingDetail($id, $storeid, $longitude = '0', $latitude = '0') {
+
+		//$countData = $this->_getCountByLevel();  //获取其他分类数量
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -274,43 +318,93 @@ class ApiModel extends CI_Model {
 		}
 
 		$field = "a.id,
-				 a.name_en,
-				 a.name_zh, 
-				 a.pic_url, 
-				 a.thumb_url,
-				 a.category_name, 
-				 a.longitude, 
-				 a.latitude,
-				 a.open_time,
-				 a.close_time,
-				 a.avg_rating, 
-				 a.avg_price,
-				 b.longitude AS mall_longitude, b.latitude AS mall_latitude, 
-				 CONCAT(a.city_name,a.district_name,a.address) AS address,
-				 a.tel,
-				 a.level,
-				 b.name_zh as mall,
-				 ".$distanceCond;
-				 //getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
+				  b.id as storeid,
+			       CONCAT(d.name_en,'-',a.name_zh) AS name_zh,
+			       b.tb_brand_id,
+			       b.pic_url,
+			       b.thumb_url,
+			       b.open_time,
+			       b.close_time,
+			       b.tel,
+			       a.longitude,
+			       a.latitude,
+			       a.avg_rating,
+			       a.level,
+			       CONCAT(a.district_name, a.address, if(a.name_zh != '', a.name_zh, a.name_en), b.address) address,
+			       ".$distanceCond;
 
 		$sql = "Select ".$field." from ".tname('mall a').
-			   " LEFT JOIN ".tname('mall b')." ON a.branch_name = b.name_zh where a.id = '".$id."'";
+			   " LEFT JOIN ".tname('brand_mall b')." ON a.id = b.tb_mall_id
+			     LEFT JOIN ".tname('brand d')." ON b.tb_brand_id = d.id where 
+			     a.id = '".$id."' and b.id = '".$storeid."' limit 1";
 
-			   //echo $sql;die;
+			 //echo $sql;die;
 
 		$data = $this->db->query($sql)->result_array();
 
 		$result['errcode'] = '0';
 		$result['data'] = array();
 
-		if( !empty($data) ) {	
+		if( !empty($data) ) {
+
+			if( $data[0]['level'] != $this->shoppingLevel && $data[0]['level'] != $this->streetLevel ) {
+				$result['errcode'] = '2';
+
+				return $result;
+			}
+
+			if( strpos( $data[0]['name_zh'],'店') === false ) {
+				$data[0]['name_zh'] = $data[0]['name_zh'].'店';
+			}
+
+			//分享语
+			$data[0]['share_content'] = '我要去逛街！目的地：'.$data[0]['name_zh'].'！';
+
+			//该品牌其他优惠信息
+			$couponOrDiscountSql = "SELECT c.name, c.id, '1' AS type, b.name_en, b.name_zh, b.logo_url, c.price, c.cost_price, c.coupon_type FROM ".tname('brand b')."
+				INNER JOIN ".tname('coupon c')." ON c.tb_brand_id = b.id
+				WHERE c.tb_brand_id = '".$data[0]['tb_brand_id']."' and c.on_sale = 1 AND c.end_date >= '".date('Y-m-d')."'  
+				UNION ALL 
+				SELECT d.name_zh, d.id, '2' AS TYPE, b.name_en, b.name_zh, b.logo_url, '' AS price, '' AS cost_price, '' AS coupon_type FROM ".tname('brand b')."
+				INNER JOIN ".tname('discount d')." ON d.tb_brand_id = b.id
+				WHERE d.tb_brand_id = '".$data[0]['tb_brand_id']."' and d.end_date >= '".date('Y-m-d')."'";
+
+				//echo $couponOrDiscountSql;die;
+
+			$couponOrDiscount = $this->db->query($couponOrDiscountSql)->result_array();
+
+			$data[0]['couponOrDiscount'] = $couponOrDiscount;
+
+			//品牌其他门店
+			$otherStoresSql = "SELECT 
+				CASE WHEN a.level = '2' THEN a.id ELSE b.id END AS id, 
+				concat(a.name_zh, '店') as name_zh, 
+				CASE WHEN a.level = '2' THEN a.thumb_url ELSE b.thumb_url END AS thumb_url
+				FROM ".tname('mall a')."
+				INNER JOIN ".tname('brand_mall b')." ON b.tb_mall_id = a.id
+				WHERE b.id !='".$storeid."' AND b.tb_brand_id ='".$data[0]['tb_brand_id']."'";
+
+			$otherStores = $this->db->query($otherStoresSql)->result_array();
+
+			$data[0]['otherStores'] = $otherStores;
+
+
+			//附近还有数量
+			//使用此函数计算得到结果后，带入sql查询。
+			
+			$countData = $this->_getCountByLevel( $data[0]['longitude'], $data[0]['latitude']);
+
+			
+
+			$data[0]['count_level'] = array();
+
+			if( !empty( $countData ) ) {
+
+				$data[0]['count_level'] = $countData;
+			}
 
 			if( !empty( $data[0]['pic_url'])) {
 				$data[0]['pic_url'] = explode(',',$data[0]['pic_url']);
-			}
-
-			if( $data[0]['level'] != $this->shoppingLevel ) {
-				$result['errcode'] = '2';
 			}
 
 			$result['data'] = $data;
@@ -353,7 +447,7 @@ class ApiModel extends CI_Model {
 				".$distanceCond;
 				//getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 
-		$where = 'where a.status = 1 and a.level = '.$this->restaurantLevel;  //
+		$where = 'where a.tb_district_id = 786 and a.status = 1 and a.level = '.$this->restaurantLevel;  //
 
 		if( $category != '' ) {
 
@@ -418,8 +512,8 @@ class ApiModel extends CI_Model {
 				 a.description,
 				 b.name_zh as mall,
 				 b.longitude AS mall_longitude, b.latitude AS mall_latitude, 
-				 CONCAT(a.city_name,a.district_name,a.address) AS address,
-				 ".$distanceCond;
+				 CONCAT(a.district_name,a.address) AS address,
+				 ".$distanceCond.", concat('真爱就是，你会陪我在',a.name_zh,'一起吃胖') as share_content";
 				 //getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 
 		$sql = "Select ".$field." from ".tname('mall a').
@@ -496,7 +590,7 @@ class ApiModel extends CI_Model {
 				".$distanceCond;
 				//getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 
-		$where = "where a.status = 1 and a.level in ( '".$this->cinemaLevel."','".$this->ktvLevel."')";  //
+		$where = "where a.tb_district_id = 786 and a.status = 1 and a.level in ( '".$this->cinemaLevel."','".$this->ktvLevel."')";  //
 
 		if( $distanceType > 0 ) {
 
@@ -526,6 +620,8 @@ class ApiModel extends CI_Model {
 	 */
 	public function getCinemaDetail($id, $longitude = '0', $latitude = '0') {
 
+		$countData = $this->_getCountByLevel();  //获取其他分类数量
+
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 		}else {
@@ -547,7 +643,7 @@ class ApiModel extends CI_Model {
 				 a.affiliated_facilities,
 				 b.name_zh as mall,
 				 b.longitude AS mall_longitude, b.latitude AS mall_latitude, 
-				 CONCAT(a.city_name,a.district_name,a.address) AS address,
+				 CONCAT(a.district_name,a.address) AS address,
 				 ".$distanceCond;
 				 //getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 
@@ -555,8 +651,6 @@ class ApiModel extends CI_Model {
 			   " LEFT JOIN ".tname('mall b')." ON a.branch_name = b.name_zh where a.id = '".$id."'";
 
 		$data = $this->db->query($sql)->result_array();
-
-		
 
 		$result['errcode'] = '0';
 		$result['data'] = array();
@@ -569,18 +663,30 @@ class ApiModel extends CI_Model {
 				return $result;
 			}
 
+			if( !empty( $countData ) ) {
+
+				$data[0]['count_level'] = $countData;
+			}
+
 			//正在上映的电影
 			/*SELECT m.name,m.rating,m.image FROM tb_cinema_movie m 
 			INNER JOIN tb_cinema_today t ON t.movie_id = m.movie_id
 			WHERE t.cinema_id = '11efd881b27a86d4c569401b1275f1c8'*/
 			$movieField = 'm.name, m.rating, m.image';
 			$movieSql = "Select ".$movieField." from ".tname('cinema_movie m').
-						" LEFT JOIN ".tname('cinema_today t')." ON t.movie_id = m.movie_id where t.cinema_id = '".$id."'";
+						" LEFT JOIN ".tname('cinema_today t')." ON t.movie_id = m.movie_id where t.cinema_id = '".$id.
+						"' AND DATE_FORMAT( t.`date`,'%Y-%m-%d') = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')";
 
 			$movieData = $this->db->query($movieSql)->result_array();
 			//echo '<pre>';print_r($movieData);die;
 
 			$data[0]['movie_list'] = $movieData;
+
+			if( $data[0]['level'] == '5' ) {
+				$data[0]['share_content'] = '谁和我去'.$data[0]['name_zh'].'看电影？票钱我掏了！';
+			}else if( $data[0]['level'] == '8' ) {
+				$data[0]['share_content'] = '小伙伴们，我们去'.$data[0]['name_zh'].'唱个过瘾吧！';
+			}
 
 			if( !empty( $data[0]['pic_url'])) {
 				$data[0]['pic_url'] = explode(',',$data[0]['pic_url']);
@@ -626,7 +732,7 @@ class ApiModel extends CI_Model {
 				".$distanceCond;
 				//getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 
-		$where = 'where a.status = 1 and a.level = '.$this->travelLevel;
+		$where = 'where a.tb_district_id = 786 and a.status = 1 and a.level = '.$this->travelLevel;
 
 		if( $category != '' ) {
 
@@ -661,6 +767,8 @@ class ApiModel extends CI_Model {
 	 */
 	public function getTravelDetail($id, $longitude = '0', $latitude = '0') {
 
+		$countData = $this->_getCountByLevel();  //获取其他分类数量
+
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 		}else {
@@ -683,8 +791,8 @@ class ApiModel extends CI_Model {
 				 a.description,
 				 b.name_zh as mall,
 				 b.longitude AS mall_longitude, b.latitude AS mall_latitude, 
-				 CONCAT(a.city_name,a.district_name,a.address) AS address,
-				 ".$distanceCond;
+				 CONCAT(a.district_name,a.address) AS address,
+				 ".$distanceCond.", concat('这个周末，我们去',a.name_zh,'约会吧~') as share_content";
 				 //getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 
 		$sql = "Select ".$field." from ".tname('mall a').
@@ -701,6 +809,11 @@ class ApiModel extends CI_Model {
 				$result['errcode'] = '2';
 
 				return $result;
+			}
+
+			if( !empty( $countData ) ) {
+
+				$data[0]['count_level'] = $countData;
 			}
 
 			if( !empty( $data[0]['pic_url'])) {
@@ -746,7 +859,7 @@ class ApiModel extends CI_Model {
 				".$distanceCond;
 				//getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 
-		$where = 'where a.status = 1 and a.level = '.$this->hotelLevel;
+		$where = 'where a.tb_district_id = 786 and a.status = 1 and a.level = '.$this->hotelLevel;
 
 		if( $distanceType > 0 ) {
 
@@ -776,6 +889,8 @@ class ApiModel extends CI_Model {
 	 */
 	public function getHotelDetail($id, $longitude = '0', $latitude = '0') {
 
+		$countData = $this->_getCountByLevel();  //获取其他分类数量
+
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 		}else {
@@ -798,8 +913,8 @@ class ApiModel extends CI_Model {
 				 a.description,
 				 b.name_zh as mall,
 				 b.longitude AS mall_longitude, b.latitude AS mall_latitude, 
-				 CONCAT(a.city_name,a.district_name,a.address) AS address,
-				 ".$distanceCond;
+				 CONCAT(a.district_name,a.address) AS address,
+				 ".$distanceCond.", concat('偶尔想要住得比家里还舒服，就去',a.name_zh) as share_content";;
 				 //getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 
 		$sql = "Select ".$field." from ".tname('mall a').
@@ -816,6 +931,11 @@ class ApiModel extends CI_Model {
 				$result['errcode'] = '2';
 
 				return $result;
+			}
+
+			if( !empty( $countData ) ) {
+
+				$data[0]['count_level'] = $countData;
 			}
 
 			if( !empty( $data[0]['pic_url'])) {
@@ -836,7 +956,7 @@ class ApiModel extends CI_Model {
 	 * @param string $sort 排序 0默认按距离最近   1 按距离最近   2 评价最好   3 人气最高  4 人均最低    5 人均最高
 	 *
 	 */
-	private function _sortByType($sortType) {
+	private function _sortByType($sortType, $t = '') {
 
 		$orderby = 'Order by distance asc ';
 
@@ -848,7 +968,12 @@ class ApiModel extends CI_Model {
 				$orderby = 'Order by a.avg_rating desc ';
 				break;
 			case '3':
-				$orderby = 'Order by viewnum desc ';
+				if( $t == '1' ) {
+					$orderby = 'ORDER BY c.storeViewNum DESC, (ISNULL(c.storeViewNum)) ';
+				}else {
+					$orderby = 'Order by viewnum desc ';
+				}
+				
 				break;
 			case '4':
 				//$orderby = 'Order by a.avg_price asc ';
@@ -911,31 +1036,83 @@ class ApiModel extends CI_Model {
 
 	/**
 	 * 统计各类型的数量
+	 * @param $longitude 当前店铺的经度
+	 * @param $latitude 当前店铺的纬度
 	 *
 	 */
-	private function _getCountByLevel() {
+	private function _getCountByLevel($longitude = '', $latitude = '') {
+
+		$squares = $this->returnSquarePoint($longitude, $latitude);
+
+		//$sql = "select level, count(*) as count from `tb_mall` where tb_district_id = 786 and status = 1 and level in( 4,5,6,7,8) and latitude <> 0 and latitude > ".$squares['right-bottom']['lat']." and latitude < ".$squares['left-top']['lat']." and longitude > ".$squares['left-top']['lng']." and longitude < ".$squares['right-bottom']['lng']." group by level";
+		$sql = "Select a.level, count(*) as count from tb_mall a LEFT JOIN tb_brand_mall b ON a.id = b.tb_mall_id LEFT JOIN tb_brand d ON b.tb_brand_id = d.id where a.tb_district_id = 786 and a.status = 1  and a.latitude <> 0 and a.latitude > ".$squares['right-bottom']['lat']." and a.latitude < ".$squares['left-top']['lat']." and a.longitude > ".$squares['left-top']['lng']." and a.longitude < ".$squares['right-bottom']['lng']." group by level";		
 
 		$data = array();
 
-		$sql = "SELECT level,COUNT(*) as count FROM ".tname('mall')." where level != '2' GROUP BY level";
+		$shopping = 0;  //购物
+		$restaruant = 0;  //美食
+		$travel = 0;  //景点
+		$hotel = 0;  //酒店
+		$enterainment = 0; //娱乐
 
 		$result = $this->db->query($sql)->result_array();
-		//echo '<pre>';print_r($result);die;
 
-		$entertainment = 0;
+		//echo '<pre>';print_r($result);echo '<hr>';
+
 		foreach( $result as $key=>$item ) {
-			if( $key == '2' || $key == '5' ) {
-				$entertainment += intVal($item['count']);
-			}else {
-				array_push($data, intVal($item['count']));
+
+			switch( $item['level'] ) {
+
+				case '1':
+				case '2':
+					$shopping += intVal($item['count']);
+					break;
+				case '4':
+					$restaruant = intVal($item['count']);
+					break;
+				case '5':
+				case '8':
+					$enterainment += intVal($item['count']);
+					break;
+				case '6':
+					$travel = intVal($item['count']);
+					break;
+				case '7':
+					$hotel = intVal($item['count']);
+					break;
 			}
 		}
+		array_push($data, $shopping, $restaruant, $travel, $hotel, $enterainment);
 		/*
 		 * 0 - 购物  1 - 美食  2 - 景点  3 - 酒店  4 - 娱乐
 		 */
-		$data[] = $entertainment;
 
 		//echo '<pre>';print_r($data);die;
+
 		return $data;
 	}
+
+	/**
+	 *计算某个经纬度的周围某段距离的正方形的四个点
+	 *
+	 *@param lng float 经度
+	 *@param lat float 纬度
+	 *@param distance float 该点所在圆的半径，该圆与此正方形内切，默认值为2千米
+	 *@return array 正方形的四个点的经纬度坐标
+	 */
+	 function returnSquarePoint($lng, $lat,$distance = 2){
+	 
+	    $dlng =  2 * asin(sin($distance / (2 * EARTH_RADIUS)) / cos(deg2rad($lat)));
+	    $dlng = rad2deg($dlng);
+	     
+	    $dlat = $distance/EARTH_RADIUS;
+	    $dlat = rad2deg($dlat);
+	     
+	    return array(
+	                'left-top'=>array('lat'=>$lat + $dlat,'lng'=>$lng-$dlng),
+	                'right-top'=>array('lat'=>$lat + $dlat, 'lng'=>$lng + $dlng),
+	                'left-bottom'=>array('lat'=>$lat - $dlat, 'lng'=>$lng - $dlng),
+	                'right-bottom'=>array('lat'=>$lat - $dlat, 'lng'=>$lng + $dlng)
+	                );
+	 }
 }
