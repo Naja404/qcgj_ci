@@ -35,8 +35,8 @@ $lang = array(
 	'TEXT_PLACEHOLDER_RULE_SORT'         => '数字越大排序越高',
 	'TEXT_UPDATE_USER_STATUS_0'          => '<span class="label label-success">停用</span>',
 	'TEXT_UPDATE_USER_STATUS_1'          => '<span class="label label-error">正常</span>',
-	'TEXT_UPDATE_USERSTATUS_CLASS_0'     => 'icon-ok bigger-120',
-	'TEXT_UPDATE_USERSTATUS_CLASS_1'     => 'icon-remove bigger-120',
+	'TEXT_UPDATE_USERSTATUS_CLASS_0'     => '启用',
+	'TEXT_UPDATE_USERSTATUS_CLASS_1'     => '禁用',
 	
 	'ERR_ADD_ROLENAME_EXISTS'            => '角色名已存在',
 	'ERR_ADDROLE_USERNAME_EXISTS'        => '用户名已存在',

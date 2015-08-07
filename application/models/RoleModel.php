@@ -225,29 +225,69 @@ class RoleModel extends CI_Model {
 	}
 
 	/**
+	 * 删除用户
+	 * @param string $userId 用户id
+	 */
+	public function delUser($userId = false){
+
+		$delRes = $this->db->delete(tname('qcgj_role_user'), array('user_id' => $userId));
+
+		if (!$delRes) $this->returnRes['msg'] = $this->lang->line('ERR_DELETE_FAILURE'); else $this->returnRes['error'] = false;
+
+		return $this->returnRes;
+	}
+
+	/**
+	 *  获取用户详情
+	 * @param string $userId 用户id
+	 */
+	public function getUserDetail($userId = false){
+		$sql = "SELECT 
+					a.name AS userName, 
+					a.role_id, 
+					IF(c.brand_id is null, '', (SELECT CONCAT(name_zh, '_', name_en) FROM ".tname('brand')." WHERE id = c.brand_id)) AS brandName,
+					c.brand_id
+					FROM ".tname('qcgj_role_user')." AS a 
+					LEFT JOIN ".tname('qcgj_role')." AS b ON b.role_id = a.role_id
+					LEFT JOIN ".tname('qcgj_role_brand_mall')." AS c ON c.user_id = a.user_id
+					WHERE a.user_id = '%s'";
+
+		$queryRes = $this->db->query(sprintf($sql, $userId))->first_row();
+
+		return $queryRes;
+	}
+
+	/**
 	 * 获取用户列表
 	 *
 	 */
-	public function getRoleUserList($pageNum = 1, $pageCount = 10){
+	public function getRoleUserList($pageNum = 1, $where, $pageCount = 10){
 
 		$pageNum = abs(($pageNum - 1) * $pageCount);
 		$limit = ' LIMIT '.$pageNum.','.$pageCount;
 
-		$sql = "SELECT  a.user_id, 
+		$field = " a.user_id, 
 						a.name, 
 						b.name AS role_name, 
 						a.created_time, 
-						a.status 
-					FROM ".tname('qcgj_role_user')." AS a
-		 			LEFT JOIN ".tname('qcgj_role')." AS b ON b.role_id = a.role_id ORDER BY a.created_time DESC";
+						a.status ";
+		$countField = " COUNT(*) AS total ";
 
-		$queryTotal = $this->db->count_all(tname('qcgj_role_user'));
-		$queryRes = $this->db->query($sql.$limit)->result();
+		$sql = "SELECT %s
+					FROM ".tname('qcgj_role_user')." AS a
+		 			LEFT JOIN ".tname('qcgj_role')." AS b ON b.role_id = a.role_id 
+		 			 %s
+		 			 ORDER BY a.created_time DESC 
+		 			 %s ";
+
+
+		$queryTotal = $this->db->query(sprintf($sql, $countField, $where, ''))->first_row();
+		$queryRes = $this->db->query(sprintf($sql, $field, $where, $limit))->result();
 
 		$this->returnRes = array(
 				'error' => false,
 				'data'  => array(
-						'total'  => $queryTotal,
+						'total'  => $queryTotal->total,
 						'result' => $queryRes,
 					),
 			);

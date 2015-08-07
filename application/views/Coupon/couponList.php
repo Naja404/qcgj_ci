@@ -63,6 +63,40 @@
 
 						<div class="row">
 							<div class="col-xs-12">
+
+								<form method="get" action="<?php echo site_url('Coupon/couponList');?>">
+
+									优惠券标题:<input type="text" name="title" value="<?php echo $this->input->get('roleUser');?>"/>
+									&nbsp;
+									&nbsp;
+									&nbsp;
+									城市:
+									<select name="city">
+										<option value="">全部</option>
+										<?php foreach ($roleSelect as $k => $v) {?>
+										<option value="<?php echo $v->role_id?>" <?php echo $this->input->get('role') == $v->role_id ? 'selected' : '';?>><?php echo $v->name;?></option>
+										<?php } ?>
+									</select>
+									&nbsp;
+									&nbsp;
+									&nbsp;
+									状态:
+									<select name="city">
+										<option value="">全部</option>
+										<?php foreach ($roleSelect as $k => $v) {?>
+										<option value="<?php echo $v->role_id?>" <?php echo $this->input->get('role') == $v->role_id ? 'selected' : '';?>><?php echo $v->name;?></option>
+										<?php } ?>
+									</select>
+
+									时间范围:
+									<input type="text" name="dateRange" id="dateRange" value="" >
+									&nbsp;
+									&nbsp;
+									&nbsp;
+									<button type="submit"><?php echo $this->lang->line('BTN_SEARCH');?></button>
+								</form>
+								<br>
+
 								<div class="row">
 									<div class="col-xs-12">
 
@@ -110,13 +144,13 @@
 														<td><?php echo $v->mallCount;?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-																<button class="btn btn-xs btn-danger" onclick="delCoupon('<?php echo strEncrypt($v->id);?>');">
-																	<i class="icon-trash bigger-120"></i>
-																</button>
+																<a style="color:red;" onclick="delCoupon('<?php echo strEncrypt($v->id);?>');">
+																	<i class="icon-trash bigger-120">删除</i>
+																</a>
 																<?php if($v->saleStatus == 0){?>
-																<button class="btn btn-xs btn-info" onclick="editCoupon('<?php echo strEncrypt($v->id);?>');">
-																	<i class="icon-edit bigger-120"></i>
-																</button>
+																<a onclick="editCoupon('<?php echo strEncrypt($v->id);?>');">
+																	<i class="icon-edit bigger-120">编辑</i>
+																</a>
 																<?php } ?>
 																<?php if($this->userInfo->role_id == 1){?>
 																<select name="couponStatus" onchange="setCouponStatus(this, '<?php echo strEncrypt($v->id);?>')" >
@@ -195,12 +229,19 @@
 		<!-- page specific plugin scripts -->
 		
 		<!-- ace scripts -->
-
+		<script src="<?php echo config_item('html_url');?>js/date-time/daterangepicker.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/ace-elements.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 
 		<!-- inline scripts related to this page -->
 		<script type="text/javascript">
+			jQuery(function($) {
+						// 日期选择
+				$('input[name=dateRange]').daterangepicker().prev().on(ace.click_event, function(){
+					$(this).next().focus();
+				});
+			})
+
 			function editCoupon(couponId){
 				window.location.href = "<?php echo site_url('Coupon/editCoupon');?>"+"?couponId="+couponId;
 			}

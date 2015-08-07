@@ -51,6 +51,7 @@ $lang = array(
 		'ERR_PARAM'          => '参数错误',
 		'ERR_ADD_FAILURE'    => '数据添加错误,请刷新后重试',
 		'ERR_UPDATE_FAILURE' => '数据更新失败,请刷新后重试',
+		'ERR_DELETE_FAILURE' => '数据删除失败,请刷新后重试',
 		'ERR_PLEASE_LOGIN'   => '未登录,请先登录',
 		'ERR_TIMEOUT_LOGIN'  => '登录超时,请重新登录',
 		'ERR_NOT_ALLOW'      => '您无权限浏览该页面',

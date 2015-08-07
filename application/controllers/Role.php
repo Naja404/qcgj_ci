@@ -20,11 +20,13 @@ class Role extends WebBase {
 	 * 角色列表
 	 */
 	public function roleList(){
-		
+
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ROLELIST');
 
-		$roleRes = $this->RoleModel->getRoleUserList($this->p);
-		$this->outData['brandList'] = $this->RoleModel->getBrandList();
+		$where = $this->_getRoleListWhere();
+
+		$roleRes = $this->RoleModel->getRoleUserList($this->p, $where);
+		// $this->outData['brandList'] = $this->RoleModel->getBrandList();
 
 		$this->outData['roleList'] = $roleRes['data']['result'];
 		$this->outData['ruleList'] = $this->RoleModel->getRuleList();
@@ -154,6 +156,25 @@ class Role extends WebBase {
 	}
 
 	/**
+	 * 编辑角色用户
+	 *
+	 */
+	public function editRoleUser(){
+		if (!$this->input->is_ajax_request()) {
+			$this->outData['pageTitle'] = '用户编辑';
+			$this->outData['roleSelect'] = $this->RoleModel->getRoleList();
+			$this->outData['detail'] = $this->RoleModel->getUserDetail($this->input->get('uid'));
+			return $this->load->view('Role/editUser', $this->outData);
+		}
+
+		$this->ajaxRes = array(
+					'status' => 0,
+			);
+
+		jsonReturn($this->ajaxRes);	
+	}
+
+	/**
 	 * 更新用户内容
 	 *
 	 */
@@ -183,6 +204,29 @@ class Role extends WebBase {
 
 			jsonReturn($this->ajaxRes);
 		}
+	}
+
+	/**
+	 * 删除用户
+	 *
+	 */
+	public function delUser(){
+		if (!$this->input->is_ajax_request()) {
+			jsonReturn($this->ajaxRes);
+		}
+		$userId = $this->input->post('user_id');
+		
+		$delRes = $this->RoleModel->delUser($userId);
+
+		if ($delRes['error']) {
+			$this->ajaxRes['msg'] = $delRes['msg'];
+		}else{
+			$this->ajaxRes = array(
+						'status'     => 0,
+						);
+		}
+
+		jsonReturn($this->ajaxRes);
 	}
 
 	/**
@@ -226,6 +270,31 @@ class Role extends WebBase {
  			);
 
  		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 获取角色列表筛选条件
+	 *
+	 */
+	private function _getRoleListWhere(){
+		$where = '';
+
+		$whereArr = array();
+		
+		$reqData = $this->input->get();
+
+		if (!empty($reqData['roleUser']) && is_string($reqData['roleUser'])) $whereArr[] = " a.name LIKE '%".$this->input->get('roleUser')."%' ";
+
+		if (@is_numeric($reqData['roleStatus']) && in_array($reqData['roleStatus'], array(1, 0))) $whereArr[] = " a.status = ".$reqData['roleStatus']." ";
+
+		if (!empty($reqData['role']) && is_numeric($reqData['role'])) $whereArr[] = " a.role_id = ".(int)$reqData['role']." ";
+
+		if (count($whereArr) > 0) {
+			$where = ' WHERE ';
+			$where .= implode(' AND ', $whereArr);
+		}
+
+		return $where;
 	}
 
 }

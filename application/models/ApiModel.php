@@ -49,7 +49,30 @@ class ApiModel extends CI_Model {
 		// 					->where('pic_url IS NOT NULL')
 		// 					->get(tname('mall'))->result();
 
-		$sql = "SELECT *, `getDistance`('".$longitude."', '".$latitude."', longitude, latitude) as distance FROM `tb_mall` WHERE `tb_district_id` = 786 AND `level` = 1  AND status = 1 AND `pic_url` IS NOT NULL order by distance ASC ";
+		$sql = "select count(*) as count, b.id , b.name_zh as total 
+				from tb_brand_mall as a
+				left join tb_mall as b on b.id = a.tb_mall_id
+ 				where 
+ 					b.level in (1, 2) 
+ 					and 
+ 					b.tb_district_id = 786 
+ 					and 
+ 					b.status = 1 
+ 				group by tb_mall_id ";
+
+ 		$queryRes = $this->db->query($sql)->result();
+		
+		$mallsId = array();
+ 		
+ 		foreach ($queryRes as $k => $v) {
+ 			if ($v->count > 10) {
+ 				$mallsId[] = $v->id;
+ 			}
+ 		}
+
+ 		$mallId = "'".implode("','", $mallsId)."'";
+
+		$sql = "SELECT *, `getDistance`('".$longitude."', '".$latitude."', longitude, latitude) as distance FROM `tb_mall` WHERE id IN (".$mallId.") AND `tb_district_id` = 786 AND `level` = 1  AND status = 1 AND `pic_url` IS NOT NULL order by distance ASC ";
 
 		$queryRes = $this->db->query($sql)->result();
 
@@ -89,6 +112,7 @@ class ApiModel extends CI_Model {
 						on b.id = a.tb_subject_id
 					where 
 						a.tb_district_id = 786 
+					order by b.update_time desc
 					limit 10";
 
 		$queryRes = $this->db->query($sql)->result_array();
@@ -242,7 +266,7 @@ class ApiModel extends CI_Model {
 			       c.storeViewNum,
 			       ".$distanceCond;
 
-		$where = 'where a.tb_district_id = 786 and a.status = 1 and ( a.level = '.$this->shoppingLevel.' OR a.level = '.$this->streetLevel.') ';  //
+		$where = " where a.tb_district_id = 786 and a.trade_area_name != '' and a.status = 1 and ( a.level = '".$this->shoppingLevel."' OR a.level = '".$this->streetLevel."') and d.name_en !=''";  //
 
 		$table_con = '';
 
@@ -360,14 +384,33 @@ class ApiModel extends CI_Model {
 			//分享语
 			$data[0]['share_content'] = '我要去逛街！目的地：'.$data[0]['name_zh'].'！';
 
+			$category_data = array();
+			$brand_id = $data[0]['tb_brand_id'];
+
+			if( $brand_id != '' ) {
+				$category_sql = "select distinct(c.name) from tb_brand_category b inner join tb_category c on c.id = b.tb_category_id 
+						where b.tb_brand_id = '".$brand_id."'";
+
+				$categorylist = $this->db->query($category_sql)->result_array();
+
+				if( !empty($categorylist )) {
+					foreach( $categorylist as $category ) {
+						if( !in_array( $category['name'], $category_data ) ) {
+							array_push( $category_data, $category['name'] );
+						}
+					}
+				}
+			}
+			$data[0]['category_name'] = $category_data;
+
 			//该品牌其他优惠信息
-			$couponOrDiscountSql = "SELECT c.name, c.id, '1' AS type, b.name_en, b.name_zh, b.logo_url, c.price, c.cost_price, c.coupon_type FROM ".tname('brand b')."
+			$couponOrDiscountSql = "SELECT c.name, c.id, '1' AS type, b.name_en, b.name_zh, b.logo_url, c.price, c.cost_price, c.coupon_type, concat(date_format(c.begin_date,'%Y/%m/%d'), ' - ', date_format(c.end_date,'%Y/%m/%d')) as usedate FROM ".tname('brand b')."
 				INNER JOIN ".tname('coupon c')." ON c.tb_brand_id = b.id
-				WHERE c.tb_brand_id = '".$data[0]['tb_brand_id']."' and c.on_sale = 1 AND c.end_date >= '".date('Y-m-d')."'  
+				WHERE c.is_delete = 0 and c.tb_brand_id = '".$data[0]['tb_brand_id']."' and c.on_sale = 1 AND c.end_date >= '".date('Y-m-d')."'  
 				UNION ALL 
-				SELECT d.name_zh, d.id, '2' AS TYPE, b.name_en, b.name_zh, b.logo_url, '' AS price, '' AS cost_price, '' AS coupon_type FROM ".tname('brand b')."
+				SELECT d.name_zh, d.id, '2' AS TYPE, b.name_en, b.name_zh, b.logo_url, '' AS price, '' AS cost_price, '' AS coupon_type, concat(date_format(d.begin_date,'%Y/%m/%d'), ' - ', date_format(d.end_date,'%Y/%m/%d')) as usedate FROM ".tname('brand b')."
 				INNER JOIN ".tname('discount d')." ON d.tb_brand_id = b.id
-				WHERE d.tb_brand_id = '".$data[0]['tb_brand_id']."' and d.end_date >= '".date('Y-m-d')."'";
+				WHERE d.is_delete = 0 and d.tb_brand_id = '".$data[0]['tb_brand_id']."' and d.end_date >= '".date('Y-m-d')."'";
 
 				//echo $couponOrDiscountSql;die;
 
@@ -377,12 +420,13 @@ class ApiModel extends CI_Model {
 
 			//品牌其他门店
 			$otherStoresSql = "SELECT 
-				CASE WHEN a.level = '2' THEN a.id ELSE b.id END AS id, 
+				a.id,
+				b.id as storeid, 
 				concat(a.name_zh, '店') as name_zh, 
 				CASE WHEN a.level = '2' THEN a.thumb_url ELSE b.thumb_url END AS thumb_url
 				FROM ".tname('mall a')."
 				INNER JOIN ".tname('brand_mall b')." ON b.tb_mall_id = a.id
-				WHERE b.id !='".$storeid."' AND b.tb_brand_id ='".$data[0]['tb_brand_id']."'";
+				WHERE a.tb_district_id = 786 and a.status = 1 and b.id !='".$storeid."' AND b.tb_brand_id ='".$data[0]['tb_brand_id']."'";
 
 			$otherStores = $this->db->query($otherStoresSql)->result_array();
 
@@ -391,10 +435,7 @@ class ApiModel extends CI_Model {
 
 			//附近还有数量
 			//使用此函数计算得到结果后，带入sql查询。
-			
 			$countData = $this->_getCountByLevel( $data[0]['longitude'], $data[0]['latitude']);
-
-			
 
 			$data[0]['count_level'] = array();
 
@@ -487,7 +528,7 @@ class ApiModel extends CI_Model {
 	 */
 	public function getRestaurantDetail($id, $longitude = '0', $latitude = '0') {
 
-		$countData = $this->_getCountByLevel();  //获取其他分类数量
+		//$countData = $this->_getCountByLevel();  //获取其他分类数量
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -531,6 +572,10 @@ class ApiModel extends CI_Model {
 
 				return $result;
 			}
+
+			//附近还有数量
+			//使用此函数计算得到结果后，带入sql查询。
+			$countData = $this->_getCountByLevel( $data[0]['longitude'], $data[0]['latitude']);
 
 			if( !empty( $countData ) ) {
 
@@ -620,7 +665,7 @@ class ApiModel extends CI_Model {
 	 */
 	public function getCinemaDetail($id, $longitude = '0', $latitude = '0') {
 
-		$countData = $this->_getCountByLevel();  //获取其他分类数量
+		//$countData = $this->_getCountByLevel();  //获取其他分类数量
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -662,6 +707,10 @@ class ApiModel extends CI_Model {
 
 				return $result;
 			}
+
+			//附近还有数量
+			//使用此函数计算得到结果后，带入sql查询。
+			$countData = $this->_getCountByLevel( $data[0]['longitude'], $data[0]['latitude']);
 
 			if( !empty( $countData ) ) {
 
@@ -767,7 +816,7 @@ class ApiModel extends CI_Model {
 	 */
 	public function getTravelDetail($id, $longitude = '0', $latitude = '0') {
 
-		$countData = $this->_getCountByLevel();  //获取其他分类数量
+		//$countData = $this->_getCountByLevel();  //获取其他分类数量
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -810,6 +859,10 @@ class ApiModel extends CI_Model {
 
 				return $result;
 			}
+
+			//附近还有数量
+			//使用此函数计算得到结果后，带入sql查询。
+			$countData = $this->_getCountByLevel( $data[0]['longitude'], $data[0]['latitude']);
 
 			if( !empty( $countData ) ) {
 
@@ -855,6 +908,7 @@ class ApiModel extends CI_Model {
 				a.longitude,
 				a.latitude,
 				a.avg_rating,
+				a.avg_price,
 				count(b.tb_obj_id) as viewnum,
 				".$distanceCond;
 				//getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -889,7 +943,7 @@ class ApiModel extends CI_Model {
 	 */
 	public function getHotelDetail($id, $longitude = '0', $latitude = '0') {
 
-		$countData = $this->_getCountByLevel();  //获取其他分类数量
+		//$countData = $this->_getCountByLevel();  //获取其他分类数量
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -908,6 +962,7 @@ class ApiModel extends CI_Model {
 				 a.open_time,
 				 a.close_time,
 				 a.avg_rating,
+				 a.avg_price,
 				 a.tel,
 				 a.level,
 				 a.description,
@@ -932,6 +987,10 @@ class ApiModel extends CI_Model {
 
 				return $result;
 			}
+		
+			//附近还有数量
+			//使用此函数计算得到结果后，带入sql查询。
+			$countData = $this->_getCountByLevel( $data[0]['longitude'], $data[0]['latitude']);
 
 			if( !empty( $countData ) ) {
 

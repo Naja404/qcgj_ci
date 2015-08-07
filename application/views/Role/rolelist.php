@@ -75,6 +75,21 @@
 
 						<div class="row">
 							<div class="col-xs-12">
+								<form method="get" action="<?php echo site_url('Role/roleList');?>">
+
+									用户名:<input type="text" name="roleUser" value="<?php echo $this->input->get('roleUser');?>"/>
+
+									角色:
+									<select name="role">
+										<option value="">全部</option>
+										<?php foreach ($roleSelect as $k => $v) {?>
+										<option value="<?php echo $v->role_id?>" <?php echo $this->input->get('role') == $v->role_id ? 'selected' : '';?>><?php echo $v->name;?></option>
+										<?php } ?>
+									</select>
+									状态：<input type="radio" name="roleStatus" value="1" <?php echo $this->input->get('roleStatus') == 1 ? 'checked' : '';?>>启用 <input type="radio" name="roleStatus" value="0" <?php echo $this->input->get('roleStatus') == 0 ? 'checked' : '';?>> 禁用
+									<button type="submit"><?php echo $this->lang->line('BTN_SEARCH');?></button>
+								</form>
+								<br>
 								<div class="row">
 									<div class="col-xs-12">
 										<div class="table-responsive">
@@ -124,23 +139,23 @@
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 																<?php if($v->status == 0){?>
-																<button class="btn btn-xs btn-success" onclick="setUserStatus('<?php echo $v->user_id;?>');" >
-																	<i id="userStat_<?php echo $v->user_id;?>" class="icon-ok bigger-120"></i>
-																</button>
+																<a onclick="setUserStatus('<?php echo $v->user_id;?>');" >
+																	<i id="userStat_<?php echo $v->user_id;?>" class="icon-ok bigger-120">启用</i>
+																</a>
 																<input type="hidden" value="1" name="userStatVal_<?php echo $v->user_id;?>"/>
 																<?php }else{ ?>
-																<button class="btn btn-xs btn-success" onclick="setUserStatus('<?php echo $v->user_id;?>');" >
-																	<i id="userStat_<?php echo $v->user_id;?>" class="icon-remove bigger-120"></i>
-																</button>
+																<a onclick="setUserStatus('<?php echo $v->user_id;?>');" >
+																	<i id="userStat_<?php echo $v->user_id;?>" class="icon-remove bigger-120">禁用</i>
+																</a>
 																<input type="hidden" value="0" name="userStatVal_<?php echo $v->user_id;?>"/>
 																<?php }?>
-																<button class="btn btn-xs btn-info">
-																	<i class="icon-edit bigger-120"></i>
-																</button>
+																<a style="color:blue;" href="<?php echo base_url('Role/editRoleUser').'?uid='.$v->user_id;?>">
+																	<i class="icon-edit bigger-120">编辑</i>
+																</a>
 
-																<button class="btn btn-xs btn-danger">
-																	<i class="icon-trash bigger-120"></i>
-																</button>
+																<a style="color:red;" onclick="delRoleUser('<?php echo $v->user_id;?>', '<?php echo $v->name;?>');">
+																	<i class="icon-trash bigger-120">删除</i>
+																</a>
 															</div>
 
 														</td>
@@ -588,11 +603,28 @@
 							alert(data.msg);
 						}else{
 							$('#status_' + userID).html(data.html);
-							$('#userStat_'+userID).attr("class", data.class);
+							$('#userStat_'+userID).text(data.class);
 							$('input[name=userStatVal_'+userID+']').val(data.userStatus);
 						}
 					}
 				});
+			}
+
+			function delRoleUser(userID, userName){
+				if (confirm('是否确认删除 >> '+userName+' << ?')) {
+					$.ajax({
+						type:"POST",
+						url:"<?php echo site_url('Role/delUser');?>",
+						data:{user_id:userID},
+						success:function(data){
+							if (data.status) {
+								alert(data.msg);
+							}else{
+								window.location.reload();
+							}
+						}
+					});
+				};
 			}
 		</script>
 
