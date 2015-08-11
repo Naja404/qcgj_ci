@@ -179,7 +179,7 @@ class Coupon extends WebBase {
 	public function editCoupon(){
 		$couponId = strDecrypt($this->input->get('couponId'));
 
-		if (!$this->CouponModel->checkAuthCoupon($couponId)) {
+		if (!$this->CouponModel->checkAuthCoupon($couponId, $this->userInfo->role_id == 1 ? true : false)) {
 			$outData = array(
 					'errLang' => $this->lang->line('ERR_AUTH_EDIT_COUPON'),
 					'url'     => site_url('Coupon/couponList'),
@@ -214,9 +214,13 @@ class Coupon extends WebBase {
 
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_EDITCOUPON');
 
-		$this->outData['couponData'] = $this->CouponModel->getCouponById($couponId);
+		$brandId = $this->input->get('brand');
 
-		$shopList = $this->CouponModel->getShopList();
+		$brandId = !empty($brandId) ? $brandId : false;
+
+		$this->outData['couponData'] = $this->CouponModel->getCouponById($couponId, $brandId ? true : false);
+
+		$shopList = $this->CouponModel->getShopList($brandId);
 
 		$this->outData['shopList'] = $this->_fetchCheckMall($shopList['data']['list'], $this->outData['couponData']->mallID);
 

@@ -138,10 +138,5 @@ $lang = array(
 					'label' => 'ERR_COUPON_USEGUIDE',
 					'rules' => 'required',
 					),
-				array(
-					'field' => 'couponVerification',
-					'label' => 'ERR_COUPON_VERIFICATION',
-					'rules' => 'required',
-					),
 			),
 );

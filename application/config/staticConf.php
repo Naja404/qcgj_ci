@@ -53,6 +53,38 @@ $config = array(
 		'AdminConf' => array(
 				'RoleId' => array(1),
 			),
+
+		//折扣类型（1满减，2满赠，3折扣，4满量减，6买就赠，7新品，8特价）
+		'DISCOUNT_TYPE' => array(
+						array(
+							'key'   => 1,
+							'value' => '满减',
+							),
+						array(
+							'key'   => 2,
+							'value' => '满赠',
+							),
+						array(
+							'key'   => 3,
+							'value' => '折扣',
+							),
+						array(
+							'key'   => 4,
+							'value' => '满量减',
+							),
+						array(
+							'key'   => 6,
+							'value' => '满减',
+							),
+						array(
+							'key'   => 7,
+							'value' => '新品',
+							),
+						array(
+							'key'   => 8,
+							'value' => '特价',
+							),
+			),
 	);
 
 

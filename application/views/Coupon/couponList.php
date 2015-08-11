@@ -147,12 +147,15 @@
 																<a style="color:red;" onclick="delCoupon('<?php echo strEncrypt($v->id);?>');">
 																	<i class="icon-trash bigger-120">删除</i>
 																</a>
-																<?php if($v->saleStatus == 0){?>
+																<?php if($v->saleStatus == 0 && $this->userInfo->role_id != 1){?>
 																<a onclick="editCoupon('<?php echo strEncrypt($v->id);?>');">
 																	<i class="icon-edit bigger-120">编辑</i>
 																</a>
 																<?php } ?>
 																<?php if($this->userInfo->role_id == 1){?>
+																<a onclick="editCoupon('<?php echo strEncrypt($v->id);?>', '<?php echo $v->tb_brand_id;?>');">
+																	<i class="icon-edit bigger-120">编辑</i>
+																</a>
 																<select name="couponStatus" onchange="setCouponStatus(this, '<?php echo strEncrypt($v->id);?>')" >
 																	<option value="0" <?php echo $v->status == 0 ? 'selected' : ''; ?>>
 																		<?php echo $this->lang->line('TEXT_DEFAULT_STATUS');?>
@@ -242,8 +245,8 @@
 				});
 			})
 
-			function editCoupon(couponId){
-				window.location.href = "<?php echo site_url('Coupon/editCoupon');?>"+"?couponId="+couponId;
+			function editCoupon(couponId, brandId){
+				window.location.href = "<?php echo site_url('Coupon/editCoupon');?>"+"?couponId="+couponId+"&brand="+brandId;
 			}
 
 			function delCoupon(couponId){

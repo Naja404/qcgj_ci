@@ -22,6 +22,7 @@ class CouponModel extends CI_Model {
 		$limit = ' LIMIT '.$pageNum.','.$pageCount;
 
 		$field = " a.id,
+					a.tb_brand_id,
 					a.name AS title,
 					CONCAT(a.begin_date, '<br/>~<br/>', a.end_date) AS expire,
 					a.status AS status,
@@ -312,7 +313,7 @@ class CouponModel extends CI_Model {
 						'id'           => makeUUID(),
 						'tb_coupon_id' => $couponData['couponId'],
 						'tb_mall_id'   => $v,
-						'address'	   => $this->getMallFloorById($v, $this->userInfo->brand_id),
+						'address'	   => $this->getMallFloorById($v, $couponData['brandId']),
 						'create_time'  => currentTime(),
 						'update_time'  => currentTime(),
 					);
