@@ -123,10 +123,10 @@
 													<?php foreach ($list as $k => $v):?>
 													<tr>
 														<td>
-															<img src="" width="100px;">	
+															<img src="<?php echo config_item('image_url').$v['brand_pic_url'];?>" width="100px;">	
 														</td>
 														<td><?php echo $v['name_zh'];?></td>
-														<td><?php echo $v['type'];?></td>
+														<td width="50px;"><?php echo $this->lang->line('TEXT_DISCOUNT_TYPE_'.$v['type']);?></td>
 														<td><?php echo $v['begin_date'];?></td>
 														<td><?php echo $v['end_date'];?></td>
 														<td><?php echo $v['brand'];?></td>
@@ -134,7 +134,7 @@
 														<td><?php echo $v['discount_desc'];?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-																<a onclick="editDiscount('<?php echo $v['id'];?>', '<?php echo $v['tb_brand_id'];?>');">
+																<a href="<?php echo base_url('Discount/editDis').'?discountId='.$v['id'].'&brandId='.$v['tb_brand_id'];?>">
 																	<i class="icon-edit bigger-120">编辑</i>
 																</a>
 																&nbsp;
@@ -207,6 +207,7 @@
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 
 		<script type="text/javascript">
+
 			function delDiscount(discountId, brandId){
 				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DEL_DISCOUNT');?>")) {
 					return false;

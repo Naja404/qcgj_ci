@@ -19,6 +19,164 @@ class DiscountModel extends CI_Model {
 	}
 
 	/**
+	 * 添加折扣信息
+	 * @param array $reqData 折扣数据
+	 */
+	public function addDis($reqData = array()){
+
+		if ($this->isAdmin) {
+			$brandId = $reqData['brandId'];
+		}else{
+			$brandId = $this->userInfo->brand_id;
+		}
+
+		$date = $this->_formatDiscountDate($reqData['discountDate']);
+		
+		$addDis = array(
+				'id'             => makeUUID(),
+				'name_zh'        => addslashes($reqData['discountTitle']),
+				'brand_pic_url'  => $reqData['discountImg'],
+				'status'         => 0,
+				'create_time'    => currentTime(),
+				'update_time'    => currentTime(),
+				'tb_category_id' => $reqData['discountCate'],
+				'category_name'  => $this->getCateNameById($reqData['discountCate']),
+				'tb_brand_id'    => $brandId,
+				'brand_name_en'  => $this->getBrandNameById($brandId, 'EN'),
+				'brand_name_zh'  => $this->getBrandNameById($brandId, 'ZH'),
+				'discount_desc'  => $reqData['discountDescription'],
+				'begin_date'     => currentTime('', $date[0]),
+				'end_date'       => currentTime('', $date[1]),
+				'type'			 => (int)$reqData['discountType'],
+				'is_delete'		 => 0,
+				'oper'			 => $this->userInfo->user_id,
+				'is_top'		 => 0,
+			);
+
+		// 添加折扣
+		$addDisRes = $this->db->insert(tname('discount'), $addDis);
+
+		if (!$addDisRes) {
+			$this->returnRes['msg'] = $this->lang->line('ERR_DISCOUNT_ADD_FAILURE');
+			return $this->returnRes;
+		}
+
+		// 添加商场
+		if (is_array($reqData['mallID']) && count($reqData['mallID'])) {
+			$disInsertMall = $tmpMallArr = array();
+
+			foreach ($reqData['mallID'] as $k => $v) {
+
+				if (in_array($v, $tmpMallArr)) {
+					continue;
+				}
+
+				$disInsertMall[] = array(
+						'id'             => makeUUID(),
+						'tb_discount_id' => $addDis['id'],
+						'tb_mall_id'     => $v,
+						'address'        => $this->getMallFloorById($v, $brandId),
+						'create_time'    => currentTime(),
+						'update_time'    => currentTime(),
+					);
+			}
+
+			$this->db->insert_batch(tname('discount_mall'), $disInsertMall);
+		}
+
+		$this->returnRes['error'] = false;
+	}
+
+	/**
+	 * 编辑折扣信息
+	 * @param array $reqData 折扣数据
+	 */
+	public function editDis($reqData = array()){
+
+		$date = $this->_formatDiscountDate($reqData['discountDate']);
+		
+		$editDis = array(
+				'name_zh'        => addslashes($reqData['discountTitle']),
+				'brand_pic_url'  => $reqData['discountImg'],
+				'update_time'    => currentTime(),
+				'tb_category_id' => $reqData['discountCate'],
+				'category_name'  => $this->getCateNameById($reqData['discountCate']),
+				'discount_desc'  => $reqData['discountDescription'],
+				'begin_date'     => currentTime('', $date[0]),
+				'end_date'       => currentTime('', $date[1]),
+				'type'			 => (int)$reqData['discountType'],
+			);
+
+		if (!$this->isAdmin) $editDis['oper'] = $this->userInfo->user_id;
+
+		$where = array(
+				'id'          => $reqData['discountId'],
+				'tb_brand_id' => $reqData['brandId'],
+			);
+
+		// 更新折扣
+		$editDisRes = $this->db->where($where)->update(tname('discount'), $editDis);
+
+		if (!$editDisRes) {
+			$this->returnRes['msg'] = $this->lang->line('ERR_DISCOUNT_UPDATE_FAILURE');
+			return $this->returnRes;
+		}
+
+		// 更新商场
+		if (is_array($reqData['mallID']) && count($reqData['mallID'])) {
+
+			$this->db->where(array('tb_discount_id' => $reqData['discountId']))->delete(tname('discount_mall'));
+
+			$disInsertMall = $tmpMallArr = array();
+
+			foreach ($reqData['mallID'] as $k => $v) {
+
+				if (in_array($v, $tmpMallArr)) {
+					continue;
+				}
+
+				$disInsertMall[] = array(
+						'id'             => makeUUID(),
+						'tb_discount_id' => $reqData['discountId'],
+						'tb_mall_id'     => $v,
+						'address'        => $this->getMallFloorById($v, $reqData['brandId']),
+						'create_time'    => currentTime(),
+						'update_time'    => currentTime(),
+					);
+			}
+
+			$this->db->insert_batch(tname('discount_mall'), $disInsertMall);
+		}
+
+		$this->returnRes['error'] = false;
+	}
+
+	/**
+	 * 获取折扣详情
+	 * @param string $discountId 折扣id
+	 */
+	public function getDiscountDetail($discountId = false){
+		
+		$where = array(
+				'id' => $discountId,
+			);
+
+		$queryRes = $this->db->get_where(tname('discount'), $where)->first_row();
+
+		$mallQueryRes = $this->db->select('tb_mall_id')->get_where(tname('discount_mall'), array('tb_discount_id' => $discountId))->result();
+
+		$queryRes->mallID = array();
+
+		foreach ($mallQueryRes as $k => $v) {
+			array_push($queryRes->mallID, $v->tb_mall_id);
+		}
+
+		$queryRes->date = date('Y/m/d', strtotime($queryRes->begin_date)).' - '.date('Y/m/d', strtotime($queryRes->end_date));
+
+		return $queryRes;
+	}
+
+	/**
 	 * 获取折扣列表
 	 * @param int $page 页码
 	 * @param string $where 查询条件
@@ -94,17 +252,6 @@ class DiscountModel extends CI_Model {
 	}
 
 	/**
-	 * 获取品牌名
-	 * @param string $brandId 品牌id
-	 */
-	public function getBrandName($brandId = false){
-		$sql = "SELECT CONCAT(name_en, ' ', name_zh) AS name FROM ".tname('brand')." WHERE id = '".$brandId."' ";
-		$queryRes = $this->db->query($sql)->first_row();
-
-		return $queryRes->name;
-	}
-
-	/**
 	 * 获取品牌宣传图
 	 * @param string $brandId 品牌id
 	 */
@@ -126,7 +273,65 @@ class DiscountModel extends CI_Model {
 	}
 
 	/**
-	 * 格式化
+	 * 是否存在折扣
+	 * @param string $discountId 折扣id
+	 */
+	public function hasDiscountById($discountId = false, $brandId = false){
+		$where = array(
+				'id' => $discountId,
+				'tb_brand_id' => $brandId,
+			);
+		if ($this->isAdmin) unset($where['tb_brand_id']);
+
+		$queryRes = $this->db->get_where(tname('discount'), $where)->result();
+
+		return count($queryRes) == 1 ? true : false;
+	}
+
+	/**
+	 * 验证折扣添加
+	 * @param array $reqData 折扣数据
+	 */
+	public function verlidationAddDis($reqData = array()){
+
+		$this->form_validation->set_rules($this->lang->line('ADD_DISCOUNT_VALIDATION'));
+
+		if (!$this->form_validation->run()) {
+			return validation_errors();
+		}
+
+		$discountDate = $this->_formatDiscountDate($reqData['discountDate'], true);
+
+		if (!$discountDate) return $this->lang->line('EMPTY_DISCOUNT_DATE');
+
+		return true;
+	}
+
+	/**
+	 * 格式化折扣有效期
+	 * @param string $date
+	 * @param bool $returnBool 是否判断
+	 */
+	private function _formatDiscountDate($date = false, $returnBool = false){
+
+		$date = explode(' - ', $date);
+
+		$date[0] = strtotime($date[0]);
+		$date[1] = strtotime($date[1]);
+
+		if ($returnBool) {
+			
+			if ($date[1] <= $date[0]) return false;
+
+			return true;
+		}
+
+		return $date;
+	}
+
+
+	/**
+	 * 格式化品牌宣传图
 	 * @param string $picUrl 多张图片路径
 	 */
 	private function _formatBrandImg($picUrl = false){

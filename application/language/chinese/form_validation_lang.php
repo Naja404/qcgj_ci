@@ -52,4 +52,10 @@ $lang = array(
 	'ERR_SHOP_LAT'      => '请正确填写门店地址纬度',
 	'ERR_SHOP_ADDRESS'	=> '请正确填写门店地址',
 
+	// 添加折扣 Discount/addDis
+	'ERR_DISCOUNT_TITLE'       => '请正确填写折扣标题',
+	'ERR_DISCOUNT_DATE'        => '请正确选择折扣日期',
+	'ERR_DISCOUNT_DESCRIPTION' => '请正确填写折扣描述',
+	'ERR_DISCOUNT_IMAGE'       => '请正确选择折扣图片',
+
 );

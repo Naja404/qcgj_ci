@@ -54,7 +54,7 @@
 							<li>
 								<a href="{:U('Discount/disList')}"><?php echo $this->lang->line('TITLE_DISCOUNT_MANAGER');?></a>
 							</li>
-							<li class="active"><?php echo $this->lang->line('TITLE_DISCOUNT_ADD');?></li>
+							<li class="active"><?php echo $this->lang->line('TITLE_DISCOUNT_EDIT');?></li>
 						</ul>
 
 					</div>
@@ -70,7 +70,7 @@
 									<div class="span12">
 										<div class="widget-box">
 											<div class="widget-header widget-header-blue widget-header-flat">
-												<h4 class="lighter"><span style="color:red;"><?php echo isset($brandName) ? $brandName : '';?></span><?php echo $this->lang->line('TITLE_DISCOUNT_ADD');?></h4>
+												<h4 class="lighter"><span style="color:red;"><?php echo isset($brandName) ? $brandName : '';?></span><?php echo $this->lang->line('TITLE_DISCOUNT_EDIT');?></h4>
 											</div>
 
 											<div class="widget-body">
@@ -79,13 +79,13 @@
 													<div class="step-content row-fluid position-relative" id="step-container">
 														<div class="step-pane active" id="step1">
 
-															<form class="form-horizontal" id="addDis-form" method="post" enctype="multipart/form-data" >
+															<form class="form-horizontal" id="editDis-form" method="post" enctype="multipart/form-data" >
 																<div class="form-group">
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="discountTitle"><?php echo $this->lang->line('TEXT_DISCOUNT_TITLE');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<input type="text" name="discountTitle" id="discountTitle" class="col-xs-12 col-sm-6" placeholder="<?php echo $this->lang->line('PLACEHOLDER_DISCOUNT_TITLE');?>"/>
+																			<input type="text" name="discountTitle" id="discountTitle" class="col-xs-12 col-sm-6" placeholder="<?php echo $this->lang->line('PLACEHOLDER_DISCOUNT_TITLE');?>" value="<?php echo $discountDetail->name_zh;?>"/>
 																		</div>
 																	</div>
 																</div>
@@ -97,7 +97,7 @@
 																		<div class="clearfix">
 																			<select name="discountType">
 																				<?php foreach (config_item('DISCOUNT_TYPE') as $k => $v) {?>
-																					<option value="<?php echo $v['key']?>"><?php echo $v['value'];?></option>
+																					<option value="<?php echo $v['key']?>" <?php echo $v['key'] == $discountDetail->type ? 'selected': '';?>><?php echo $v['value'];?></option>
 																				<?php }?>
 																			</select>
 																		</div>
@@ -111,7 +111,7 @@
 																		<div class="clearfix">
 																			<select name="discountCate">
 																				<?php foreach ($discountCate as $k => $v) {?>
-																					<option value="<?php echo $v['id'];?>"><?php echo $v['name'];?></option>
+																					<option value="<?php echo $v['id'];?>" <?php echo $v['id'] == $discountDetail->tb_category_id ? 'selected' : '';?> ><?php echo $v['name'];?></option>
 																				<?php }?>
 																			</select>
 																		</div>
@@ -123,7 +123,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<input type="text" name="discountDate" id="discountDate" class="col-xs-12 col-sm-6" placeholder="<?php echo $this->lang->line('PLACEHOLDER_DISCOUNT_DATE');?>"/>
+																			<input type="text" name="discountDate" id="discountDate" class="col-xs-12 col-sm-6" placeholder="<?php echo $this->lang->line('PLACEHOLDER_DISCOUNT_DATE');?>" value="<?php echo $discountDetail->date;?>"/>
 																		</div>
 																	</div>
 																</div>
@@ -133,7 +133,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<textarea class="input-xlarge" name="discountDescription" id="discountDescription" placeholder="<?php echo $this->lang->line('PLACEHOLDER_DISCOUNT_DESCRIPTION');?>"></textarea>
+																			<textarea class="input-xlarge" name="discountDescription" id="discountDescription" placeholder="<?php echo $this->lang->line('PLACEHOLDER_DISCOUNT_DESCRIPTION');?>"><?php echo $discountDetail->discount_desc;?></textarea>
 																		</div>
 																	</div>
 																</div>
@@ -144,8 +144,8 @@
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
 																			<?php foreach ($brandImg as $k => $v) {?>
-																				<img src="" width="100px;" height="100px;">
-																				<input type="radio" name="discountImg" value="<?php echo $v;?>" />
+																				<img src="<?php echo config_item('image_url').$v;?>" width="100px;" height="100px;">
+																				<input type="radio" name="discountImg" value="<?php echo $v;?>" <?php echo $v == $discountDetail->brand_pic_url ? 'checked' : '';?>/>
 																				<br>
 																				<br>
 																			<?php }?>
@@ -193,7 +193,7 @@
 																						<tr>
 																							<td class="center">
 																								<label>
-																									<input type="checkbox" class="ace" name="mallID[]" value="<?php echo $v['mallID']?>"/>
+																									<input type="checkbox" class="ace" name="mallID[]" value="<?php echo $v['mallID']?>" <?php echo in_array($v['mallID'], $discountDetail->mallID) ? 'checked' : '';?>/>
 																									<span class="lbl"></span>
 																								</label>
 																							</td>
@@ -214,9 +214,8 @@
 																		</div><!-- /span -->
 																	</div>
 																</div>
-																<?php if(isset($brandId) && !empty($brandId)){?>
-																<input type="hidden" name="brandId" value="<?php echo $brandId;?>" >
-																<?php }?>
+																<input type="hidden" name="brandId" value="<?php echo $discountDetail->tb_brand_id;?>" >
+																<input type="hidden" name="discountId" value="<?php echo $discountDetail->id;?>">
 																<div class="space-8"></div>
 
 															</form>
@@ -226,7 +225,7 @@
 
 													<hr />
 													<div class="row-fluid wizard-actions">
-														<button class="btn btn-success" onclick="sudAddDiscountForm();">
+														<button class="btn btn-success" onclick="sudEditDiscountForm();">
 															<?php echo $this->lang->line('BTN_SUBMIT');?>
 															<i class="icon-arrow-right icon-on-right"></i>
 														</button>
@@ -360,7 +359,7 @@
 					$('#shopListHTML').html(shopListHTML);
 				});
 
-				$('#addDis-form').validate({
+				$('#editDis-form').validate({
 					errorElement: 'div',
 					errorClass: 'help-block',
 					focusInvalid: false,
@@ -424,40 +423,21 @@
 
 			})
 			
-			function sudAddDiscountForm(){
-				if(!$('#addDis-form').valid()){
+			function sudEditDiscountForm(){
+				if(!$('#editDis-form').valid()){
 					return false;
 				}
 
 				$.ajax({
 					type:"POST",
-					url:"<?php echo site_url('Discount/addDis');?>",
-					data:$('#addDis-form').serialize(),
+					url:"<?php echo site_url('Discount/editDis');?>",
+					data:$('#editDis-form').serialize(),
 					success:function(data){
 						if (data.status) {
 							alert(data.msg);
 							return false;
 						}else{
-							bootbox.dialog({
-								message: "<?php echo $this->lang->line('TEXT_DISCOUNT_ADD_SUCCESS');?>", 
-								buttons: {
-									"goList" : {
-										"label" : "<?php echo $this->lang->line('TITLE_DISCOUNT_LIST');?>",
-										"className" : "btn-sm btn-primary",
-										callback: function(){
-											window.location.href = "<?php echo site_url('Discount/disList');?>";
-										}
-									},
-									"continue" : {
-										"label" : "<?php echo $this->lang->line('TEXT_CONTINUE_DISCOUNT_ADD');?>",
-										"className" : "btn-sm btn-primary",
-										callback: function(){
-											window.location.href = "<?php echo site_url('Discount/addDis');?>";
-										}
-									}
-								}
-							});
-							return true;
+							window.location.href = "<?php echo base_url('Discount/disList');?>";
 						}
 					}
 				});

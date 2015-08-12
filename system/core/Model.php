@@ -176,4 +176,47 @@ class CI_Model {
 		return false;
 	}
 
+	/**
+	 * 根据分类id获取分类名
+	 * @param string $categoryId 分类id
+	 */
+	public function getCateNameById($categoryId = false){
+
+		$where = array(
+				'id' => $categoryId,
+			);
+		$queryRes = $this->db->get_where(tname('category'), $where)->first_row();
+
+		return $queryRes->name;
+	}
+
+	/**
+	 * 根据品牌id获取品牌名
+	 * @param string $brandId 品牌id
+	 * @param string $nameType 中文=zh 英文=en
+	 */
+	public function getBrandNameById($brandId = false, $nameType = 'EN'){
+
+		switch ($nameType) {
+			case 'EN':
+				$nameField = " name_en ";
+				break;
+			case 'ZH':
+				$nameField = " name_zh ";
+				break;
+			case 'ALL':
+				$nameField = "CONCAT(name_en, ' ', name_zh)";
+				break;
+			default:
+				$nameField = "CONCAT(name_en, ' ', name_zh)";
+				break;
+		}
+
+		$sql = "SELECT %s AS name FROM ".tname('brand')." WHERE id = '".$brandId."' ";
+		
+		$queryRes = $this->db->query(sprintf($sql, $nameField))->first_row();
+
+		return $queryRes->name;
+	}
+
 }

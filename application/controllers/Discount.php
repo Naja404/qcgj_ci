@@ -45,6 +45,31 @@ class Discount extends WebBase {
 	 *
 	 */
 	public function addDis(){
+
+		if ($this->input->is_ajax_request()) {
+			
+			$reqData = $this->input->post();
+
+			$verlidationRes = $this->DiscountModel->verlidationAddDis($reqData);
+
+			if ($verlidationRes !== true) {
+				$this->ajaxRes['msg'] = $verlidationRes;
+				jsonReturn($this->ajaxRes);
+			}
+
+			$addDisRes = $this->DiscountModel->addDis($reqData);
+
+			if ($addDisRes['error']) {
+				$this->ajaxRes['msg'] = $addDisRes['msg'];
+			}else{
+				$this->ajaxRes = array(
+						'status' => 0,
+					);
+			}
+
+			jsonReturn($this->ajaxRes);
+		}
+
 		$this->outData['pageTitle'] = $this->lang->line('TITLE_DISCOUNT_ADD');
 
 		$brandId = $this->input->get('brandId');
@@ -54,7 +79,8 @@ class Discount extends WebBase {
 				redirect(base_url('Discount/brandSelect'));
 				exit();
 			}
-			$this->outData['brandName']  = $this->DiscountModel->getBrandName($brandId);
+			$this->outData['brandName']  = $this->DiscountModel->getBrandNameById($brandId, 'ALL');
+			$this->outData['brandId'] = $brandId;
 		}
 
 		$shopList                    = $this->CouponModel->getShopList($brandId);
@@ -71,6 +97,66 @@ class Discount extends WebBase {
 		$this->outData['brandImg'] = $this->DiscountModel->getBrandImg($brandId);
 
 		$this->load->view('Discount/addDis', $this->outData);
+	}
+
+	/**
+	 * 编辑折扣
+	 *
+	 */
+	public function editDis(){
+		if ($this->input->is_ajax_request()) {
+			
+			$reqData = $this->input->post();
+
+			$verlidationRes = $this->DiscountModel->verlidationAddDis($reqData);
+
+			if ($verlidationRes !== true) {
+				$this->ajaxRes['msg'] = $verlidationRes;
+				jsonReturn($this->ajaxRes);
+			}
+
+			$editDisRes = $this->DiscountModel->editDis($reqData);
+
+			if ($editDisRes['error']) {
+				$this->ajaxRes['msg'] = $editDisRes['msg'];
+			}else{
+				$this->ajaxRes = array(
+						'status' => 0,
+					);
+			}
+
+			jsonReturn($this->ajaxRes);
+		}
+
+		$this->outData['pageTitle'] = $this->lang->line('TITLE_DISCOUNT_EDIT');
+
+		$brandId = $this->input->get('brandId');
+		$discountId = $this->input->get('discountId');
+
+		if(!$this->checkDiscountAuth($discountId, $brandId)){
+			$outData = array(
+					'errLang' => $this->lang->line('ERR_AUTH_EDIT_COUPON'),
+					'url'     => site_url('Coupon/couponList'),
+				);
+			$this->load->view('Public/error', $outData);
+		}
+
+		$shopList                    = $this->CouponModel->getShopList($brandId);
+
+		$this->outData['shopList']   = $shopList['data']['list'];
+		$this->outData['areaList']   = $shopList['data']['areaList'];
+		$this->outData['cityList']   = $shopList['data']['cityList'];
+		$this->outData['bjAreaList'] = $shopList['data']['bjAreaList'];
+		$this->outData['shAreaList'] = $shopList['data']['shAreaList'];
+		$this->outData['gzAreaList'] = $shopList['data']['gzAreaList'];
+
+		$this->outData['discountCate'] = $this->DiscountModel->getBrandCate();
+
+		$this->outData['brandImg'] = $this->DiscountModel->getBrandImg($brandId);
+
+		$this->outData['discountDetail'] = $this->DiscountModel->getDiscountDetail($discountId);
+
+		$this->load->view('Discount/editDis', $this->outData);
 	}
 
 	/**
@@ -109,6 +195,22 @@ class Discount extends WebBase {
 		}
 
 		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 检测折扣编辑权限
+	 * @param string $discountId 折扣id
+	 * @param string $brandId 品牌id
+	 */
+	public function checkDiscountAuth($discountId = false, $brandId = false){
+
+		if (!$this->DiscountModel->hasDiscountById($discountId, $brandId)) return false;
+		
+		if (!$this->DiscountModel->isAdmin){
+			if ($brandId != $this->userInfo->brand_id) return false;
+		} 
+
+		return true;
 	}
 
 	/**
