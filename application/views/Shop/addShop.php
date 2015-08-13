@@ -87,7 +87,7 @@
 										<div class="col-sm-9">
 											<select  name="areaName">
 												<?php foreach($areaList as $v){?>
-												<option value="<?php echo $v->areaId;?>"><?php echo $v->areaName;?></option>
+												<option value="<?php echo $v->id;?>"><?php echo $v->name;?></option>
 												<?php };?>
 											</select>
 										</div>
@@ -99,9 +99,9 @@
 										<label class="col-sm-3 control-label no-padding-right" for="fieldConfirmPasswd"> <?php echo $this->lang->line('TEXT_MALL_NAME');?> </label>
 
 										<div class="col-sm-9">
-											<select  name="cityName">
-												<?php foreach($cityList as $v){?>
-												<option value="<?php echo $v->cityId;?>"><?php echo $v->cityName;?></option>
+											<select  name="mallName">
+												<?php foreach($mallList as $v){?>
+												<option value="<?php echo $v->id;?>"><?php echo $v->name_zh;?></option>
 												<?php };?>
 											</select>
 										</div>
@@ -112,17 +112,13 @@
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right" for="fieldSelectShop"><?php echo $this->lang->line('TEXT_ADDRESS');?></label>
 										<div class="col-sm-9">
-											<select  id="fieldSelectShop" name="mallID">
-												<?php foreach($shopList as $v){?>
-												<option value="<?php echo $v->mallID;?>"><?php echo $v->shopName;?></option>
-												<?php };?>
-											</select>
+											<input type="text" name="floor" value="" placeholder="请填写楼层">
 										</div>
 									</div>
 
 									<div class="clearfix form-actions">
 										<div class="col-md-offset-3 col-md-9">
-											<button class="btn btn-info" type="button" onclick="subAddManager();">
+											<button class="btn btn-info" type="button" onclick="">
 												<i class="icon-ok bigger-110"></i>
 												<?php echo $this->lang->line('BTN_SUBMIT');?>
 											</button>
@@ -189,6 +185,12 @@
 
 		<script type="text/javascript">
 			jQuery(function($) {
+
+				$('#cityName').on('change', function(){
+
+					$('#shopListHTML').html(shopListHTML);
+				});
+
 			$('#addManagerForm').validate({
 					errorElement: 'div',
 					errorClass: 'help-block',

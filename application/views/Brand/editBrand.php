@@ -112,7 +112,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="summary"> <?php echo $this->lang->line('TEXT_DESCRIPTION');?> </label>
 
 										<div class="col-sm-9">
-											<textarea name="summary" id="summary"><?php echo $brand->description;?></textarea>
+											<textarea name="summary" id="summary" style="width:300px;height:150px;"><?php echo $brand->description;?></textarea>
 										</div>
 									</div>
 
@@ -372,7 +372,7 @@
 							if (hrefType == '1005') {
 								window.location.href = "<?php echo site_url('Brand/hadBrandList').'?p='.$this->input->get('p');?>";
 							}else{
-								window.location.href = "<?php echo site_url('Brand/listView').'?p='.$this->input->get('p');?>";
+								window.location.href = "<?php echo site_url('Brand/listView').'?p='.$this->input->get('p');?><?php echo $this->input->get('category') == 'yes' ? '&category=yes' : '' ;?>";
 							}
 							
 							return true;

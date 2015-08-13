@@ -107,7 +107,9 @@ class Brand extends WebBase {
 		
 		if ($brandName) $where = " WHERE (name_zh LIKE '%".$brandName."%' OR name_en LIKE '%".$brandName."%') AND status = 1 ";
 
-		$brandList = $this->BrandModel->getBrandList($where, $this->p);
+		$isCate = $this->input->get('category') == 'yes' ? true : false;
+
+		$brandList = $this->BrandModel->getBrandList($where, $this->p, $isCate);
 
 		$this->outData['pagination'] = $brandList['pagination'];
 

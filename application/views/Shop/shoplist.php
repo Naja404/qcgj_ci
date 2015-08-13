@@ -69,16 +69,27 @@
 								<form method="get" action="<?php echo site_url('Shop/shopList');?>">
 									<?php echo $this->lang->line('TEXT_SELECT_CITY');?>:
 									<select name="city">
+										<option value="">全部</option>
 										<?php foreach($cityList as $city){?>
-										<option value="<?php echo $city['cityId']?>" <?php echo $this->input->get('city', true) == $city['cityId'] ? 'selected' : '';?>><?php echo $city['name'];?></option>
+										<option value="<?php echo $city->id?>" <?php echo $this->input->get('city', true) == $city->id ? 'selected' : '';?>><?php echo $city->name_zh;?></option>
 										<?php }?>
 									</select>
-
+									<?php if($this->ShopModel->isAdmin){?>
+									&nbsp;
+									&nbsp;
+									品牌名<input type="text" name="brand" value="<?php echo $this->input->get('brand');?>">
+									<?php }?>
+									&nbsp;
+									&nbsp;
 									<?php echo $this->lang->line('TEXT_SHOP_NAME');?>:<input type="text" name="shop" value="<?php echo $this->input->get('shop');?>"/>
-
-
+									&nbsp;
+									&nbsp;
 									<?php echo $this->lang->line('TEXT_SHOP_ADDRESS');?>:<input type="text" name="address" value="<?php echo $this->input->get('address');?>"/>
+									&nbsp;
+									&nbsp;
 									<button type="submit"><?php echo $this->lang->line('BTN_SEARCH');?></button><?php echo $shopListTotalLang;?>
+									<br>
+									<br>
 								</form>
 							</div>
 
@@ -90,13 +101,9 @@
 												<thead>
 													<tr>
 														<th class="center">
-															<label>
-																<input type="checkbox" class="ace" />
-																<span class="lbl"></span>
-															</label>
+															LOGO
 														</th>
 														<th><?php echo $this->lang->line('TEXT_BRAND_NAME');?></th>
-														<th><?php echo $this->lang->line('TEXT_CATEGORY_NAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_MALL_NAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_ADDRESS');?></th>
 														<th><?php echo $this->lang->line('TEXT_AREA_NAME');?></th>
@@ -110,16 +117,12 @@
 													<?php foreach ($shopList as $v):?>
 													<tr>
 														<td class="center">
-															<label>
-																<input type="checkbox" class="ace" />
-																<span class="lbl"></span>
-															</label>
+															<img src="<?php echo config_item('image_url').$v->logoUrl;?>" width="100px;">
 														</td>
 
 														<td>
 															<a href="#"><?php echo $v->brandName;?></a>
 														</td>
-														<td><?php echo $v->categoryName;?></td>
 														<td><?php echo $v->mallName;?></td>
 														<td><?php echo $v->address;?></td>
 														<td><?php echo $v->areaName;?></td>

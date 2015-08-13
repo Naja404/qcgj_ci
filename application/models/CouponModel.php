@@ -27,7 +27,6 @@ class CouponModel extends CI_Model {
 					CONCAT(a.begin_date, '<br/>~<br/>', a.end_date) AS expire,
 					a.status AS status,
 					a.on_sale AS saleStatus,
-					d.city_name AS cityName,
 					(SELECT COUNT(*) FROM ".tname('coupon_individual')." WHERE tb_coupon_id = a.id AND status > 0) AS received,
 					(SELECT COUNT(*) FROM ".tname('coupon_individual')." WHERE tb_coupon_id = a.id AND status = 2) AS used,
 					count(c.tb_coupon_id) AS mallCount ";
@@ -38,8 +37,7 @@ class CouponModel extends CI_Model {
 					%s
 				 FROM ".tname('coupon')." AS a
 				LEFT JOIN ".tname('coupon_mall')." AS c ON c.tb_coupon_id = a.id
-				LEFT JOIN ".tname('mall')." AS d ON d.id = c.tb_mall_id 
-				WHERE a.is_delete != 1 %s GROUP BY a.id %s ";
+				 %s GROUP BY a.id %s ";
 
 		$where = $this->_checkUserWhere($where);
 
@@ -761,7 +759,7 @@ class CouponModel extends CI_Model {
 	private function _checkUserWhere($where = false){
 
 		if ($this->userInfo->role_id == 1) {
-			if (!empty($where) && is_string($where)) return ' AND '.$where;
+			if (!empty($where) && is_string($where)) return $where;
 			return ' ';
 		}
 

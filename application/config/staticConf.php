@@ -85,6 +85,22 @@ $config = array(
 							'value' => '特价',
 							),
 			),
+
+		// 优惠券 状态列表
+		'COUPON_STATUS' => array(
+				array(
+					'id' => '0',
+					'name' => '审核中',
+					),
+				array(
+					'id' => '1',
+					'name' => '上架',
+					),
+				array(
+					'id' => '2',
+					'name' => '下架',
+					),	
+			),
 	);
 
 

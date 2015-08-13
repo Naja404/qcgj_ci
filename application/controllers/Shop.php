@@ -16,6 +16,7 @@ class Shop extends WebBase {
 		parent::__construct();
 		
 		$this->load->model('ShopModel');
+		$this->load->model('BrandModel');
 		$this->lang->load('shop');
 		$this->outData['currentModule'] = __CLASS__;
 	}
@@ -28,7 +29,10 @@ class Shop extends WebBase {
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_ADD_SHOP');
 		$this->outData['cityList'] = $this->ShopModel->getCityList();
 
-		$this->outData['areaList'] = $this->ShopModel->getAreaList($this->outData['cityList'][0]->cityId);
+		$this->outData['areaList'] = $this->BrandModel->getDistrictList($this->outData['cityList'][0]->cityId);
+		
+		$this->outData['mallList'] = $this->ShopModel->getMallList($this->outData['cityList'][0]->cityId, $this->outData['areaList'][0]->id);
+
 		$this->load->view('Shop/addShop', $this->outData);
 	}
 
@@ -45,9 +49,10 @@ class Shop extends WebBase {
 		$this->outData['shopListTotal'] = $shopList['data']['total'];
 		$this->outData['shopListTotalLang'] = sprintf($this->lang->line('TEXT_SHOPLIST_TOTAL'), $shopList['data']['total']);
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_SHOPLIST');
-		$this->outData['cityList'] = $this->lang->line('SELECT_CITY_LIST');
-		
+		$this->outData['cityList'] = $this->ShopModel->getCityById();
+
 		$this->_shopListPage();
+
 		$this->load->view('Shop/shopList', $this->outData);
 	}
 
@@ -56,27 +61,24 @@ class Shop extends WebBase {
 	 *
 	 */
 	public function shopListWhere(){
-		$cityID = (int)$this->input->get('city', true);
-		$shopName = $this->input->get('shop', true);
-		$address = $this->input->get('address', true);
 
-		if (!in_array($this->cityList[$cityID], $this->cityList)) {
-			$cityName = $this->cityList[0];
-		}else{
-			$cityName = $this->cityList[$cityID];
-		}
+		$reqData = $this->input->get();
 
-		$where = " WHERE c.city_name = '".$cityName."' ";
+		$where = array();
 
-		if (!empty($shopName)) {
-			$where .= " AND c.name_zh LIKE '%".$shopName."%' ";
-		}
+		$where[] = " b.status = 1 AND b.level IN  (1, 2) ";
 
-		if (!empty($address)) {
-			$where .= " AND (c.address LIKE '%".$address."%' OR c.trade_area_name LIKE '%".$address."%')";
-		}
+		if (isset($reqData['city']) && !empty($reqData['city'])) $where[] = " b.tb_city_id = '".addslashes($reqData['city'])."' ";
 
-		return $where;
+		if (isset($reqData['brand']) && !empty($reqData['brand'])) $where[] = " (c.name_zh LIKE '%".addslashes($reqData['brand'])."%' OR c.name_en LIKE '%".addslashes($reqData['brand'])."%') ";
+
+		if (isset($reqData['shop']) && !empty($reqData['shop'])) $where[] = " b.name_zh LIKE '%".addslashes($reqData['shop'])."%' ";
+
+		if (isset($reqData['address']) && !empty($reqData['address'])) $where[] = " b.address LIKE '%".addslashes($reqData['address'])."%' ";
+
+		$whereStr = " WHERE ".implode(" AND ", $where);
+
+		return $whereStr;
 
 	}
 

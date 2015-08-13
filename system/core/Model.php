@@ -219,4 +219,19 @@ class CI_Model {
 		return $queryRes->name;
 	}
 
+	/**
+	 * 获取城市列表
+	 * @param string $cityId
+	 */
+	public function getCityById($cityId = false){
+
+		if ($cityId) {
+			$queryRes = $this->db->get_where(tname('city'), array('id' => $cityId))->first_row();
+		} else {
+			$queryRes = $this->db->get(tname('city'))->result();
+		}
+
+		return $queryRes;
+	}
+
 }

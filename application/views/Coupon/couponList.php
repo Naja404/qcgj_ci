@@ -66,33 +66,22 @@
 
 								<form method="get" action="<?php echo site_url('Coupon/couponList');?>">
 
-									优惠券标题:<input type="text" name="title" value="<?php echo $this->input->get('roleUser');?>"/>
+									优惠券标题:<input type="text" name="title" value="<?php echo $this->input->get('title');?>"/>
 									&nbsp;
 									&nbsp;
 									&nbsp;
-									城市:
-									<select name="city">
-										<option value="">全部</option>
-										<?php foreach ($roleSelect as $k => $v) {?>
-										<option value="<?php echo $v->role_id?>" <?php echo $this->input->get('role') == $v->role_id ? 'selected' : '';?>><?php echo $v->name;?></option>
-										<?php } ?>
-									</select>
+									时间范围:
+									<input type="text" name="dateRange" id="dateRange" value="<?php echo $this->input->get('dateRange');?>" style="width:180px;">
 									&nbsp;
 									&nbsp;
 									&nbsp;
 									状态:
-									<select name="city">
+									<select name="status">
 										<option value="">全部</option>
-										<?php foreach ($roleSelect as $k => $v) {?>
-										<option value="<?php echo $v->role_id?>" <?php echo $this->input->get('role') == $v->role_id ? 'selected' : '';?>><?php echo $v->name;?></option>
+										<?php foreach (config_item('COUPON_STATUS') as $k => $v) {?>
+										<option value="<?php echo $v['id'];?>" <?php echo (string)$this->input->get('status') == $v['id'] ? 'selected' : '';?>><?php echo $v['name'];?></option>
 										<?php } ?>
 									</select>
-
-									时间范围:
-									<input type="text" name="dateRange" id="dateRange" value="" >
-									&nbsp;
-									&nbsp;
-									&nbsp;
 									<button type="submit"><?php echo $this->lang->line('BTN_SEARCH');?></button>
 								</form>
 								<br>
@@ -115,7 +104,6 @@
 														<th><?php echo $this->lang->line('TEXT_COUPON_TITLE');?></th>
 														<th><?php echo $this->lang->line('TEXT_COUPON_EXPIRE');?></th>
 														<th><?php echo $this->lang->line('TEXT_COUPON_STATUS');?></th>
-														<th><?php echo $this->lang->line('TEXT_CITY_NAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_COUPON_RECEIVECOUNT');?></th>
 														<th><?php echo $this->lang->line('TEXT_COUPON_USECOUNT');?></th>
 														<th><?php echo $this->lang->line('TEXT_COUPON_SHOPCOUNT');?></th>
@@ -138,7 +126,6 @@
 														</td>
 														<td><?php echo $v->expire;?></td>
 														<td><?php echo $this->lang->line('TEXT_STATUS_'.$v->saleStatus);?></td>
-														<td><?php echo $v->cityName;?></td>
 														<td><?php echo $v->received;?></td>
 														<td><?php echo $v->used;?></td>
 														<td><?php echo $v->mallCount;?></td>
@@ -232,6 +219,7 @@
 		<!-- page specific plugin scripts -->
 		
 		<!-- ace scripts -->
+		<script src="<?php echo config_item('html_url');?>js/date-time/moment.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/date-time/daterangepicker.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/ace-elements.min.js"></script>
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>

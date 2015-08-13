@@ -71,6 +71,12 @@
 									<?php echo $this->lang->line('TEXT_SHOP_BRANDNAME');?>:<input type="text" name="brand" value="<?php echo $this->input->get('brand');?>"/>
 
 									<button type="submit"><?php echo $this->lang->line('BTN_SEARCH');?></button>
+									
+									<?php if($this->input->get('category') != 'yes'){?>
+									<a  href="<?php echo site_url('Brand/listView').'?category=yes';?>">只看空分类</a>
+									<?php }else{ ?>
+									<a  href="<?php echo site_url('Brand/listView');?>">查看全部</a>
+									<?php } ?>
 								</form>
 							</div>
 							<div class="col-xs-12">
@@ -84,6 +90,7 @@
 														<th><?php echo $this->lang->line('TEXT_PIC_URL');?></th>
 														<th><?php echo $this->lang->line('TEXT_NAME_ZH');?></th>
 														<th><?php echo $this->lang->line('TEXT_NAME_EN');?></th>
+														<th>分类</th>
 														<th style="width:200px;"><?php echo $this->lang->line('TEXT_DESCRIPTION');?></th>
 														<th><?php echo $this->lang->line('TEXT_CREATED_TIME');?></th>
 														<th><?php echo $this->lang->line('TEXT_UPDATED_TIME');?></th>
@@ -108,6 +115,7 @@
 														</td>
 														<td><?php echo $v->name_zh;?></td>
 														<td><?php echo $v->name_en;?></td>
+														<td><?php echo $v->category;?></td>
 														<td><?php echo $v->summary;?></td>
 														<td><?php echo $v->create_time;?></td>
 														<td><?php echo $v->update_time;?></td>
@@ -116,7 +124,7 @@
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 
 																<!-- <button class="btn btn-xs btn-info"> -->
-																	<a href="<?php echo site_url('Brand/editBrand').'?brandId='.strEncrypt($v->id).'&p='.$this->input->get('p');?>"><i class="icon-edit bigger-120"></i>编辑</a>
+																	<a href="<?php echo site_url('Brand/editBrand').'?brandId='.strEncrypt($v->id).'&p='.$this->input->get('p').'&category='.$this->input->get('category');?>"><i class="icon-edit bigger-120"></i>编辑</a>
 																<!-- </button> -->
 
 																<button class="btn btn-xs btn-danger" onclick="delBrand('<?php echo $v->id;?>');">

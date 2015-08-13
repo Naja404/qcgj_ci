@@ -10,9 +10,10 @@ class ShopModel extends CI_Model {
 	public function __construct(){
 		$this->returnRes = array(
 							'error' => true, // true=有错误, false=正确
-							'msg'   => false, 
+							'msg'   => false,
 							'data'  => array()
 							);
+		$this->isAdmin = $this->isAdminUser($this->userInfo->role_id);
 	}
 
 	/**
@@ -21,6 +22,27 @@ class ShopModel extends CI_Model {
 	 */
 	public function getShopMallInfo(){
 
+	}
+
+	/**
+	 * 获取商场列表
+	 * @param string $cityId 城市id
+	 * @param string $districtId 区域id
+	 */
+	public function getMallList($cityId = false, $districtId = false){
+
+		$where = array(
+				'status' => 1,
+				'level'  => 1,
+			);
+
+		if (isset($cityId) && !empty($cityId)) $where['tb_city_id'] = $cityId;
+
+		if (isset($districtId) && !empty($districtId)) $where['tb_district_id'] = $districtId;
+
+		$queryRes = $this->db->select('id, name_zh')->get_where(tname('mall'), $where)->result();
+
+		return $queryRes;
 	}
 
 	/**
@@ -52,7 +74,7 @@ class ShopModel extends CI_Model {
 		$where = array(
 					'tb_city_id' => is_string($cityId) ? $cityId : '',
 				);
-		
+
 		$select = "tb_trade_area_id AS areaId, trade_area_name AS areaName";
 
 		$queryRes = $this->db->select($select)->group_by('tb_trade_area_id')->get_where(tname('mall'), $where)->result();
@@ -73,28 +95,28 @@ class ShopModel extends CI_Model {
 
 		$pageNum = ($pageNum - 1) * $pageCount;
 
-		$limit = ' GROUP BY a.id LIMIT '.$pageNum.','.$pageCount;
+		$limit = ' LIMIT '.$pageNum.','.$pageCount;
 
-		$field = 'b.id AS brandId,
-					CONCAT(b.name_en, b.name_zh) AS brandName,
-					e.name AS categoryName,
-					c.name_zh AS mallName,
-					c.address,
-					c.trade_area_name AS areaName,
-					c.city_name AS cityName,
-					a.address AS floor ';
+		$field = " 	c.id AS brandId,
+					b.id AS mallId,
+					CONCAT(c.name_en, ' ', c.name_zh) AS brandName,
+					c.logo_url AS logoUrl,
+					b.name_zh AS mallName,
+					b.address AS address,
+					b.district_name AS areaName,
+					b.city_name AS cityName,
+					a.address AS floor";
 
 		$totalField = ' COUNT(*) AS total ';
 
-		$sql = "SELECT %s
-					FROM ".tname('brand_mall')." AS a 
-					LEFT JOIN ".tname('brand')." AS b ON b.id = a.tb_brand_id
-					LEFT JOIN ".tname('mall')." AS c ON c.id  = a.tb_mall_id
-					LEFT JOIN ".tname('brand_category')." AS d ON d.tb_brand_id = a.tb_brand_id
-					LEFT JOIN ".tname('category')." AS e ON e.id = d.tb_category_id 
-					%s 
-					%s 
-					%s ";
+		$sql = "SELECT
+					%s
+				 FROM tb_brand_mall AS a
+				LEFT JOIN tb_mall AS b ON b.id = a.tb_mall_id
+				LEFT JOIN tb_brand AS c ON c.id = a.tb_brand_id
+				%s
+				%s
+				%s ";
 
 		$where = $this->_checkUserBrand($where);
 
@@ -123,13 +145,14 @@ class ShopModel extends CI_Model {
 	 *
 	 */
 	public function getShopListWithForm(){
+
 		$shopList = $this->cache->get(config_item('USER_CACHE.SHOPLIST').$this->userInfo->user_id);
 		if ($shopList) return $shopList;
 
-		$sql = "SELECT 
+		$sql = "SELECT
 					c.id AS mallID,
-					CONCAT(c.city_name, c.trade_area_name, c.name_zh, c.address) AS shopName 
-				 FROM ".tname('brand')." AS a 
+					CONCAT(c.city_name, c.trade_area_name, c.name_zh, c.address) AS shopName
+				 FROM ".tname('brand')." AS a
 				LEFT JOIN ".tname('brand_mall')." AS b ON b.tb_brand_id = a.id
 				LEFT JOIN ".tname('mall')." AS c ON c.id = b.tb_mall_id
 				WHERE a.id = '".$this->userInfo->brand_id."'";
@@ -174,7 +197,7 @@ class ShopModel extends CI_Model {
 		$mallRes = $this->db->insert(tname('qcgj_role_brand_mall'), $insertMall);
 
 		if (!$mallRes) {
-			
+
 			$where = array(
 					'user_id' => $insert['user_id'],
 				);
@@ -220,13 +243,13 @@ class ShopModel extends CI_Model {
 					c.city_name AS cityName ";
 
 		$sql = "SELECT %s
-					 FROM ".tname('qcgj_role_brand_mall')." AS a 
-					LEFT JOIN ".tname('qcgj_role_user')." AS b ON b.user_id = a.user_id 
-					LEFT JOIN ".tname('mall')." AS c ON c.id = a.mall_id 
-					WHERE a.brand_id = '".$this->userInfo->brand_id."' 
-					AND a.user_id != '".$this->userInfo->user_id."' 
+					 FROM ".tname('qcgj_role_brand_mall')." AS a
+					LEFT JOIN ".tname('qcgj_role_user')." AS b ON b.user_id = a.user_id
+					LEFT JOIN ".tname('mall')." AS c ON c.id = a.mall_id
+					WHERE a.brand_id = '".$this->userInfo->brand_id."'
+					AND a.user_id != '".$this->userInfo->user_id."'
 					AND a.mall_id != '' ";
-					
+
 		$queryRes = $this->db->query(sprintf($sql, $field).$limit)->result();
 
 		$queryTotal = $this->db->query(sprintf($sql, " COUNT(*) AS total "))->first_row();
@@ -265,19 +288,18 @@ class ShopModel extends CI_Model {
 	 */
 	private function _checkUserBrand($where = null){
 		// 判断超级管理员
-		$ruleArr = array(1);
-		if (in_array($this->userInfo->role_id, $ruleArr)) {
+		if ($this->isAdmin) {
 			return $where;
 		}
 
 		if (isset($this->userInfo->brand_id) && !empty($this->userInfo->brand_id)) {
 			$brandEmpty = true;
-			$where .= " AND b.id = '".$this->userInfo->brand_id."' ";
+			$where .= " AND c.id = '".$this->userInfo->brand_id."' ";
 		}
 
 		if (isset($this->userInfo->mall_id) && !empty($this->userInfo->mall_id)) {
 			$mallEmpty = true;
-			$where .= " AND c.id = '".$this->userInfo->mall_id."' ";
+			$where .= " AND b.id = '".$this->userInfo->mall_id."' ";
 		}
 
 		if (!isset($mallEmpty) && !isset($brandEmpty)) {

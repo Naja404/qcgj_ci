@@ -83,8 +83,13 @@ class Coupon extends WebBase {
 
 		$order = ' ORDER BY a.create_time DESC ';
 
+		$where = $this->_getCouponWhere();
+
 
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_COUPON_LIST');
+		
+		$this->outData['cityList'] = $this->CouponModel->getCityById();
+
 		$couponList = $this->CouponModel->getCouponList($where, $order, $this->p);
 
 		$this->outData['couponList'] = $couponList['data']['list'];
@@ -440,5 +445,31 @@ class Coupon extends WebBase {
 		}
 
 		return true;
+	}
+
+	/**
+	 * 获取优惠券列表查询条件
+	 *
+	 */
+	private function _getCouponWhere(){
+		$where = array();
+
+		$where[] = " a.is_delete != 1 ";
+
+		$reqData = $this->input->get();
+
+		if (isset($reqData['title']) && !empty($reqData['title'])) $where[] = " a.name LIKE '%".addslashes($reqData['title'])."%' ";
+
+		if (isset($reqData['dateRange']) && !empty($reqData['dateRange'])) {
+			$date = explode(' - ', $reqData['dateRange']);
+			$where[] = " (a.begin_date >= '".date('Y-m-d', strtotime($date[0]))."' AND a.end_date <= '".date('Y-m-d', strtotime($date[1]))."') ";
+		}
+
+		if (isset($reqData['status']) && !empty($reqData['status'])) $where[] = " a.on_sale = ".(int)$reqData['status']." ";
+
+		$whereStr = " WHERE ".implode(" AND ", $where);
+
+		return $whereStr;
+
 	}
 }

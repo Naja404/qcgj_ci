@@ -193,15 +193,48 @@ class BrandModel extends CI_Model {
 	 * @param string $where 查询条件
 	 * @param int $p 页数
 	 */
-	public function getBrandList($where = NULL, $p = 1){
+	public function getBrandList($where = NULL, $p = 1, $isCate = false){
 
-		$limit = "ORDER BY create_time DESC LIMIT ".page($p, 25);
+		$limit = " LIMIT ".page($p, 25);
+
+		if($isCate){
+			$field = "  a.id, 
+						a.name_en, 
+						a.name_zh, 
+						a.logo_url, 
+						a.pic_url, 
+						(SELECT GROUP_CONCAT(DISTINCT d.name) AS name FROM tb_brand_category AS c LEFT JOIN tb_category AS d ON d.id = c.tb_category_id WHERE c.tb_brand_id = a.id) AS category, 
+						a.create_time, 
+						a.update_time, 
+						LEFT(a.description, 50) AS summary, a.oper ";
+			$countField = " COUNT(*) AS total ";
+			$sql = "SELECT 
+						%s
+						FROM tb_brand AS a
+						LEFT JOIN tb_brand_category as b on b.tb_brand_id = a.`id`
+						 WHERE a.status = 1 and b.tb_category_id is null or (a.description is null or a.description = '') ORDER BY a.create_time DESC %s ";
+			
+			$queryTotal = $this->db->query(sprintf($sql, $countField, ''))->first_row();
+
+			$pagination = $this->setPagination(site_url('Brand/listView'), $queryTotal->total, 25);
+
+			$queryRes = $this->db->query(sprintf($sql, $field, $limit))->result();
+
+			$returnRes = array(
+					'list'       => $queryRes,
+					'pagination' => $pagination,
+				);
+
+			return $returnRes;
+
+		}
 		
 		$field = " 	id, 
 					name_en, 
 					name_zh, 
 					logo_url, 
 					pic_url,
+					(SELECT GROUP_CONCAT(DISTINCT b.name) AS name FROM tb_brand_category AS a LEFT JOIN tb_category AS b ON b.id = a.tb_category_id WHERE a.tb_brand_id = tb_brand.id) AS category,
 					create_time, 
 					update_time, 
 					LEFT(description, 50) AS summary, 
@@ -213,7 +246,7 @@ class BrandModel extends CI_Model {
 
 		$pagination = $this->setPagination(site_url('Brand/listView'), $queryTotal->total, 25);
 
-		$sql = sprintf($sql, $field, $where, $limit);
+		$sql = sprintf($sql, $field, $where, ' ORDER BY create_time DESC '.$limit);
 
 		$queryRes = $this->db->query($sql)->result();
 
@@ -221,7 +254,7 @@ class BrandModel extends CI_Model {
 				'list'       => $queryRes,
 				'pagination' => $pagination,
 			);
-		
+
 		return $returnRes;
 	}
 
