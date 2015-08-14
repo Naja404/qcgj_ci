@@ -66,9 +66,26 @@
 
 						<div class="row">
 							<div class="col-xs-12">
-								<form class="form-horizontal" role="form" id="addManagerForm">
+								<form class="form-horizontal" role="form" id="addShopForm">
+
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="fieldMagerName"> <?php echo $this->lang->line('TEXT_CITY_NAME');?> </label>
+										<label class="col-sm-3 control-label no-padding-right" for="brandZh"> 品牌中文 </label>
+
+										<div class="col-sm-9">
+											<input type="text" name="brandZh" id="brandZh" placeholder="">
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="brandEn"> 品牌英文 </label>
+
+										<div class="col-sm-9">
+											<input type="text" value="" name="brandEn" id="brandEn">
+										</div>
+									</div>
+									<input type="hidden" name="brandId" id="brandId" >
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="cityName"> <?php echo $this->lang->line('TEXT_CITY_NAME');?> </label>
 
 										<div class="col-sm-9">
 											<select  name="cityName">
@@ -82,7 +99,7 @@
 									<div class="space-4"></div>
 
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="fieldPasswd"> <?php echo $this->lang->line('TEXT_AREA_NAME');?> </label>
+										<label class="col-sm-3 control-label no-padding-right" for="areaName"> <?php echo $this->lang->line('TEXT_AREA_NAME');?> </label>
 
 										<div class="col-sm-9">
 											<select  name="areaName">
@@ -96,7 +113,7 @@
 									<div class="space-4"></div>
 
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="fieldConfirmPasswd"> <?php echo $this->lang->line('TEXT_MALL_NAME');?> </label>
+										<label class="col-sm-3 control-label no-padding-right" for="mallName"> <?php echo $this->lang->line('TEXT_MALL_NAME');?> </label>
 
 										<div class="col-sm-9">
 											<select  name="mallName">
@@ -110,7 +127,7 @@
 									<div class="space-4"></div>
 
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="fieldSelectShop"><?php echo $this->lang->line('TEXT_ADDRESS');?></label>
+										<label class="col-sm-3 control-label no-padding-right" for="floor"><?php echo $this->lang->line('TEXT_ADDRESS');?></label>
 										<div class="col-sm-9">
 											<input type="text" name="floor" value="" placeholder="请填写楼层">
 										</div>
@@ -186,12 +203,54 @@
 		<script type="text/javascript">
 			jQuery(function($) {
 
-				$('#cityName').on('change', function(){
+				$("#brandZh").keyup(function(){
 
+					$("#brandId").val('');
+
+					$.ajax({
+			      		type:"POST",
+			      		url:"<?php echo site_url('Brand/searchBrand');?>",
+			      		data:{brand:$("#brandZh").val()},
+			      		success:function(data){
+			      			if (data.status != 0) { return false;}
+			      			
+			      			var sourceData = new Array();
+
+			      			$.each(data.list, function(k, v){
+			      				sourceData.push(v);
+			      			});
+
+						    $("#brandZh").autocomplete({
+						      source: sourceData,
+						      select:function(event, ui){
+								var brandName = ui.item.label.split('_');
+
+									$("#brandEn").val(brandName[0]);
+									$("#brandZh").val(brandName[1]);
+
+						      		$("#brandId").val(ui.item.id);
+						      }
+						  });
+						
+			      		}
+					});
+				});
+
+				$('#cityName').on('change', function(){
+					$.ajax({
+						type:"POST",
+						url:"<?php echo site_url('Shop/getAreaList');?>",
+						data:{cityId:this.value},
+						success:function(data){
+							if (data.status == '0') {
+
+							}
+						}
+					});
 					$('#shopListHTML').html(shopListHTML);
 				});
 
-			$('#addManagerForm').validate({
+			$('#addShopForm').validate({
 					errorElement: 'div',
 					errorClass: 'help-block',
 					focusInvalid: false,
@@ -267,14 +326,14 @@
 
 
 			function subAddManager(){
-				if(!$('#addManagerForm').valid()){
+				if(!$('#addShopForm').valid()){
 					return false;
 				}
 
 				$.ajax({
 					type:"POST",
 					url:"<?php echo site_url('Shop/addShopManager');?>",
-					data:$('#addManagerForm').serialize(),
+					data:$('#addShopForm').serialize(),
 					success:function(data){
 						if (data.status) {
 							alert(data.msg);

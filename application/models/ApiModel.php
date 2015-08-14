@@ -102,18 +102,10 @@ class ApiModel extends CI_Model {
 		// 		 ->limit(10)
 		// 		 ->get(tname('subject'))->result_array();
 
-		$sql = "select 
-					distinct b.id AS detailID, 
-					b.title, 
-					b.main_pic_url AS image, 
-					IF(b.status = 1, '1', '1') AS type 
-					from tb_subject_mall as a
-					left join tb_subject as b 
-						on b.id = a.tb_subject_id
-					where 
-						a.tb_district_id = 786 
-					order by b.update_time desc
-					limit 10";
+		$sql = "SELECT distinct id AS detailID, 
+					title, 
+					main_pic_url AS image, 
+					IF(status = 1, '1', '1') AS type  FROM tb_subject WHERE tb_district_id = 786 ORDER BY update_time DESC LIMIT 10";
 
 		$queryRes = $this->db->query($sql)->result_array();
 

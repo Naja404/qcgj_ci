@@ -131,6 +131,14 @@ class Shop extends WebBase {
 	}
 
 	/**
+	 * 获取区域列表
+	 * @param string $cityId
+	 */
+	public function getAreaList(){
+		
+	}
+
+	/**
 	 * 添加店长表单验证
 	 *
 	 */

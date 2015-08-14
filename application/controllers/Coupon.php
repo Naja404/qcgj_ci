@@ -23,7 +23,7 @@ class Coupon extends WebBase {
 	 *
 	 */
 	public function verifyCoupon(){
-		$where = ' a.on_sale = 0 ';
+		$where = 'WHERE a.on_sale = 0 ';
 
 		$order = ' ORDER BY a.create_time DESC ';
 

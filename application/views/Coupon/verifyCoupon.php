@@ -104,7 +104,7 @@
 														</td>
 														<td><?php echo $v->expire;?></td>
 														<td id="userSpan_<?php echo strEncrypt($v->id);?>"><?php echo $this->lang->line('TEXT_STATUS_'.$v->saleStatus);?></td>
-														<td><?php echo $v->cityName;?></td>
+														<td>上海</td>
 														<td><?php echo $v->received;?></td>
 														<td><?php echo $v->used;?></td>
 														<td><?php echo $v->mallCount;?></td>

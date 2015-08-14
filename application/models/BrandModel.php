@@ -444,6 +444,7 @@ class BrandModel extends CI_Model {
 		foreach ($list as $k => $v) {
 			$tmp = array(
 					'label' => $v->name_en.'_'.$v->name_zh,
+					'value' => $v->name_zh,
 					'id' => $v->id,
 				);
 			array_push($returnList, $tmp);
@@ -1080,7 +1081,7 @@ class BrandModel extends CI_Model {
 
 		if($brandId !== false) $where .= " AND id != '".$brandId."' ";
 
-		$sql = "SELECT COUNT(*) AS total FROM ".tname('brand')." WHERE ".$where;
+		$sql = "SELECT COUNT(*) AS total FROM ".tname('brand')." WHERE status = 1 AND ".$where;
 
 		$queryRes = $this->db->query($sql)->first_row();
 

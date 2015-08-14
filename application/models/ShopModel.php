@@ -239,16 +239,26 @@ class ShopModel extends CI_Model {
 					b.name AS userName,
 					c.name_zh AS mallName,
 					c.address,
-					c.trade_area_name AS areaName,
+					c.district_name AS areaName,
 					c.city_name AS cityName ";
 
-		$sql = "SELECT %s
-					 FROM ".tname('qcgj_role_brand_mall')." AS a
-					LEFT JOIN ".tname('qcgj_role_user')." AS b ON b.user_id = a.user_id
-					LEFT JOIN ".tname('mall')." AS c ON c.id = a.mall_id
-					WHERE a.brand_id = '".$this->userInfo->brand_id."'
-					AND a.user_id != '".$this->userInfo->user_id."'
-					AND a.mall_id != '' ";
+		if ($this->isAdmin) {
+			$sql = "SELECT %s
+						 FROM ".tname('qcgj_role_brand_mall')." AS a
+						LEFT JOIN ".tname('qcgj_role_user')." AS b ON b.user_id = a.user_id
+						LEFT JOIN ".tname('mall')." AS c ON c.id = a.mall_id
+						WHERE a.brand_id != ''
+							AND a.mall_id != '' ";
+		}else{
+			$sql = "SELECT %s
+						 FROM ".tname('qcgj_role_brand_mall')." AS a
+						LEFT JOIN ".tname('qcgj_role_user')." AS b ON b.user_id = a.user_id
+						LEFT JOIN ".tname('mall')." AS c ON c.id = a.mall_id
+						WHERE a.brand_id = '".$this->userInfo->brand_id."'
+						AND a.user_id != '".$this->userInfo->user_id."'
+						AND a.mall_id != '' ";
+		}
+
 
 		$queryRes = $this->db->query(sprintf($sql, $field).$limit)->result();
 
