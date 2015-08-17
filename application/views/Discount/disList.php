@@ -56,13 +56,12 @@
 							</li>
 							<li class="active"><?php echo $this->lang->line('TITLE_DISCOUNT_LIST');?></li>
 						</ul>
-
+						<div class="nav-search">
+							<a href="<?php echo base_url('Discount/addDis');?>"><button class="btn btn-xs btn-primary">添加折扣</button></a>
+						</div>
 					</div>
 
 					<div class="page-content">
-
-						<div class="page-header">
-						</div>
 
 						<div class="row">
 							<div class="col-xs-12">

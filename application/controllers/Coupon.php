@@ -23,7 +23,7 @@ class Coupon extends WebBase {
 	 *
 	 */
 	public function verifyCoupon(){
-		$where = 'WHERE a.on_sale = 0 ';
+		$where = 'WHERE a.on_sale = 0 AND is_delete = 0 ';
 
 		$order = ' ORDER BY a.create_time DESC ';
 
@@ -65,6 +65,7 @@ class Coupon extends WebBase {
 						'html'         => $updateRes['html'],
 						'couponStatus' => $couponStatus == 1 ? 2 : 1,
 						'class'        => $updateRes['class'],
+						'showText'     => $couponStatus == 1 ? '下架' : '上架',
 						);
 
 

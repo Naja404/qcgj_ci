@@ -95,26 +95,40 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="row">
-																		<div class="col-xs-3">
-																			<label class="blue">
-																				<input name="couponType" value="1" type="radio" class="ace" <?php echo $couponData->coupon_type === '1' ? 'checked' : '';?> />
-																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_VOUCHERS');?></span>
-																			</label>
-																		</div>
+																			<div class="col-xs-3">
+																				<label class="blue">
+																					<input name="couponType" value="1" type="radio" class="ace" checked />
+																					<span class="lbl">代金券</span>
+																				</label>
+																			</div>
 
-																		<div class="col-xs-3">
-																			<label class="blue">
-																				<input name="couponType" value="102" type="radio" class="ace" <?php echo $couponData->coupon_type === '102' ? 'checked' : '';?>/>
-																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_DISCOUNT');?></span>
-																			</label>
-																		</div>
+																			<div class="col-xs-3">
+																				<label class="blue">
+																					<input name="couponType" value="2" type="radio" class="ace"  />
+																					<span class="lbl">普通单张券</span>
+																				</label>
+																			</div>
 
-																		<div class="col-xs-3">
-																			<label class="blue">
-																				<input name="couponType" value="103" type="radio" class="ace" <?php echo $couponData->coupon_type === '103' ? 'checked' : '';?> />
-																				<span class="lbl"><?php echo $this->lang->line('TEXT_COUPON_DELIVERY');?></span>
-																			</label>
-																		</div>
+																			<div class="col-xs-3">
+																				<label class="blue">
+																					<input name="couponType" value="4" type="radio" class="ace"  />
+																					<span class="lbl">展示券</span>
+																				</label>
+																			</div>
+
+																			<div class="col-xs-3">
+																				<label class="blue">
+																					<input name="couponType" value="6" type="radio" class="ace"  />
+																					<span class="lbl">普通券多张</span>
+																				</label>
+																			</div>
+
+																			<div class="col-xs-3">
+																				<label class="blue">
+																					<input name="couponType" value="999" type="radio" class="ace"  />
+																					<span class="lbl">临时券</span>
+																				</label>
+																			</div>
 
 																		</div>
 																	</div>
@@ -273,8 +287,21 @@
 																		</div>
 																	</div>
 																</div>
-																<!-- 图片上传 -->
+
 																<div class="form-group">
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right">验券合作商:</label>
+
+																	<div class="col-xs-12 col-sm-9">
+																		<div>
+																			<label>
+																				<input name="interface_partner" value="1" type="checkbox" class="ace" id="interface_partner" <?php echo $couponData->interface_partner == '1' ? 'checked': '';?>/>
+																				<span class="lbl" for="interface_partner">银联</span>
+																			</label>
+																		</div>
+																	</div>
+																</div>
+																<!-- 图片上传 -->
+<!-- 																<div class="form-group">
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_IMAGE');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
@@ -290,7 +317,7 @@
 																			</label>
 																		</div>
 																	</div>
-																</div>
+																</div> -->
 																
 																<div class="hr hr-dotted"></div>
 																<div class="form-group">

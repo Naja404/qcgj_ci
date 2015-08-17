@@ -190,7 +190,7 @@ class CouponModel extends CI_Model {
 				'id'                     => makeUUID(),
 				'name'                   => $couponData['couponTitle'],
 				'brand_pic_url'			 => $brandInfo->logo_url,
-				'main_pic_url'         	 => $couponData['couponPic'],
+				// 'main_pic_url'         	 => $couponData['couponPic'],
 				'status'                 => 0,
 				'gene_type'              => isset($couponData['couponAutoCode']) ? 1 : 0,	//生成类型 0.无须生成 1.自动生成 2.手动
 				'coupon_type'            => $couponData['couponType'],				// 1.代金券 102.折扣劵 103.提货券
@@ -216,6 +216,7 @@ class CouponModel extends CI_Model {
 				'on_sale_time'           => $couponData['reviewPass'] == 2 ? $couponData['reviewPassDate'] : NULL, //上架时间
 				'oper'                   => $this->userInfo->user_id,
 				'access_limit'			 => 1,
+				'interface_partner'		 => $couponData['interface_partner'] == '1' ? '1' : '',
 			);
 	
 		// 创建优惠券
@@ -266,7 +267,7 @@ class CouponModel extends CI_Model {
 
 		$couponEditData = array(
 				'name'                   => $couponData['couponTitle'],
-				'main_pic_url'           => $couponData['couponPic'],
+				// 'main_pic_url'           => $couponData['couponPic'],
 				'gene_type'              => isset($couponData['couponAutoCode']) ? 1 : 0,	//生成类型 0.无须生成 1.自动生成 2.手动
 				'coupon_type'            => $couponData['couponType'],				// 1.代金券 102.折扣劵 103.提货券
 				'update_time'            => currentTime(),
@@ -282,6 +283,7 @@ class CouponModel extends CI_Model {
 				'receive_end_date'       => $receiveDate['end'],					//领取结束
 				'on_sale_time'           => $couponData['reviewPass'] == 2 ? $couponData['reviewPassDate'] : NULL, //上架时间
 				'oper'                   => $this->userInfo->user_id,
+				'interface_partner'		 => $couponData['interface_partner'] == '1' ? '1' : '',
 			);
 		$where = array(
 				'id' => $couponData['couponId'],
@@ -360,7 +362,7 @@ class CouponModel extends CI_Model {
 		}
 		
 		$where = array(
-				'tb_brand_id' => $this->userInfo->brand_id,
+				// 'tb_brand_id' => $this->userInfo->brand_id,
 				'id'          => $couponId,
 			);
 		$update = array(
@@ -573,6 +575,9 @@ class CouponModel extends CI_Model {
 
 		if (count($coupon) <= 0 || empty($coupon)) return false;
 
+		//判断是否是银联
+		if ((int)$coupon->interface_partner != 1) return true;
+
 		// todo 查询门店id
 
 		$form = array(
@@ -600,7 +605,7 @@ class CouponModel extends CI_Model {
 			$url = config_item('UNIONPAY.CANCEL_EVENT');
 		}
 
-		$postRes = $this->Snoopy->submit($url, $form);
+		$postRes = $this->snoopy->submit($url, $form);
 
 		$result = json_decode($postRes->results, true);
 
@@ -760,7 +765,7 @@ class CouponModel extends CI_Model {
 
 		if ($this->userInfo->role_id == 1) {
 			if (!empty($where) && is_string($where)) return $where;
-			return ' ';
+			return ' AND a.is_delete = 0 ';
 		}
 
 		if (empty($this->userInfo->brand_id)) {
@@ -770,10 +775,10 @@ class CouponModel extends CI_Model {
 		$whereBrand = "a.tb_brand_id = '".$this->userInfo->brand_id."' ";
 
 		if (empty($where)) {
-			return " AND ".$whereBrand;
+			return " AND ".$whereBrand." AND a.is_delete = 0 ";
 		}
 
-		return $where .= " AND ".$whereBrand;
+		return $where .= " AND ".$whereBrand." AND a.is_delete = 0 ";
 	}
 
 }

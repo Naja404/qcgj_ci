@@ -3,8 +3,6 @@
  * 品牌管理模型
  */
 
-define('EARTH_RADIUS', 6371);//地球半径，平均半径为6371km
-
 class ApiModel extends CI_Model {
 
 	protected $shoppingLevel;
@@ -15,6 +13,7 @@ class ApiModel extends CI_Model {
 	protected $travelLevel;
 	protected $hotelLevel;
 	protected $distance;
+	protected $nearby;
 
 	public function __construct(){
 
@@ -33,7 +32,7 @@ class ApiModel extends CI_Model {
 								 '6'=>'仙霞路',
 								 '7'=>'定西路');
 
-		
+		$this->nearby = 2000;    //附近2000m
 	}
 
 	/**
@@ -102,10 +101,36 @@ class ApiModel extends CI_Model {
 		// 		 ->limit(10)
 		// 		 ->get(tname('subject'))->result_array();
 
-		$sql = "SELECT distinct id AS detailID, 
-					title, 
-					main_pic_url AS image, 
-					IF(status = 1, '1', '1') AS type  FROM tb_subject WHERE tb_district_id = 786 ORDER BY update_time DESC LIMIT 10";
+		// $sql = "SELECT distinct id AS detailID, 
+		// 			title, 
+		// 			main_pic_url AS image, 
+		// 			IF(status = 1, '1', '1') AS type  FROM tb_subject WHERE tb_district_id = 786 ORDER BY update_time DESC LIMIT 10";
+
+		$sql = "SELECT 
+					  a.* 
+					FROM
+					  (SELECT DISTINCT 
+					    id AS detailID,
+					    title,
+					    main_pic_url AS image,
+					    update_time,
+					    'subject' type
+					  FROM
+					    tb_subject 
+					  WHERE tb_district_id = 786 
+					  UNION
+					  ALL 
+					  SELECT DISTINCT 
+					    id AS detailID,
+					    title,
+					    main_pic_url AS image,
+					    update_time,
+					    'welfare' type
+					  FROM
+					    `tb_welfare` 
+					  WHERE `tb_district_id` = 786) a
+					ORDER BY update_time DESC 
+					LIMIT 10";
 
 		$queryRes = $this->db->query($sql)->result_array();
 
@@ -237,7 +262,7 @@ class ApiModel extends CI_Model {
 	 * @param string $latitude  当前纬度
 	 * @param string $sort 排序 0 默认距离最近  1 按距离最近   2 评价最好   3 人气最高  4 人均最低    5 人均最高
 	 */
-	public function getShoppingList($p, $limit, $category = '', $longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0, $city = '1') {
+	public function getShoppingList($p, $limit, $category = '', $longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0, $metres = '') {
 
 
 		if( $longitude != '0' && $latitude != '0' ) {
@@ -246,8 +271,8 @@ class ApiModel extends CI_Model {
 			$distanceCond = "'' as distance ";			
 		}
 
-    	$field = "a.id,
-    			   b.id as storeid,
+    	$field = "case when a.level = '2' then a.id else b.id end as id,
+    				b.id as storeid,
 			       CONCAT(d.name_en,'-',a.name_zh) AS name_zh,
 			       b.tb_brand_id,
 			       case when a.level = '2' then a.pic_url else b.pic_url end as pic_url,
@@ -259,6 +284,10 @@ class ApiModel extends CI_Model {
 			       ".$distanceCond;
 
 		$where = " where a.tb_district_id = 786 and a.trade_area_name != '' and a.status = 1 and ( a.level = '".$this->shoppingLevel."' OR a.level = '".$this->streetLevel."') and d.name_en !=''";  //
+
+		if( $metres == '1' ) {
+			$where .= ' and getDistance('.$latitude.','.$longitude.',a.latitude,a.longitude) <= 2000';
+		}
 
 		$table_con = '';
 
@@ -323,7 +352,7 @@ class ApiModel extends CI_Model {
 	 * @param string $longitude 当前经度
 	 * @param string $latitude  当前纬度
 	 */
-	public function getShoppingDetail($id, $storeid, $longitude = '0', $latitude = '0') {
+	public function getShoppingDetail($id, $longitude = '0', $latitude = '0') {
 
 		//$countData = $this->_getCountByLevel();  //获取其他分类数量
 
@@ -333,8 +362,8 @@ class ApiModel extends CI_Model {
 			$distanceCond = "'' as distance ";			
 		}
 
-		$field = "a.id,
-				  b.id as storeid,
+		$field = "case when a.level = '2' then a.id else b.id end as id,
+				   b.id as storeid,
 			       CONCAT(d.name_en,'-',a.name_zh) AS name_zh,
 			       b.tb_brand_id,
 			       b.pic_url,
@@ -352,7 +381,7 @@ class ApiModel extends CI_Model {
 		$sql = "Select ".$field." from ".tname('mall a').
 			   " LEFT JOIN ".tname('brand_mall b')." ON a.id = b.tb_mall_id
 			     LEFT JOIN ".tname('brand d')." ON b.tb_brand_id = d.id where 
-			     a.id = '".$id."' and b.id = '".$storeid."' limit 1";
+			     case when a.level = '2' then a.id = '".$id."' else b.id = '".$id."' end";
 
 			 //echo $sql;die;
 
@@ -412,13 +441,13 @@ class ApiModel extends CI_Model {
 
 			//品牌其他门店
 			$otherStoresSql = "SELECT 
-				a.id,
-				b.id as storeid, 
+				case when a.level = '2' then a.id else b.id end as id, 
+				b.id as storeid,
 				concat(a.name_zh, '店') as name_zh, 
 				CASE WHEN a.level = '2' THEN a.thumb_url ELSE b.thumb_url END AS thumb_url
 				FROM ".tname('mall a')."
 				INNER JOIN ".tname('brand_mall b')." ON b.tb_mall_id = a.id
-				WHERE a.tb_district_id = 786 and a.status = 1 and b.id !='".$storeid."' AND b.tb_brand_id ='".$data[0]['tb_brand_id']."'";
+				WHERE a.tb_district_id = 786 and a.status = 1 and case when a.level = '2' then a.id != '".$id."' else b.id !='".$id."' end AND b.tb_brand_id ='".$data[0]['tb_brand_id']."'";
 
 			$otherStores = $this->db->query($otherStoresSql)->result_array();
 
@@ -458,7 +487,7 @@ class ApiModel extends CI_Model {
 	 * @param string $latitude  当前纬度
 	 * @param string $sort 排序 0 默认按创建时间  1 按距离最近   2 评价最好   3 人气最高  4 人均最低    5 人均最高
 	 */
-	public function getRestaurantList($p, $limit, $category = '', $longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0) {
+	public function getRestaurantList($p, $limit, $category = '', $longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0, $metres = '') {
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -487,10 +516,16 @@ class ApiModel extends CI_Model {
 			$where .= " and c.name = '".$category."'";
 		}
 
+		if( $metres == '1' ) {
+			$where .= ' and getDistance('.$latitude.','.$longitude.',a.latitude,a.longitude) <= 2000';
+		}
+
 		if( $distanceType > 0 ) {
 
 			$where .= $this->_getDistanceCondition($distanceType, $longitude, $latitude);
 		}
+
+
 		/*
 		SELECT a.id, a.name_en, a.name_zh, a.pic_url, a.category_name, a.longitude, a.latitude, a.avg_rating, a.avg_price, 
 		COUNT(b.tb_obj_id) AS viewnum, getDistance('','',a.latitude,a.longitude) AS distance FROM tb_mall a 
@@ -607,7 +642,7 @@ class ApiModel extends CI_Model {
 	 * @param string $latitude  当前纬度
 	 * @param string $sort 排序 0 默认按创建时间  1 按距离最近   2 评价最好   3 人气最高  4 人均最低    5 人均最高
 	 */
-	public function getCinemaList($p, $limit, $longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0) {
+	public function getCinemaList($p, $limit, $longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0, $metres = '') {
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -628,6 +663,10 @@ class ApiModel extends CI_Model {
 				//getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 
 		$where = "where a.tb_district_id = 786 and a.status = 1 and a.level in ( '".$this->cinemaLevel."','".$this->ktvLevel."')";  //
+
+		if( $metres == '1' ) {
+			$where .= ' and getDistance('.$latitude.','.$longitude.',a.latitude,a.longitude) <= 2000';
+		}
 
 		if( $distanceType > 0 ) {
 
@@ -752,7 +791,7 @@ class ApiModel extends CI_Model {
 	 * @param string $latitude  当前纬度
 	 * @param string $sort 排序 0 默认按创建时间  1 按距离最近   2 评价最好   3 人气最高  4 人均最低    5 人均最高
 	 */
-	public function getTravelList($p, $limit, $category = '' ,$longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0) {
+	public function getTravelList($p, $limit, $category = '' ,$longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0, $metres = '') {
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -774,6 +813,10 @@ class ApiModel extends CI_Model {
 				//getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 
 		$where = 'where a.tb_district_id = 786 and a.status = 1 and a.level = '.$this->travelLevel;
+
+		if( $metres == '1' ) {
+			$where .= ' and getDistance('.$latitude.','.$longitude.',a.latitude,a.longitude) <= 2000';
+		}
 
 		if( $category != '' ) {
 
@@ -883,7 +926,7 @@ class ApiModel extends CI_Model {
 	 * @param string $latitude  当前纬度
 	 * @param string $sort 排序 0 默认按距离最近  1 按距离最近   2 评价最好   3 人气最高  4 人均最低    5 人均最高
 	 */
-	public function getHotelList($p, $limit ,$longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0) {
+	public function getHotelList($p, $limit ,$longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0, $metres = '') {
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -906,6 +949,10 @@ class ApiModel extends CI_Model {
 				//getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 
 		$where = 'where a.tb_district_id = 786 and a.status = 1 and a.level = '.$this->hotelLevel;
+
+		if( $metres == '1' ) {
+			$where .= ' and getDistance('.$latitude.','.$longitude.',a.latitude,a.longitude) <= 2000';
+		}
 
 		if( $distanceType > 0 ) {
 
@@ -1093,10 +1140,10 @@ class ApiModel extends CI_Model {
 	 */
 	private function _getCountByLevel($longitude = '', $latitude = '') {
 
-		$squares = $this->returnSquarePoint($longitude, $latitude);
+		$condition = ' and getDistance('.$latitude.','.$longitude.',a.latitude,a.longitude) <= '.$this->nearby;		
 
-		//$sql = "select level, count(*) as count from `tb_mall` where tb_district_id = 786 and status = 1 and level in( 4,5,6,7,8) and latitude <> 0 and latitude > ".$squares['right-bottom']['lat']." and latitude < ".$squares['left-top']['lat']." and longitude > ".$squares['left-top']['lng']." and longitude < ".$squares['right-bottom']['lng']." group by level";
-		$sql = "Select a.level, count(*) as count from tb_mall a LEFT JOIN tb_brand_mall b ON a.id = b.tb_mall_id LEFT JOIN tb_brand d ON b.tb_brand_id = d.id where a.tb_district_id = 786 and a.status = 1  and a.latitude <> 0 and a.latitude > ".$squares['right-bottom']['lat']." and a.latitude < ".$squares['left-top']['lat']." and a.longitude > ".$squares['left-top']['lng']." and a.longitude < ".$squares['right-bottom']['lng']." group by level";		
+		$sql = "Select a.level, count(*) as count from ".tname('mall a')." LEFT JOIN ".tname('brand_mall b')." ON a.id = b.tb_mall_id LEFT JOIN ".tname('brand d')." ON b.tb_brand_id = d.id where a.tb_district_id = 786 and a.status = 1".$condition." group by level";
+		//echo $sql;die;
 
 		$data = array();
 
@@ -1143,27 +1190,4 @@ class ApiModel extends CI_Model {
 		return $data;
 	}
 
-	/**
-	 *计算某个经纬度的周围某段距离的正方形的四个点
-	 *
-	 *@param lng float 经度
-	 *@param lat float 纬度
-	 *@param distance float 该点所在圆的半径，该圆与此正方形内切，默认值为2千米
-	 *@return array 正方形的四个点的经纬度坐标
-	 */
-	 function returnSquarePoint($lng, $lat,$distance = 2){
-	 
-	    $dlng =  2 * asin(sin($distance / (2 * EARTH_RADIUS)) / cos(deg2rad($lat)));
-	    $dlng = rad2deg($dlng);
-	     
-	    $dlat = $distance/EARTH_RADIUS;
-	    $dlat = rad2deg($dlat);
-	     
-	    return array(
-	                'left-top'=>array('lat'=>$lat + $dlat,'lng'=>$lng-$dlng),
-	                'right-top'=>array('lat'=>$lat + $dlat, 'lng'=>$lng + $dlng),
-	                'left-bottom'=>array('lat'=>$lat - $dlat, 'lng'=>$lng - $dlng),
-	                'right-bottom'=>array('lat'=>$lat - $dlat, 'lng'=>$lng + $dlng)
-	                );
-	 }
 }

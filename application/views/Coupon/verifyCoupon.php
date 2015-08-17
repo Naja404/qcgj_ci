@@ -81,9 +81,6 @@
 														<th><?php echo $this->lang->line('TEXT_COUPON_TITLE');?></th>
 														<th><?php echo $this->lang->line('TEXT_COUPON_EXPIRE');?></th>
 														<th><?php echo $this->lang->line('TEXT_COUPON_STATUS');?></th>
-														<th><?php echo $this->lang->line('TEXT_CITY_NAME');?></th>
-														<th><?php echo $this->lang->line('TEXT_COUPON_RECEIVECOUNT');?></th>
-														<th><?php echo $this->lang->line('TEXT_COUPON_USECOUNT');?></th>
 														<th><?php echo $this->lang->line('TEXT_COUPON_SHOPCOUNT');?></th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
@@ -104,19 +101,16 @@
 														</td>
 														<td><?php echo $v->expire;?></td>
 														<td id="userSpan_<?php echo strEncrypt($v->id);?>"><?php echo $this->lang->line('TEXT_STATUS_'.$v->saleStatus);?></td>
-														<td>上海</td>
 														<td><?php echo $v->received;?></td>
-														<td><?php echo $v->used;?></td>
-														<td><?php echo $v->mallCount;?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-																<button class="btn btn-xs btn-danger" onclick="delCoupon('<?php echo strEncrypt($v->id);?>');">
-																	<i class="icon-trash bigger-120"></i>
-																</button>
+																<a style="color:red;" onclick="delCoupon('<?php echo strEncrypt($v->id);?>');">
+																	<i class="icon-trash bigger-120">删除</i>
+																</a>
 																<?php if($v->saleStatus == 0){?>
-																<button class="btn btn-xs btn-info" onclick="saleCoupon('<?php echo strEncrypt($v->id);?>');">
-																	<i id="userIcon_<?php echo strEncrypt($v->id);?>" class="icon-ok bigger-120"></i>
-																</button>
+																<a onclick="saleCoupon('<?php echo strEncrypt($v->id);?>');">
+																	<i id="userIcon_<?php echo strEncrypt($v->id);?>" class="icon-ok bigger-120">通过</i>
+																</a>
 																<input type="hidden" name="userHide_<?php echo strEncrypt($v->id);?>" value="1" />
 																<?php } ?>
 																<select name="couponStatus" onchange="setCouponStatus(this, '<?php echo strEncrypt($v->id);?>')" >
@@ -212,6 +206,7 @@
 						if (data.status == '0') {
 							$('#userSpan_' + couponId).html(data.html);
 							$('#userIcon_'+couponId).attr("class", data.class);
+							$('#userIcon_'+couponId).text(data.showText);
 							$('input[name=userHide_'+couponId+']').val(data.couponStatus);
 							return true;
 						}

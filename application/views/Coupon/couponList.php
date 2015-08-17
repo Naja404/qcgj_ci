@@ -56,7 +56,10 @@
 							</li>
 							<li class="active"><?php echo $this->lang->line('TEXT_COUPON_LIST');?></li>
 						</ul>
-
+						<div class="nav-search">
+							<a href="<?php echo base_url('Coupon/addCoupon');?>"><button class="btn btn-xs btn-primary">添加优惠券</button></a>
+						</div>
+						
 					</div>
 
 					<div class="page-content">
