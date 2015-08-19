@@ -398,6 +398,21 @@ class CouponModel extends CI_Model {
 
 		$couponRes->mallID = $this->db->select('tb_mall_id AS id')->get_where(tname('coupon_mall'), array('tb_coupon_id' => $couponId))->result_array();
 
+		$couponType = config_item('COUPON_TYPE');
+
+		$couponRes->typeHTML = $couponType[$couponRes->coupon_type];
+
+		$couponRes->mallHTML = '';
+
+		foreach ($couponRes->mallID as $k => $v) {
+			$mallRes = $this->db->get_where(tname('mall'), array('id' => $v['id']))->first_row();
+			$couponRes->mallHTML .= $mallRes->name_zh.'('.$mallRes->city_name.' '.$mallRes->address.')<br>';
+		}
+
+		$couponRes->geneHTML = $couponRes->gene_type == 1 ? '自动生成' : '手动生成';
+
+		$couponRes->partnerHTML = $couponRes->interface_partner == 1 ? '银联' : '无';
+
 		return $couponRes;		
 	}
 

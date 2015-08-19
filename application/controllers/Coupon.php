@@ -334,6 +334,23 @@ class Coupon extends WebBase {
 	}
 
 	/**
+	 * ajax 获取优惠券详情
+	 *
+	 */
+	public function getCouponDetail(){
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$couponId = $this->input->post('couponId');
+
+		$this->ajaxRes = array(
+				'data'   => $this->CouponModel->getCouponById($couponId, true),
+				'status' => 0,
+			);
+		
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
 	 * ajax上传优惠券图片
 	 *
 	 */
