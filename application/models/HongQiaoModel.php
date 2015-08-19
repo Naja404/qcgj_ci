@@ -17,6 +17,45 @@ class HongQiaoModel extends CI_Model {
 	}
 
 	/**
+	 * 合并新虹桥查询
+	 * @param string $where 查询条件
+	 * @param int $p 页码
+	 * @param string $pageUrl 分页url
+	 */
+	public function getHongQiaoList($where = NULL, $p = 1, $pageUrl = NULL){
+		
+		$limit = "LIMIT ".page($p, 25);
+
+		$totalField = " COUNT(*) AS total ";
+
+		$field = " id, 
+				   name_zh, 
+				   city_name, 
+				   district_name, 
+				   address, 
+				   thumb_url, 
+				   avg_rating, 
+				   avg_price, 
+				   description, 
+				   tel,
+				   status ";
+
+		$sql = "SELECT %s FROM ".tname('mall')." %s ORDER BY create_time DESC %s ";
+
+		$queryTotal = $this->db->query(sprintf($sql, $totalField, $where, ''))->first_row();
+
+		$queryRes = $this->db->query(sprintf($sql, $field, $where, $limit))->result();
+
+		$returnRes = array(
+				'list'       => $queryRes,
+				'pagination' => $this->setPagination(site_url($pageUrl), $queryTotal->total, 25),
+			);
+		
+		return $returnRes;
+
+	}
+
+	/**
 	 * 获取爬虫店铺数据
 	 * @param string $where 查询条件
 	 * 
@@ -27,11 +66,11 @@ class HongQiaoModel extends CI_Model {
 		
 		$field = " * ";
 
-		$sql = "SELECT %s FROM ".tname('new_mall_s')." WHERE status NOT IN (0, 101) %s  ORDER BY id ASC %s GROUP BY brandName ";
+		$sql = "SELECT %s FROM ".tname('new_mall_s')." WHERE status NOT IN (0, 101) %s  GROUP BY brandName ORDER BY id ASC %s";
 
-		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, ''))->first_row();
+		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, ''))->result();
 
-		$pagination = $this->setPagination(site_url($url), $queryTotal->total, 25);
+		$pagination = $this->setPagination(site_url($url), count($queryTotal), 25);
 
 		$sql = sprintf($sql, $field, $where, $limit);
 
@@ -61,7 +100,7 @@ class HongQiaoModel extends CI_Model {
 		if (!empty($queryRes->tb_brand_id)) {
 			$queryRes->brandInfo = $this->db->get_where(tname('brand'), array('id' => $queryRes->tb_brand_id))->first_row();
 		}else{
-			$queryRes->brandInfo = $this->db->select('id, name_zh, name_en')
+			$queryRes->brandInfo = $this->db->select('id, name_zh, name_en, logo_url')
 												->where(array('name_zh' => $searchName))
 												->or_where(array('name_en' => $searchName))
 												->get(tname('brand'))

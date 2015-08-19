@@ -113,19 +113,6 @@
 																</a>
 																<input type="hidden" name="userHide_<?php echo strEncrypt($v->id);?>" value="1" />
 																<?php } ?>
-																<select name="couponStatus" onchange="setCouponStatus(this, '<?php echo strEncrypt($v->id);?>')" >
-																	<option value="0" <?php echo $v->status == 0 ? 'selected' : ''; ?>>
-																		<?php echo $this->lang->line('TEXT_DEFAULT_STATUS');?>
-																	</option>
-																	<option value="1" <?php echo $v->status == 1 ? 'selected' : ''; ?>>
-																		<?php echo $this->lang->line('TEXT_RECOMMEND');?>
-																	</option>
-																	<option value="2" <?php echo $v->status == 2 ? 'selected' : ''; ?>>
-																		<?php echo $this->lang->line('TEXT_TOPCOUPON');?>
-																	</option>
-																	<option value="101"><?php echo $this->lang->line('TEXT_CANCEL_RECOMMEND');?></option>
-																	<option value="102"><?php echo $this->lang->line('TEXT_CANCEL_TOPCOUPON');?></option>
-																</select>
 															</div>
 
 														</td>

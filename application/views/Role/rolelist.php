@@ -48,30 +48,30 @@
 						<ul class="breadcrumb">
 							<li>
 								<i class="icon-home home-icon"></i>
-								<a href="{:C('WEBSITE_URL')}"><?php echo $this->lang->line('TEXT_HOME_PAGE');?></a>
+								<a href="<?php echo base_url();?>"><?php echo $this->lang->line('TEXT_HOME_PAGE');?></a>
 							</li>
 
 							<li>
-								<a href="{:U('Coupon/rolelist')}"><?php echo $this->lang->line('TEXT_ROLE_MANAGER');?></a>
+								<a href="<?php echo base_url('Role/roleList');?>"><?php echo $this->lang->line('TEXT_ROLE_MANAGER');?></a>
 							</li>
 							<li class="active"><?php echo $this->lang->line('TEXT_ROLE_LIST');?></li>
 						</ul>
+						<div class="nav-search">
+							<a href="<?php echo base_url('Role/addRoleUser');?>"><button class="btn btn-xs btn-primary">添加用户</button></a>
+						</div>
 
 					</div>
 
 					<div class="page-content">
 
-						<div class="page-header">
+<!-- 						<div class="page-header">
 							<button class="btn">
 								<a href="#modal-addrole" role="button" data-toggle="modal"><i class="icon-pencil bigger-100"><?php echo $this->lang->line('TEXT_ROLE_ADD');?></i></a>
 							</button>
 							<button class="btn">
 								<a href="#modal-addrule" role="button" class="white" data-toggle="modal"><i class="icon-pencil bigger-100"><?php echo $this->lang->line('TEXT_ROLE_RULE_ADD');?></i></a>
 							</button>
-<!-- 							<button class="btn">
-								<a href="#modal-addruleuser" role="button" class="white" data-toggle="modal"><i class="icon-pencil bigger-100"><?php echo $this->lang->line('TEXT_ROLE_RULE_USER_ADD');?></i></a>
-							</button> -->
-						</div>
+						</div> -->
 
 						<div class="row">
 							<div class="col-xs-12">

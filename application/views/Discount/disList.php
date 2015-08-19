@@ -108,6 +108,7 @@
 													<tr>
 														<th>宣传图</th>
 														<th>标题</th>
+														<th width="50px;">数据来源</th>
 														<th width="30px;">类型</th>
 														<th width="85px;">有效期开始</th>
 														<th width="85px;">有效期结束</th>	
@@ -125,6 +126,7 @@
 															<img src="<?php echo config_item('image_url').$v['brand_pic_url'];?>" width="100px;">	
 														</td>
 														<td><?php echo $v['name_zh'];?></td>
+														<td>管理员</td>
 														<td width="50px;"><?php echo $this->lang->line('TEXT_DISCOUNT_TYPE_'.$v['type']);?></td>
 														<td><?php echo $v['begin_date'];?></td>
 														<td><?php echo $v['end_date'];?></td>

@@ -56,7 +56,9 @@
 							</li>
 							<li class="active"><?php echo $this->lang->line('TEXT_TITLE_MANAGERLIST');?></li>
 						</ul>
-
+						<div class="nav-search">
+							<a href="<?php echo base_url('Shop/addShopManager');?>"><button class="btn btn-xs btn-primary">添加店长</button></a>
+						</div>
 					</div>
 
 					<div class="page-content">
@@ -81,7 +83,7 @@
 														<th><?php echo $this->lang->line('TEXT_MANAGER_NAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_MALL_NAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_ADDRESS');?></th>
-														<th><?php echo $this->lang->line('TEXT_AREA_NAME');?></th>
+														<th>区域</th>
 														<th><?php echo $this->lang->line('TEXT_CITY_NAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
@@ -106,13 +108,13 @@
 														<td><?php echo $v->cityName;?></td>
 														<td>
 															<div class="btn-group">
-																<button class="btn btn-xs btn-success">
-																	<i class="icon-ok bigger-120"></i>
-																</button>
-
-																<button class="btn btn-xs btn-danger">
-																	<i class="icon-trash bigger-120"></i>
-																</button>
+																<a >
+																	<i class="icon-ok bigger-120">禁用</i>
+																</a>
+																&nbsp;
+																<a style="color:red;">
+																	<i class="icon-trash bigger-120">删除</i>
+																</a>
 															</div>
 														</td>
 													</tr>

@@ -219,7 +219,9 @@ class HongQiao extends WebBase {
 	 */
 	public function cinemaList(){
 
-		$list = $this->HongQiaoModel->getCinemaList($this->p);
+		$where = $this->_getHongQiaoWhere(array(' level = 5 '));
+
+		$list = $this->HongQiaoModel->getHongQiaoList($where, $this->p, 'HongQiao/cinemaList');
 
 		$this->outData['pageTitle'] = '电影院列表';
 
@@ -306,10 +308,12 @@ class HongQiao extends WebBase {
 	 */
 	public function travelList(){
 
-		$where = " WHERE name != '' ";
+		$where = $this->_getHongQiaoWhere(array(' level = 6 '));
 
-		$list = $this->HongQiaoModel->getTravelList($where, $this->p);
+		$list = $this->HongQiaoModel->getHongQiaoList($where, $this->p, 'HongQiao/travelList');
+
 		$this->outData['pageTitle'] = '景点列表';
+
 		$this->outData['list'] = $list['list'];
 		$this->outData['pagination'] = $list['pagination'];
 
@@ -396,9 +400,9 @@ class HongQiao extends WebBase {
 	 */
 	public function restaurantList(){
 
-		$where = ' WHERE mark = 2 ';
+		$where = $this->_getHongQiaoWhere(array(' level = 4 '));
 
-		$list = $this->HongQiaoModel->getRestaurantList($where, $this->p);
+		$list = $this->HongQiaoModel->getHongQiaoList($where, $this->p, 'HongQiao/restaurantList');
 
 		$this->outData['pageTitle'] = '餐厅列表';
 		$this->outData['list'] = $list['list'];
@@ -544,6 +548,15 @@ class HongQiao extends WebBase {
 
 		echo json_encode($this->ajaxRes);exit;
 
+	}
+
+	/**
+	 * 获取新虹桥列表查询条件
+	 * @param array $where 查询条件
+	 */
+	public function _getHongQiaoWhere($where = array()){
+
+		return ' WHERE '.implode(' AND ', $where);
 	}
 
 	/**

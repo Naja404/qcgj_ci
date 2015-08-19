@@ -146,7 +146,7 @@
 																<a onclick="editCoupon('<?php echo strEncrypt($v->id);?>', '<?php echo $v->tb_brand_id;?>');">
 																	<i class="icon-edit bigger-120">编辑</i>
 																</a>
-																<select name="couponStatus" onchange="setCouponStatus(this, '<?php echo strEncrypt($v->id);?>')" >
+<!-- 																<select name="couponStatus" onchange="setCouponStatus(this, '<?php echo strEncrypt($v->id);?>')" >
 																	<option value="0" <?php echo $v->status == 0 ? 'selected' : ''; ?>>
 																		<?php echo $this->lang->line('TEXT_DEFAULT_STATUS');?>
 																	</option>
@@ -158,7 +158,7 @@
 																	</option>
 																	<option value="101"><?php echo $this->lang->line('TEXT_CANCEL_RECOMMEND');?></option>
 																	<option value="102"><?php echo $this->lang->line('TEXT_CANCEL_TOPCOUPON');?></option>
-																</select>
+																</select> -->
 																<?php } ?>
 															</div>
 

@@ -56,13 +56,12 @@
 							</li>
 							<li class="active">商场列表</li>
 						</ul>
-
+						<div class="nav-search">
+							<a href="<?php echo base_url('Brand/addMall');?>"><button class="btn btn-xs btn-primary">添加商场</button></a>
+						</div>
 					</div>
 
 					<div class="page-content">
-
-						<div class="page-header">
-						</div>
 
 						<div class="row">
 							<div class="col-xs-12">
@@ -86,6 +85,8 @@
 
 									<?php echo $this->lang->line('TEXT_SHOP_ADDRESS');?>:<input type="text" name="address" value="<?php echo $this->input->get('address');?>"/>
 									<button type="submit"><?php echo $this->lang->line('BTN_SEARCH');?></button>
+									<br>
+									<br>
 								</form>
 							</div>
 							<div class="col-xs-12">
@@ -95,7 +96,10 @@
 											<table id="rolelist-table" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
+														<th>商场图片</th>
 														<th>商场名</th>
+														<th>城市</th>
+														<th>区域</th>
 														<th>地址</th>
 														<th>状态</th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
@@ -105,19 +109,21 @@
 												<tbody>
 													<?php foreach ($mallList as $v):?>
 													<tr >
+														<td><img src="<?php echo config_item('image_url').$v->thumb_url;?>" width="100px;"></td>
 														<td id="<?php echo $v->id;?>">
 																<?php echo $v->name_zh;?>
 														</td>
 														<td>
 															<?php echo $v->city_name;?>
+														</td>
+														<td>
 															<?php echo $v->district_name;?>
+														</td>
+														<td>
 															<?php echo $v->address;?>
 														</td>
-
 														<td>
-															<?php if (strtotime($v->update_time) > strtotime('2015-07-15')) {?>
-																<button class="btn">已编辑</button>
-															<?php }?>
+															<span class="label label-<?php echo $v->status == 1 ? 'info' : 'danger';?>"><?php echo $v->status == 1 ? '显示' : '隐藏';?></span>
 														</td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">

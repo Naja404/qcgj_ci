@@ -52,9 +52,9 @@
 							</li>
 
 							<li>
-								<a href="<?php echo site_url('Brand/listView');?>"><?php echo $this->lang->line('TITLE_BRAND_MANAGER');?></a>
+								新虹桥
 							</li>
-							<li class="active"><?php echo $this->lang->line('TITLE_BRAND_LIST');?></li>
+							<li class="active">餐厅列表</li>
 						</ul>
 
 					</div>
@@ -73,6 +73,7 @@
 											<table id="rolelist-table" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
+														<th>图片</th>
 														<th>店名</th>
 														<th>地址</th>
 														<th>电话</th>
@@ -84,10 +85,9 @@
 												<tbody>
 													<?php foreach ($list as $v):?>
 													<tr >
+														<td><img src="<?php echo config_item('image_url').$v->thumb_url;?>"> </td>
 														<td id="<?php echo $v->id;?>">
-															<a href="http://www.dianping.com<?php echo $v->url;?>" target="_blank">
-																<?php echo $v->name;?>
-															</a>
+																<?php echo $v->name_zh;?>
 														</td>
 														<td>
 															<?php echo $v->address;?>
@@ -96,15 +96,7 @@
 															<?php echo $v->tel;?>
 														</td>
 														<td>
-																<?php if($v->update == 1){?>
-																<button>
-																		已编辑
-																</button>
-																<?php }elseif ($v->update == 2) {?>
-																<button class="btn btn-danger">
-																		需作图
-																</button>
-																<?php }?>
+															<span class="label label-<?php echo $v->status == 1 ? 'info' : 'danger';?>"><?php echo $v->status == 1 ? '显示' : '隐藏';?></span>
 														</td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">

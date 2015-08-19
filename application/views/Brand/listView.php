@@ -56,13 +56,12 @@
 							</li>
 							<li class="active"><?php echo $this->lang->line('TITLE_BRAND_LIST');?></li>
 						</ul>
-
+						<div class="nav-search">
+							<a href="<?php echo base_url('Brand/addBrand');?>"><button class="btn btn-xs btn-primary">添加品牌</button></a>
+						</div>
 					</div>
 
 					<div class="page-content">
-
-						<div class="page-header">
-						</div>
 
 						<div class="row">
 							<div class="col-xs-12">
@@ -79,6 +78,8 @@
 									<?php } ?>
 								</form>
 							</div>
+							<br>
+							<br>
 							<div class="col-xs-12">
 								<div class="row">
 									<div class="col-xs-12">
@@ -105,7 +106,7 @@
 														<td>
 															<img src="<?php echo config_item('image_url').$v->logo_url;?>" width="100px">
 														</td>
-														<td>
+														<td style="width:100px;">
 															<?php $pic = explode(',', $v->pic_url);?>
 															<?php foreach($pic as $j => $m):?>
 																<?php if ($m) { $m = explode('|', $m);?>
@@ -113,23 +114,23 @@
 																<?php }?>
 															<?php endforeach;?>
 														</td>
-														<td><?php echo $v->name_zh;?></td>
-														<td><?php echo $v->name_en;?></td>
-														<td><?php echo $v->category;?></td>
+														<td style="width:100px;"><?php echo $v->name_zh;?></td>
+														<td style="width:100px;"><?php echo $v->name_en;?></td>
+														<td style="width:50px;"><?php echo $v->category;?></td>
 														<td><?php echo $v->summary;?></td>
 														<td><?php echo $v->create_time;?></td>
 														<td><?php echo $v->update_time;?></td>
-														<td><?php echo $v->oper;?></td>
-														<td>
+														<td style="width:50px;"><?php echo $v->oper;?></td>
+														<td style="width:120px;">
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 
 																<!-- <button class="btn btn-xs btn-info"> -->
 																	<a href="<?php echo site_url('Brand/editBrand').'?brandId='.strEncrypt($v->id).'&p='.$this->input->get('p').'&category='.$this->input->get('category');?>"><i class="icon-edit bigger-120"></i>编辑</a>
 																<!-- </button> -->
 
-																<button class="btn btn-xs btn-danger" onclick="delBrand('<?php echo $v->id;?>');">
-																	<i class="icon-trash bigger-120"></i>
-																</button>
+																<a style="color:red;" onclick="delBrand('<?php echo $v->id;?>');">
+																	<i class="icon-trash bigger-120">删除</i>
+																</a>
 
 															</div>
 

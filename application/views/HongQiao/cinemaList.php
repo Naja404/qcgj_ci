@@ -48,13 +48,13 @@
 						<ul class="breadcrumb">
 							<li>
 								<i class="icon-home home-icon"></i>
-								<a href="<?php echo config_item('base_url');?>"><?php echo $this->lang->line('TEXT_HOME_PAGE');?></a>
+								<a href="<?php echo config_item('base_url');?>">主页</a>
 							</li>
 
 							<li>
-								<a href="<?php echo site_url('Brand/listView');?>"><?php echo $this->lang->line('TITLE_BRAND_MANAGER');?></a>
+								新虹桥
 							</li>
-							<li class="active"><?php echo $this->lang->line('TITLE_BRAND_LIST');?></li>
+							<li class="active">电影院列表</li>
 						</ul>
 
 					</div>
@@ -85,25 +85,17 @@
 													<?php foreach ($list as $v):?>
 													<tr>
 														<td>
-															<img src="<?php echo $v->image;?>" width="100px;">	
+															<img src="<?php echo config_item('image_url').$v->thumb_url;?>" width="100px;">	
 														</td>
 														<td>
-																<?php echo $v->name;?>
+																<?php echo $v->name_zh;?>
 														</td>
 														<td>
 															<?php echo $v->address;?>
 														</td>
 
 														<td>
-																<?php if($v->update == 1){?>
-																<button>
-																		已编辑
-																</button>
-																<?php }elseif ($v->update == 2) {?>
-																<button class="btn btn-danger">
-																		需作图
-																</button>
-																<?php }?>
+															<span class="label label-<?php echo $v->status == 1 ? 'info' : 'danger';?>"><?php echo $v->status == 1 ? '显示' : '隐藏';?></span>
 														</td>
 
 														<td>

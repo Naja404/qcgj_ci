@@ -56,13 +56,12 @@
 							</li>
 							<li class="active"><?php echo $this->lang->line('TEXT_SHOP_LIST');?></li>
 						</ul>
-
+						<div class="nav-search">
+							<a href="<?php echo base_url('Shop/addShop');?>"><button class="btn btn-xs btn-primary">添加门店</button></a>
+						</div>
 					</div>
 
 					<div class="page-content">
-
-						<div class="page-header">
-						</div>
 
 						<div class="row">
 							<div class="col-xs-12">
@@ -106,7 +105,7 @@
 														<th><?php echo $this->lang->line('TEXT_BRAND_NAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_MALL_NAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_ADDRESS');?></th>
-														<th><?php echo $this->lang->line('TEXT_AREA_NAME');?></th>
+														<th>区域</th>
 														<th><?php echo $this->lang->line('TEXT_CITY_NAME');?></th>
 														<th><?php echo $this->lang->line('TEXT_FLOOR');?></th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
@@ -130,56 +129,19 @@
 														<td><?php echo $v->floor;?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-																<button class="btn btn-xs btn-success">
-																	<i class="icon-ok bigger-120"></i>
-																</button>
-
-																<button class="btn btn-xs btn-info">
-																	<i class="icon-edit bigger-120"></i>
-																</button>
-
-																<button class="btn btn-xs btn-danger">
-																	<i class="icon-trash bigger-120"></i>
-																</button>
-
-																<button class="btn btn-xs btn-warning">
-																	<i class="icon-flag bigger-120"></i>
-																</button>
+																<a style="color:green;">
+																	<i class="icon-remove bigger-120">隐藏</i>
+																</a>
+																&nbsp;
+																<a >
+																	<i class="icon-edit bigger-120">编辑</i>
+																</a>
+																&nbsp;
+																<a style="color:red;">
+																	<i class="icon-trash bigger-120">删除</i>
+																</a>
 															</div>
 
-															<div class="visible-xs visible-sm hidden-md hidden-lg">
-																<div class="inline position-relative">
-																	<button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown">
-																		<i class="icon-cog icon-only bigger-110"></i>
-																	</button>
-
-																	<ul class="dropdown-menu dropdown-only-icon dropdown-yellow pull-right dropdown-caret dropdown-close">
-																		<li>
-																			<a href="#" class="tooltip-info" data-rel="tooltip" title="View">
-																				<span class="blue">
-																					<i class="icon-zoom-in bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-
-																		<li>
-																			<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">
-																				<span class="green">
-																					<i class="icon-edit bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-
-																		<li>
-																			<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete">
-																				<span class="red">
-																					<i class="icon-trash bigger-120"></i>
-																				</span>
-																			</a>
-																		</li>
-																	</ul>
-																</div>
-															</div>
 														</td>
 													</tr>
 													<?php endforeach;?>

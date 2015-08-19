@@ -206,7 +206,8 @@ class BrandModel extends CI_Model {
 						(SELECT GROUP_CONCAT(DISTINCT d.name) AS name FROM tb_brand_category AS c LEFT JOIN tb_category AS d ON d.id = c.tb_category_id WHERE c.tb_brand_id = a.id) AS category, 
 						a.create_time, 
 						a.update_time, 
-						LEFT(a.description, 50) AS summary, a.oper ";
+						LEFT(a.description, 50) AS summary, 
+						IF(CHAR_LENGTH(a.oper) = 32, (SELECT name FROM tb_qcgj_role_user WHERE user_id = a.oper LIMIT 1), a.oper) AS oper ";
 			$countField = " COUNT(*) AS total ";
 			$sql = "SELECT 
 						%s
@@ -238,7 +239,7 @@ class BrandModel extends CI_Model {
 					create_time, 
 					update_time, 
 					LEFT(description, 50) AS summary, 
-					oper ";
+					IF(CHAR_LENGTH(oper) = 32, (SELECT name FROM tb_qcgj_role_user WHERE user_id = oper LIMIT 1), oper) AS oper ";
 
 		$sql = "SELECT %s FROM ".tname('brand')." %s %s ";
 
