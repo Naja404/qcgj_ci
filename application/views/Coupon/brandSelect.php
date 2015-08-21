@@ -93,7 +93,7 @@
 										<div class="col-md-offset-3 col-md-9">
 											<button class="btn btn-info" type="button" onclick="subBrandSelect();">
 												<i class="icon-ok bigger-110"></i>
-												确定											
+												下一步											
 											</button>
 										</div>
 									</div>

@@ -66,7 +66,7 @@ class HongQiaoModel extends CI_Model {
 		
 		$field = " * ";
 
-		$sql = "SELECT %s FROM ".tname('new_mall_s')." WHERE status NOT IN (0, 101) %s  GROUP BY brandName ORDER BY id ASC %s";
+		$sql = "SELECT %s FROM ".tname('new_mall_s')." WHERE status NOT IN (0, 101) %s  GROUP BY brandName ORDER BY brandName ASC %s";
 
 		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, ''))->result();
 

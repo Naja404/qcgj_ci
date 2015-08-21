@@ -17,6 +17,47 @@ class ShopModel extends CI_Model {
 	}
 
 	/**
+	 * 删除门店
+	 * @param string $shopId 门店id
+	 */
+	public function delShop($shopId = false){
+		$where = array(
+				'id' => $shopId,
+			);
+
+		return $this->db->where($where)->delete(tname('brand_mall'));
+	}
+
+	/**
+	 * 获取门店详情
+	 * @param string $shopId 门店id
+	 */
+	public function getShopDetail($shopId = false){
+		$sql = "select 
+					b.name_zh AS brandZH, 
+					b.name_en AS brandEN, 
+					b.id AS brandId,
+					b.logo_url AS logo, 
+					c.id AS mallId,
+					c.name_zh AS mallName, 
+					c.city_name AS cityName,
+					c.tb_city_id AS cityId,
+					c.district_name AS districtName,
+					c.tb_district_id AS districtId,
+					c.address AS address,
+					a.address AS floor
+					 
+					from tb_brand_mall AS a 
+				LEFT JOIN tb_brand AS b ON b.id = a.tb_brand_id 
+				LEFT JOIN tb_mall AS c ON c.id = a.tb_mall_id
+				WHERE a.id = '".$shopId."'";
+
+		$queryRes = $this->db->query($sql)->first_row();
+
+		return $queryRes;
+	}
+
+	/**
 	 * 获取商厦相关信息
 	 *
 	 */
@@ -97,7 +138,9 @@ class ShopModel extends CI_Model {
 
 		$limit = ' LIMIT '.$pageNum.','.$pageCount;
 
-		$field = " 	c.id AS brandId,
+		$field = " 	
+					a.id AS id,
+					c.id AS brandId,
 					b.id AS mallId,
 					CONCAT(c.name_en, ' ', c.name_zh) AS brandName,
 					c.logo_url AS logoUrl,

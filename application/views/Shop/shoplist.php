@@ -129,15 +129,12 @@
 														<td><?php echo $v->floor;?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-																<a style="color:green;">
-																	<i class="icon-remove bigger-120">隐藏</i>
-																</a>
 																&nbsp;
-																<a >
+																<a href="<?php echo site_url('Shop/editShop').'?id='.$v->id;?>">
 																	<i class="icon-edit bigger-120">编辑</i>
 																</a>
 																&nbsp;
-																<a style="color:red;">
+																<a style="color:red;" onclick="delShop('<?php  echo $v->id;?>')">
 																	<i class="icon-trash bigger-120">删除</i>
 																</a>
 															</div>
@@ -203,7 +200,20 @@
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 
 		<script type="text/javascript">
+			function delShop(shopId){
+				if (!confirm('是否确认删除该条数据?')) {
+					return false;
+				};
 
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Shop/delShop');?>",
+					data:{shopId:shopId},
+					success:function(data){
+						window.location.reload();							
+					}
+				});
+			}
 		</script>
 
 	</body>

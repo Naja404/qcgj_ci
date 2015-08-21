@@ -72,18 +72,18 @@
 									</div>
 
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="brandNameZh_s"> 品牌中文(匹配) </label>
-
-										<div class="col-sm-9">
-											<input type="text" name="brandNameZh_s" id="brandNameZh_s" placeholder="" value="<?php echo !empty($detail->brandInfo->name_zh) ? $detail->brandInfo->name_zh : '';?>"/>
-										</div>
-									</div>
-
-									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right" for="brandNameEn_s"> 品牌英文(匹配) </label>
 
 										<div class="col-sm-9">
 											<input type="text" name="brandNameEn_s" id="brandNameEn_s" placeholder="" value="<?php echo !empty($detail->brandInfo->name_en) ? $detail->brandInfo->name_en : '';?>" />
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="brandNameZh_s"> 品牌中文(匹配) </label>
+
+										<div class="col-sm-9">
+											<input type="text" name="brandNameZh_s" id="brandNameZh_s" placeholder="" value="<?php echo !empty($detail->brandInfo->name_zh) ? $detail->brandInfo->name_zh : '';?>"/>
 										</div>
 									</div>
 
@@ -281,14 +281,14 @@
 
 			jQuery(function($) {
 
-				$("#brandNameZh_s").keyup(function(){
+				$("#brandNameEn_s").keyup(function(){
 					
 					$("#brandId_s").val('');
 
 					$.ajax({
 			      		type:"POST",
 			      		url:"<?php echo site_url('HongQiao/searchBrand');?>",
-			      		data:{brand:$("#brandNameZh_s").val()},
+			      		data:{brand:$("#brandNameEn_s").val()},
 			      		success:function(data){
 			      			if (data.status != 0) { return false;}
 			      			
@@ -298,7 +298,7 @@
 			      				sourceData.push(v);
 			      			});
 
-						    $( "#brandNameZh_s" ).autocomplete({
+						    $( "#brandNameEn_s" ).autocomplete({
 						      source: sourceData,
 						      select:function(event, ui){
 									var brandName = ui.item.label.split('_');
@@ -357,8 +357,8 @@
 			}
 
 			if ($('#brandId_s').val() == '') {
-				if ($('#brandNameZh_s').val() == '') {
-					alert('请填写品牌中文');
+				if ($('#brandNameEn_s').val() == '') {
+					alert('请填写品牌英文');
 					return false;
 				};
 			}

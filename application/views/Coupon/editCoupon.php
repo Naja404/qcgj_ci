@@ -97,35 +97,35 @@
 																		<div class="row">
 																			<div class="col-xs-3">
 																				<label class="blue">
-																					<input name="couponType" value="1" type="radio" class="ace" checked />
+																					<input name="couponType" value="1" type="radio" class="ace" <?php echo $couponData->coupon_type == 1 ? 'checked' : '';?> />
 																					<span class="lbl">代金券</span>
 																				</label>
 																			</div>
 
 																			<div class="col-xs-3">
 																				<label class="blue">
-																					<input name="couponType" value="2" type="radio" class="ace"  />
+																					<input name="couponType" value="2" type="radio" class="ace" <?php echo $couponData->coupon_type == 2 ? 'checked' : '';?> />
 																					<span class="lbl">普通单张券</span>
 																				</label>
 																			</div>
 
 																			<div class="col-xs-3">
 																				<label class="blue">
-																					<input name="couponType" value="4" type="radio" class="ace"  />
+																					<input name="couponType" value="4" type="radio" class="ace" <?php echo $couponData->coupon_type == 4 ? 'checked' : '';?> />
 																					<span class="lbl">展示券</span>
 																				</label>
 																			</div>
 
 																			<div class="col-xs-3">
 																				<label class="blue">
-																					<input name="couponType" value="6" type="radio" class="ace"  />
+																					<input name="couponType" value="6" type="radio" class="ace" <?php echo $couponData->coupon_type == 6 ? 'checked' : '';?> />
 																					<span class="lbl">普通券多张</span>
 																				</label>
 																			</div>
 
 																			<div class="col-xs-3">
 																				<label class="blue">
-																					<input name="couponType" value="999" type="radio" class="ace"  />
+																					<input name="couponType" value="999" type="radio" class="ace" <?php echo $couponData->coupon_type == 999 ? 'checked' : '';?>  />
 																					<span class="lbl">临时券</span>
 																				</label>
 																			</div>
@@ -215,7 +215,7 @@
 																<div class="space-2"></div>
 
 																<div class="form-group">
-																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponUseTime"><?php echo $this->lang->line('TEXT_COUPON_USE_TIME');?>:</label>
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponUseTime">领取时间:</label>
 
 																	<div class="col-xs-12 col-sm-8">
 																		<div class="row">
@@ -224,7 +224,7 @@
 																				<span class="input-group-addon">
 																					<i class="icon-time bigger-110"></i>
 																				</span>
-																				<input id="couponUseTimeStart" type="text" name="couponUseTimeStart" class="col-xs-6 col-sm-4" value="10:00:00"/>
+																				<input id="couponUseTimeStart" type="text" name="couponUseTimeStart" class="col-xs-6 col-sm-4" value="<?php echo date('H:i:s', strtotime($couponData->receive_begin_date));?>"/>
 																			</div>
 																			</div>
 
@@ -233,7 +233,7 @@
 																					<span class="input-group-addon">
 																						<i class="icon-time bigger-110"></i>
 																					</span>
-																					<input id="couponUseTimeEnd" type="text" name="couponUseTimeEnd" class="col-xs-6 col-sm-4" value="20:00:00"/>
+																					<input id="couponUseTimeEnd" type="text" name="couponUseTimeEnd" class="col-xs-6 col-sm-4" value="<?php echo date('H:i:s', strtotime($couponData->receive_end_date));?>"/>
 																				</div>
 																			</div>
 
@@ -279,11 +279,28 @@
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_CODE_TYPE');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
-																		<div>
-																			<label>
-																				<input name="couponAutoCode" value="1" type="checkbox" class="ace" id="couponAutoCode" <?php echo $couponData->gene_type == '1' ? 'checked' : '';?>/>
-																				<span class="lbl" for="couponAutoCode"><?php echo $this->lang->line('TEXT_COUPON_AUTO_CODE');?></span>
-																			</label>
+																		<div class="row">
+																			<div class="col-xs-3">
+																				<label class="blue">
+																					<input name="couponAutoCode" value="0" type="radio" class="ace" <?php echo $couponData->gene_type == 0 ? 'checked' : '';?> />
+																					<span class="lbl">无须生成</span>
+																				</label>
+																			</div>
+
+																			<div class="col-xs-3">
+																				<label class="blue">
+																					<input name="couponAutoCode" value="1" type="radio" class="ace" <?php echo $couponData->gene_type == 1 ? 'checked' : '';?> />
+																					<span class="lbl">自动生成</span>
+																				</label>
+																			</div>
+
+																			<div class="col-xs-3">
+																				<label class="blue">
+																					<input name="couponAutoCode" value="2" type="radio" class="ace" <?php echo $couponData->gene_type == 2 ? 'checked' : '';?> />
+																					<span class="lbl">手动生成</span>
+																				</label>
+																			</div>
+
 																		</div>
 																	</div>
 																</div>
@@ -625,7 +642,7 @@
 				});
 
 				// 数字选择
-				$('#couponSum').ace_spinner({value:<?php echo $couponData->total_count > 0 ? $couponData->total_count : 0 ;?>,min:0,max:9999,step:10, btn_up_class:'btn-info' , btn_down_class:'btn-info'})
+				$('#couponSum').ace_spinner({value:<?php echo $couponData->total_count > 0 ? $couponData->total_count : 0 ;?>,min:0,max:999999,step:100, btn_up_class:'btn-info' , btn_down_class:'btn-info'})
 				.on('change', function(){
 					//alert(this.value)
 				});

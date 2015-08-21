@@ -37,6 +37,43 @@ class Shop extends WebBase {
 	}
 
 	/**
+	 * 删除门店
+	 *
+	 */
+	public function delShop(){
+		if (!$this->input->is_ajax_request()) {
+			jsonReturn($this->ajaxRes);
+		}
+
+		$shopId = $this->input->post('shopId');
+		
+		$this->ShopModel->delShop($shopId);
+
+		jsonReturn(array('status' => 0));
+
+	}
+
+	/**
+	 * 编辑门店
+	 *
+	 */
+	public function editShop(){
+		$this->outData['pageTitle'] = '编辑门店';
+		
+		$shopId = $this->input->get('id');
+
+		$this->outData['detail'] = $this->ShopModel->getShopDetail($shopId);
+
+		$this->outData['cityList'] = $this->ShopModel->getCityList();
+
+		$this->outData['areaList'] = $this->BrandModel->getDistrictList($this->outData['detail']->cityId);
+		
+		$this->outData['mallList'] = $this->ShopModel->getMallList($this->outData['detail']->cityId, $this->outData['detail']->districtId);
+
+		$this->load->view('Shop/editShop', $this->outData);
+	}
+
+	/**
 	 * 门店列表
 	 */
 	public function shopList(){

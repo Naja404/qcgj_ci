@@ -69,12 +69,12 @@
 
 								<form method="get" action="<?php echo site_url('Coupon/couponList');?>">
 
-									优惠券标题:<input type="text" name="title" value="<?php echo $this->input->get('title');?>"/>
-									&nbsp;
-									&nbsp;
-									&nbsp;
 									时间范围:
 									<input type="text" name="dateRange" id="dateRange" value="<?php echo $this->input->get('dateRange');?>" style="width:180px;">
+									&nbsp;
+									&nbsp;
+									&nbsp;
+									优惠券标题:<input type="text" name="title" value="<?php echo $this->input->get('title');?>">
 									&nbsp;
 									&nbsp;
 									&nbsp;

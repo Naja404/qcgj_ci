@@ -192,7 +192,7 @@ class CouponModel extends CI_Model {
 				'brand_pic_url'			 => $brandInfo->logo_url,
 				// 'main_pic_url'         	 => $couponData['couponPic'],
 				'status'                 => 0,
-				'gene_type'              => isset($couponData['couponAutoCode']) ? 1 : 0,	//生成类型 0.无须生成 1.自动生成 2.手动
+				'gene_type'              => (int)$couponData['couponAutoCode'],	//生成类型 0.无须生成 1.自动生成 2.手动
 				'coupon_type'            => $couponData['couponType'],				// 1.代金券 102.折扣劵 103.提货券
 				'create_time'            => currentTime(),
 				'update_time'            => currentTime(),
@@ -207,16 +207,16 @@ class CouponModel extends CI_Model {
 				'limit_count_used'       => $couponData['couponSum'],				//使用总数
 				'limit_count_per_person' => $couponData['couponEveryoneSum'],		//每人限领数
 				'cost_price'             => $couponData['couponMoney'] == 2 ? floatval($couponData['couponMoneyNum']) : 0.00,//收费优惠券
-				'begin_date'             => $this->_formatTimeToDate($expireDate['start'], $couponData['couponUseTimeStart']),//有效期开始
-				'end_date'               => $this->_formatTimeToDate($expireDate['end'], $couponData['couponUseTimeEnd']),//有效期结束
-				'receive_begin_date'     => $receiveDate['start'],					//领取开始
-				'receive_end_date'       => $receiveDate['end'],					//领取结束
+				'begin_date'             => $expireDate['start'],//有效期开始
+				'end_date'               => $expireDate['end'],//有效期结束
+				'receive_begin_date'     => $this->_formatTimeToDate($receiveDate['start'], $couponData['couponUseTimeStart']),					//领取开始
+				'receive_end_date'       => $this->_formatTimeToDate($receiveDate['end'], $couponData['couponUseTimeEnd']),					//领取结束
 				'is_delete'              => 0,
 				'on_sale'				 => 0,
 				'on_sale_time'           => $couponData['reviewPass'] == 2 ? $couponData['reviewPassDate'] : NULL, //上架时间
 				'oper'                   => $this->userInfo->user_id,
 				'access_limit'			 => 1,
-				'interface_partner'		 => $couponData['interface_partner'] == '1' ? '1' : '',
+				'interface_partner'		 => $couponData['interface_partner'] == '1' ? '1' : '0',
 			);
 	
 		// 创建优惠券
@@ -268,7 +268,7 @@ class CouponModel extends CI_Model {
 		$couponEditData = array(
 				'name'                   => $couponData['couponTitle'],
 				// 'main_pic_url'           => $couponData['couponPic'],
-				'gene_type'              => isset($couponData['couponAutoCode']) ? 1 : 0,	//生成类型 0.无须生成 1.自动生成 2.手动
+				'gene_type'              => (int)$couponData['couponAutoCode'],	//生成类型 0.无须生成 1.自动生成 2.手动
 				'coupon_type'            => $couponData['couponType'],				// 1.代金券 102.折扣劵 103.提货券
 				'update_time'            => currentTime(),
 				'coupon_desc'            => $couponData['couponUseGuide'],			//使用说明
@@ -277,13 +277,13 @@ class CouponModel extends CI_Model {
 				'limit_count_used'       => $couponData['couponSum'],				//使用总数
 				'limit_count_per_person' => $couponData['couponEveryoneSum'],		//每人限领数
 				'cost_price'             => $couponData['couponMoney'] == 2 ? floatval($couponData['couponMoneyNum']) : 0.00,//收费优惠券
-				'begin_date'             => $this->_formatTimeToDate($expireDate['start'], $couponData['couponUseTimeStart']),//有效期开始
-				'end_date'               => $this->_formatTimeToDate($expireDate['end'], $couponData['couponUseTimeEnd']),//有效期结束
-				'receive_begin_date'     => $receiveDate['start'],					//领取开始
-				'receive_end_date'       => $receiveDate['end'],					//领取结束
+				'begin_date'             => $expireDate['start'],//有效期开始
+				'end_date'               => $expireDate['end'],//有效期结束
+				'receive_begin_date'     => $this->_formatTimeToDate($receiveDate['start'], $couponData['couponUseTimeStart']),					//领取开始
+				'receive_end_date'       => $this->_formatTimeToDate($receiveDate['end'], $couponData['couponUseTimeEnd']),					//领取结束
 				'on_sale_time'           => $couponData['reviewPass'] == 2 ? $couponData['reviewPassDate'] : NULL, //上架时间
 				'oper'                   => $this->userInfo->user_id,
-				'interface_partner'		 => $couponData['interface_partner'] == '1' ? '1' : '',
+				'interface_partner'		 => isset($couponData['interface_partner']) && $couponData['interface_partner'] == '1' ? '1' : '0',
 			);
 		$where = array(
 				'id' => $couponData['couponId'],

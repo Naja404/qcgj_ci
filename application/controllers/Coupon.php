@@ -480,7 +480,7 @@ class Coupon extends WebBase {
 
 		if (isset($reqData['dateRange']) && !empty($reqData['dateRange'])) {
 			$date = explode(' - ', $reqData['dateRange']);
-			$where[] = " (a.begin_date >= '".date('Y-m-d', strtotime($date[0]))."' AND a.end_date <= '".date('Y-m-d', strtotime($date[1]))."') ";
+			$where[] = " (a.begin_date BETWEEN '".date('Y-m-d', strtotime($date[0]))."' AND '".date('Y-m-d', strtotime($date[1]))."' OR a.end_date BETWEEN '".date('Y-m-d', strtotime($date[0]))."' AND '".date('Y-m-d', strtotime($date[1]))."') ";
 		}
 
 		if (isset($reqData['status']) && !empty($reqData['status'])) $where[] = " a.on_sale = ".(int)$reqData['status']." ";

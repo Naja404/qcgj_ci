@@ -302,11 +302,28 @@
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_CODE_TYPE');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
-																		<div>
-																			<label>
-																				<input name="couponAutoCode" value="1" type="checkbox" class="ace" id="couponAutoCode"/>
-																				<span class="lbl" for="couponAutoCode"><?php echo $this->lang->line('TEXT_COUPON_AUTO_CODE');?></span>
-																			</label>
+																		<div class="row">
+																			<div class="col-xs-3">
+																				<label class="blue">
+																					<input name="couponAutoCode" value="0" type="radio" class="ace" />
+																					<span class="lbl">无须生成</span>
+																				</label>
+																			</div>
+
+																			<div class="col-xs-3">
+																				<label class="blue">
+																					<input name="couponAutoCode" value="1" type="radio" class="ace" checked/>
+																					<span class="lbl">自动生成</span>
+																				</label>
+																			</div>
+
+																			<div class="col-xs-3">
+																				<label class="blue">
+																					<input name="couponAutoCode" value="2" type="radio" class="ace" />
+																					<span class="lbl">手动生成</span>
+																				</label>
+																			</div>
+
 																		</div>
 																	</div>
 																</div>
