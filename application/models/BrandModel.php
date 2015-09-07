@@ -213,7 +213,7 @@ class BrandModel extends CI_Model {
 						%s
 						FROM tb_brand AS a
 						LEFT JOIN tb_brand_category as b on b.tb_brand_id = a.`id`
-						 WHERE a.status = 1 and b.tb_category_id is null or (a.description is null or a.description = '') ORDER BY a.create_time DESC %s ";
+						 WHERE a.status = 1 and (b.tb_category_id is null or (a.description is null or a.description = '')) ORDER BY a.create_time DESC %s ";
 			
 			$queryTotal = $this->db->query(sprintf($sql, $countField, ''))->first_row();
 

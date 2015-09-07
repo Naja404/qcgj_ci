@@ -217,7 +217,7 @@ class ApiModel extends CI_Model {
 
 		$queryRes = $this->db->select('title,main_pic_url AS image, description, link_url AS url')
 							->order_by('sort_num', 'ASC')
-							->limit(4)
+							->limit(6)
 							->get_where(tname('online_activity'), $where)->result_array();	
 
 		$returnRes = array();
