@@ -114,4 +114,105 @@ class ApproveModel extends CI_Model {
 		return $status;
 	}
 
+	/**
+	 * 获取洋码头图片列表
+	 * @param int $page 页码
+	 * @param string $where 查询条件
+	 */
+	public function getYmtList($page = 1, $where = NULL){
+		$totalField = " COUNT(*) AS total ";
+		$field = " a.id AS ymtId,
+				   a.name, 
+				   a.orig_pic_url AS picUrl, 
+				   a.thumb_pic_url AS thumbUrl, 
+				   a.province_name AS provinceName, 
+				   a.no, 
+				   a.slogan, 
+				   a.status, 
+				   a.create_time, 
+				   a.update_time ";
+
+		$page = ($page - 1) * 25;
+
+		$limit = ' LIMIT '.$page.',25';
+
+		$sql = "SELECT 
+					%s
+					 FROM  tb_ymt_participant AS a 
+					%s
+					ORDER BY a.create_time DESC 
+					%s ";
+
+		$queryTotal = $this->db->query(sprintf($sql, $totalField, $where, ''))->first_row();
+
+		$queryRes = $this->db->query(sprintf($sql, $field, $where, $limit))->result();
+
+		$returnData = array(
+				'list' => $queryRes,
+				'page' => $this->setPagination(site_url('Approve/'.$this->router->method), $queryTotal->total, 25),
+			);
+
+		return $returnData;
+	}
+
+	/**
+	 * 更新洋码头图片状态
+	 * @param array $reqData 更新内容
+	 */
+	public function upYmtPicStatus($reqData = array()){
+		$where = array(
+				'id' => $reqData['ymtId'],
+			);
+
+		$update = array(
+				'status'      => (int)$reqData['status'],
+				'update_time' => currentTime(),
+			);
+
+		$status = $this->db->where($where)->update(tname('ymt_participant'), $update);
+
+		$status = array(
+				'error'  => $status ? true : false,
+				'status' => $update['status'] == 1 ? 2 : 1,
+			);
+
+		return $status;
+	}
+
+	/**
+	 * 获取省份列表
+	 *
+	 */
+	public function getProvinceList(){
+
+		$cacheRes = $this->cache->get(config_item('NORMAL_CACHE.PROVINCE_LIST'));
+
+		if (!empty($cacheRes) && count($cacheRes)) return $cacheRes;
+
+		$queryRes = $this->db->select('id, code, name')->get(tname('province'))->result();
+
+		if (count($queryRes)) $this->cache->save(config_item('NORMAL_CACHE.PROVINCE_LIST'), $queryRes);
+
+		return $queryRes;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

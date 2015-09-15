@@ -20,6 +20,7 @@ $config = array(
 				'BRAND_DISTRICT'      => 'Normal:Brand:District:',
 				'CITY_NAME'			  => 'Normal:Brand:cityName',
 				'BRAND_SHOP'		  => 'Normal:BrandShop:',
+				'PROVINCE_LIST'		  => 'Normal:ProvinceList',
 			),
 		// 用户缓存
 		'USER_CACHE' => array(
@@ -125,8 +126,8 @@ $config = array(
 		// 评论审核状态
 		'APPROVE_TD_DIV_1' => '<span class="label label-info">已通过</span>',
 		'APPROVE_TD_DIV_2' => '<span class="label label-danger">不通过</span>',
-		'APPROVE_A_DIV_2' => '<a onclick="upComment(\'%s\', \'%s\');"><i class="icon-remove bigger-120 green">不通过</i></a>',
-		'APPROVE_A_DIV_1' => '<a onclick="upComment(\'%s\', \'%s\');"><i class="icon-remove bigger-120">通过</i></a>',
+		'APPROVE_A_DIV_2' => '<a onclick="%s(\'%s\', \'%s\');"><i class="icon-remove bigger-120 green">不通过</i></a>',
+		'APPROVE_A_DIV_1' => '<a onclick="%s(\'%s\', \'%s\');"><i class="icon-remove bigger-120">通过</i></a>',
 
  	);
 

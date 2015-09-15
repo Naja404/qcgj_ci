@@ -55,7 +55,7 @@
 							<li>
 								<a href="<?php echo site_url('Approve/comment');?>"><?php echo $this->lang->line('TITLE_APPROVE_MANAGER');?></a>
 							</li>
-							<li class="active"><?php echo $this->lang->line('TITLE_COMMENT_LIST');?></li>
+							<li class="active"><?php echo $this->lang->line('TITLE_YMT_LIST');?></li>
 						</ul>
 					</div>
 
@@ -63,47 +63,38 @@
 
 						<div class="row">
 							<div class="col-xs-12">
-								<form method="get" action="<?php echo site_url('Approve/comment');?>">
+								<form method="get" action="<?php echo site_url('Approve/ymtPic');?>">
 
-									评论目标:
-									<select name="type">
-										<option value="">全部</option>
-										<?php foreach($commentType as $k => $v){?>
-										<option value="<?php echo $k;?>" <?php echo $k == $this->input->get('type') ? 'selected' : '' ;?>><?php echo $v;?></option>
-										<?php }?>
-									</select>
-									&nbsp;
-									&nbsp;
 									评论状态:
 									<select name="status">
 										<option value="all">全部</option>
-										<?php foreach ($commentStatus as $k => $v) {?>
+										<?php foreach ($ymtStatus as $k => $v) {?>
 										<option value="<?php echo $k;?>" <?php echo (string)$k === $this->input->get('status') ? 'selected' : '' ;?>><?php echo $v;?></option>
 										<?php }?>
 									</select>
 									&nbsp;
 									&nbsp;
-									评论星级:
-									<select name="grade">
+									省份:
+									<select name="province">
 										<option value="">全部</option>
-										<?php for ($i=1; $i <= 5; $i++) { ?>
-										<option value="<?php echo $i;?>" <?php echo (string)$i === $this->input->get('grade') ? 'selected' : '' ;?>><?php echo $i;?></option>
+										<?php foreach ($provinceList as $k => $v) {?>
+										<option value="<?php echo $v->id;?>" <?php echo (string)$v->id === $this->input->get('province') ? 'selected' : '' ;?>><?php echo $v->name;?></option>
 										<?php }?>
 									</select>
 									&nbsp;
 									&nbsp;
-									用户手机:<input type="text" name="mobile" value="<?php echo $this->input->get('mobile');?>">
+									姓名:<input type="text" name="name" value="<?php echo $this->input->get('name');?>">
 									<br><br>
-									商户名称:<input type="text" name="shop" value="<?php echo $this->input->get('shop');?>" style="width:200px;">
-									评论内容:<input type="text" name="content" value="<?php echo $this->input->get('content');?>" style="width:200px;">
+									编&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:<input type="text" name="no" value="<?php echo $this->input->get('no');?>" style="width:200px;">
+									辣妈宣言:<input type="text" name="slogan" value="<?php echo $this->input->get('slogan');?>" style="width:200px;">
 									<br><br>
-									评论时间:<input type="text" name="pubTime" id="pubTime" value="<?php echo $this->input->get('pubTime');?>" style="width:200px;">
+									创建时间:<input type="text" name="createTime" id="createTime" value="<?php echo $this->input->get('createTime');?>" style="width:200px;">
 									<br><br>
-									审核时间:<input type="text" name="approveTime" id="approveTime" value="<?php echo $this->input->get('approveTime');?>" style="width:200px;">
+									更新时间:<input type="text" name="updateTime" id="updateTime" value="<?php echo $this->input->get('updateTime');?>" style="width:200px;">
 									<button type="submit"><?php echo $this->lang->line('BTN_SEARCH');?></button>
 									&nbsp;
 									&nbsp;
-									<a href="<?php echo site_url('Approve/comment');?>">清空</a>
+									<a href="<?php echo site_url('Approve/ymtPic');?>">清空</a>
 								</form>
 								<br>
 								<div class="row">
@@ -112,16 +103,14 @@
 											<table id="rolelist-table" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
-														<th width="50px;">评论目标</th>
-														<th width="80px;">状态</th>
-														<th width="50px;">用户手机</th>
-														<th width="100px;">商户名称</th>
-														<th width="50px;">评论星级</th>
-														<th>评论内容</th>	
-														<th width="50px;">评论图片</th>
-														<th width="100px;">评论时间</th>
-														<th width="100px;">审核时间</th>
-														<th width="80px;">审核人</th>
+														<th width="50px;">姓名</th>
+														<th width="80px;">照片</th>
+														<th width="50px;">省份</th>
+														<th width="100px;">编号</th>
+														<th width="150px;">辣妈宣言</th>
+														<th width="80px;">审核状态</th>	
+														<th width="100px;">创建时间</th>
+														<th width="100px;">更新时间</th>
 														<th width="150px;"><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
 												</thead>
@@ -129,37 +118,39 @@
 												<tbody>
 													<?php foreach ($list as $k => $v):?>
 													<tr>
-														<td><?php echo $commentType[$v->type];?></td>
-														<td id="cidTd_<?php echo $v->commentId;?>"><span class="label label-<?php echo (int)$v->status == 1 ? 'info' : 'danger';?>"><?php echo $commentStatus[$v->status];?></span></td>
-														<td><?php echo $v->mobile;?></td>
-														<td><?php echo $v->shopName;?></td>
-														<td><?php echo $v->grade;?></td>
-														<td><?php echo $v->comment;?></td>
-														<td><?php if(!empty($v->picUrl)){?>
-															<a onclick="preComment('<?php echo base_url("Approve/preComment")."?commentId=".$v->commentId;?>')" >查看图片</a>
-															<?php }?>
+														<td><?php echo $v->name;?></td>
+														<td>
+															<img src="<?php echo config_item('image_url').$v->thumbUrl;?>" width="200px">
 														</td>
-														<td><?php echo $v->pubTime;?></td>
-														<td><?php echo $v->approveTime;?></td>
-														<td><?php echo $v->operName;?></td>
+														<td><?php echo $v->provinceName;?>
+														</td>
+														<td><?php echo $v->no;?>
+														</td>
+														<td><?php echo $v->slogan;?>
+														</td>
+														<td id="cidTd_<?php echo $v->ymtId;?>">
+															<span class="label label-<?php echo (int)$v->status == 1 ? 'info' : 'danger';?>"><?php echo $ymtStatus[$v->status];?></span>
+														</td>
+														<td><?php echo $v->create_time;?></td>
+														<td><?php echo $v->update_time;?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-																<span id="cid_<?php echo $v->commentId;?>">
+																<span id="cid_<?php echo $v->ymtId;?>">
 																<?php if($v->status != 1){?>
-																	<a onclick="upComment('<?php echo $v->commentId;?>', '1');">
+																	<a onclick="upYmtPic('<?php echo $v->ymtId;?>', '1');">
 																		<i class="icon-ok bigger-120">通过</i>
 																	</a>
 																<?php }else{ ?>
-																<a onclick="upComment('<?php echo $v->commentId;?>', '2');">
+																<a onclick="upYmtPic('<?php echo $v->ymtId;?>', '2');">
 																	<i class="icon-remove bigger-120 green">不通过</i>
 																</a>
 																<?php }?>
 																</span>
 																&nbsp;
 																&nbsp;
-																<a style="color:red;" onclick="">
+<!-- 																<a style="color:red;" onclick="">
 																	<i class="icon-edit bigger-120">删除</i>
-																</a>
+																</a> -->
 															</div>
 
 														</td>
@@ -227,24 +218,24 @@
 
 			jQuery(function($) {
 						// 日期选择
-				$('input[name=pubTime]').daterangepicker().prev().on(ace.click_event, function(){
+				$('input[name=createTime]').daterangepicker().prev().on(ace.click_event, function(){
 					$(this).next().focus();
 				});
-				$('input[name=approveTime]').daterangepicker().prev().on(ace.click_event, function(){
+				$('input[name=updateTime]').daterangepicker().prev().on(ace.click_event, function(){
 					$(this).next().focus();
 				});
 			})
 
-			function upComment(commentId, status){
+			function upYmtPic(ymtId, status){
 
 				$.ajax({
 					type:"POST",
-					url:"<?php echo site_url('Approve/upComment');?>",
-					data:{commentId:commentId, status:status},
+					url:"<?php echo site_url('Approve/upYmtPic');?>",
+					data:{ymtId:ymtId, status:status},
 					success:function(data){
 						if (data.status == '0') {
-							$("#cid_"+commentId).html(data.spanDiv);
-							$("#cidTd_"+commentId).html(data.tdDiv);
+							$("#cid_"+ymtId).html(data.spanDiv);
+							$("#cidTd_"+ymtId).html(data.tdDiv);
 						}else{
 							alert(data.msg);
 						}
@@ -253,9 +244,6 @@
 				});
 			}
 
-			function preComment(url){
-					window.open(url, '', 'toolbar=no,height=800,width=800');
-			}
 		</script>
 
 	</body>

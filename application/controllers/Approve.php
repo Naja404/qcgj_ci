@@ -74,7 +74,57 @@ class Approve extends WebBase {
 			$this->ajaxRes = array(
 					'status'  => 0,
 					'tdDiv'   => config_item('APPROVE_TD_DIV_'.$reqData['status']),
-					'spanDiv' => sprintf(config_item('APPROVE_A_DIV_'.$status['status']), $reqData['commentId'], $status['status']),
+					'spanDiv' => sprintf(config_item('APPROVE_A_DIV_'.$status['status']), 'upComment', $reqData['commentId'], $status['status']),
+				);
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 审核洋码头图片
+	 *
+	 */
+	public function ymtPic(){
+		$this->outData['pageTitle'] = $this->lang->line('TITLE_YMT_LIST');
+
+		$where = $this->_getYmtWhere();
+
+		$ymtList = $this->ApproveModel->getYmtList($this->p, $where);
+
+		$this->outData['list'] = $ymtList['list'];
+
+		$this->outData['page'] = $ymtList['page'];
+
+		$this->outData['ymtStatus'] = array(
+				'0' => '待审核',
+				'1' => '已通过',
+				'2' => '不通过',
+			);
+		
+		$this->outData['provinceList'] = $this->ApproveModel->getProvinceList();
+
+		$this->load->view('Approve/ymtList', $this->outData);
+	}
+
+	/**
+	 * 更新洋码头图片状态
+	 *
+	 */
+	public function upYmtPic(){
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$reqData = $this->input->post();
+
+		$status = $this->ApproveModel->upYmtPicStatus($reqData);
+
+		if ($status['error'] === false) {
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_YMT_UPDATE_FAIL');
+		}else{
+			$this->ajaxRes = array(
+					'status'  => 0,
+					'tdDiv'   => config_item('APPROVE_TD_DIV_'.$reqData['status']),
+					'spanDiv' => sprintf(config_item('APPROVE_A_DIV_'.$status['status']), 'upYmtPic', $reqData['ymtId'], $status['status']),
 				);
 		}
 
@@ -113,6 +163,45 @@ class Approve extends WebBase {
 			$approveTime = $this->_formatDate($reqData['approveTime']);
 
 			$where[] = " LEFT(a.approve_time, 10) BETWEEN '".$approveTime[0]."' AND '".$approveTime[1]."' ";
+		} 
+
+		$whereStr = NULL;
+
+		if (count($where) > 0) $whereStr = " WHERE ".implode(" AND ", $where);
+
+		return $whereStr;
+
+	}
+
+	/**
+	 * 获取洋码头查询条件
+	 *
+	 */
+	private function _getYmtWhere(){
+		$reqData = $this->input->get();
+		$where = array();
+
+		if (isset($reqData['status']) && in_array($reqData['status'], array('0', '1', '2'))) $where[] = " a.status = '".(int)$reqData['status']."' ";
+
+		if (isset($reqData['province']) && !empty($reqData['province'])) $where[] = " a.tb_province_id = '".(int)$reqData['province']."' ";
+		
+		if (isset($reqData['name']) && !empty($reqData['name'])) $where[] = " a.name = '".addslashes($reqData['name'])."' ";
+
+		if (isset($reqData['no']) && !empty($reqData['no'])) $where[] = " a.no = '".addslashes($reqData['no'])."' ";
+
+		if (isset($reqData['slogan']) && !empty($reqData['slogan'])) $where[] = " a.slogan = '".addslashes($reqData['slogan'])."' ";
+
+		if (isset($reqData['createTime']) && !empty($reqData['createTime'])){
+			
+			$createTime = $this->_formatDate($reqData['createTime']);
+
+			$where[] = " LEFT(a.create_time, 10) BETWEEN '".$createTime[0]."' AND '".$createTime[1]."' ";
+		} 
+
+		if (isset($reqData['updateTime']) && !empty($reqData['updateTime'])){
+			$updateTime = $this->_formatDate($reqData['updateTime']);
+
+			$where[] = " LEFT(a.update_time, 10) BETWEEN '".$updateTime[0]."' AND '".$updateTime[1]."' ";
 		} 
 
 		$whereStr = NULL;
