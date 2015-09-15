@@ -101,12 +101,12 @@ class Brand extends WebBase {
 
 		$this->outData['pageTitle'] = $this->lang->line('TITLE_BRAND_LIST');
 		
-		$where = " WHERE status = 1 ";
+		$where = $where = " WHERE status = 1 ";
 
 		$brandName = addslashes($this->input->get('brand'));
 		
 		if ($brandName) $where = " WHERE (name_zh LIKE '%".$brandName."%' OR name_en LIKE '%".$brandName."%') AND status = 1 ";
-
+		
 		$isCate = $this->input->get('category') == 'yes' ? true : false;
 
 		$brandList = $this->BrandModel->getBrandList($where, $this->p, $isCate);
@@ -383,6 +383,12 @@ class Brand extends WebBase {
 		if (!$this->upload->do_upload($filesName)){
 			$this->ajaxRes['msg'] = $this->upload->display_errors();
 		}else{
+			
+			if ($filesName == 'brandLogo') {
+				$fullPath = $this->upload->data('full_path');
+				$this->_resetlogoPic($fullPath);
+			}
+
 			$this->ajaxRes = array(
 					'status' => 0,
 					'url'    => config_item('image_url').$this->upload->data('relative_path'),
@@ -608,5 +614,26 @@ class Brand extends WebBase {
 
 		return $where;
 
+	}
+
+	/**
+	 * 品牌logo图片处理
+	 * @param string $fullPath 图片绝对路径地址 
+	 */
+	private function _resetlogoPic($fullPath = false){
+		resizeIMG($fullPath, $fullPath);
+		
+		$picInfo = getimagesize($fullPath);
+
+		if ($picInfo['mime'] == 'image/jpeg') {
+			$sourceImg = imagecreatefromjpeg($fullPath);
+		}else{
+			$sourceImg = imagecreatefrompng($fullPath);
+		}
+
+		$mask = imagecreatefrompng('./uploads/logo_other/mask.png');
+		
+		imagealphamask($sourceImg, $mask);
+		imagepng($sourceImg, $fullPath);
 	}
 }

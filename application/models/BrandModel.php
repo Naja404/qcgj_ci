@@ -529,8 +529,6 @@ class BrandModel extends CI_Model {
 				'create_time' => currentTime(),
 				'update_time' => currentTime(),
 				'description' => $reqData['summary'],
-				'tb_age_id'   => isset($reqData['age']) ? $reqData['age'] : '',
-				'tb_price_id' => isset($reqData['price']) ? $reqData['price'] : '',
 				'oper'        => $this->userInfo->user_id,
 			);
 		
@@ -582,6 +580,42 @@ class BrandModel extends CI_Model {
 					);	
 
 				$this->db->insert(tname('brand_style'), $style);
+			}
+
+		}
+
+		// 添加年龄层
+
+		if (isset($reqData['age']) && count($reqData['age'])) {
+
+			foreach ($reqData['age'] as $k => $v) {
+				$age = array(
+						'id' => makeUUID(),
+						'create_time' => currentTime(),
+						'update_time' => currentTime(),
+						'tb_brand_id' => $brand['id'],
+						'tb_age_id' => $v,
+					);	
+
+				$this->db->insert(tname('brand_age'), $age);
+			}
+
+		}
+
+		// 添加消费层
+		
+		if (isset($reqData['price']) && count($reqData['price'])) {
+
+			foreach ($reqData['price'] as $k => $v) {
+				$price = array(
+						'id' => makeUUID(),
+						'create_time' => currentTime(),
+						'update_time' => currentTime(),
+						'tb_brand_id' => $brand['id'],
+						'tb_price_id' => $v,
+					);	
+
+				$this->db->insert(tname('brand_price'), $price);
 			}
 
 		}

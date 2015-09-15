@@ -91,7 +91,9 @@ class Api extends WebBase {
 
 		$distanceType = $this->input->get('distanceType')?$this->input->get('distanceType'):$this->defaultDistance;    //距离类型
 
-		$result = $this->ApiModel->getShoppingList($pageNum, $pageSize, $category, $longitude, $latitude, $sortType, $distanceType);
+		$metres = $this->input->get('metres')?$this->input->get('metres'):'';    //小于2000米
+
+		$result = $this->ApiModel->getShoppingList($pageNum, $pageSize, $category, $longitude, $latitude, $sortType, $distanceType, $metres);
 
 		$err = $this->_getErrMsg('0');
 
@@ -107,20 +109,21 @@ class Api extends WebBase {
 
 		$id = $this->input->get('id')?$this->input->get('id'):'';  //商场id
 
-		$storeid = $this->input->get('storeid')?$this->input->get('storeid'):'';  //店铺id
+		//$storeid = $this->input->get('storeid')?$this->input->get('storeid'):'';  //店铺id
 
 		$longitude = $this->input->get('longitude')?$this->input->get('longitude'):0; //当前经度
 
 		$latitude = $this->input->get('latitude')?$this->input->get('latitude'):0;    //当前纬度
 
-		if( empty($id) || empty( $storeid )) {
+		if( empty($id) ) {
 
 			$err = $this->_getErrMsg('1');
 
 			$this->_returnJsonData($err);    //参数缺失
 		}
 
-		$result = $this->ApiModel->getShoppingDetail($id, $storeid, $longitude, $latitude);  //获取景点详细信息
+		//$result = $this->ApiModel->getShoppingDetail($id, $storeid, $longitude, $latitude);  //获取景点详细信息
+		$result = $this->ApiModel->getShoppingDetail($id, $longitude, $latitude);  //获取景点详细信息
 
 		$err = $this->_getErrMsg($result['errcode']);
 
@@ -149,7 +152,9 @@ class Api extends WebBase {
 
 		$distanceType = $this->input->get('distanceType')?$this->input->get('distanceType'):$this->defaultDistance;    //距离类型
 
-		$result = $this->ApiModel->getRestaurantList($pageNum, $pageSize, $category, $longitude, $latitude, $sortType, $distanceType);
+		$metres = $this->input->get('metres')?$this->input->get('metres'):'';    //小于2000米
+
+		$result = $this->ApiModel->getRestaurantList($pageNum, $pageSize, $category, $longitude, $latitude, $sortType, $distanceType, $metres);
 
 		$err = $this->_getErrMsg('0');
 
@@ -194,6 +199,8 @@ class Api extends WebBase {
 
 		$pageSize = $this->input->get('pageSize')?$this->input->get('pageSize'):$this->defaultLimit;  //每页条数
 
+		$category = $this->input->get('category')?$this->input->get('category'):'';  //分类
+
 		$longitude = $this->input->get('longitude')?$this->input->get('longitude'):0; //当前经度
 
 		$latitude = $this->input->get('latitude')?$this->input->get('latitude'):0;    //当前纬度
@@ -202,7 +209,9 @@ class Api extends WebBase {
 
 		$distanceType = $this->input->get('distanceType')?$this->input->get('distanceType'):$this->defaultDistance;    //距离类型
 
-		$result = $this->ApiModel->getCinemaList($pageNum, $pageSize, $longitude, $latitude, $sortType, $distanceType);
+		$metres = $this->input->get('metres')?$this->input->get('metres'):'';    //小于2000米
+
+		$result = $this->ApiModel->getCinemaList($pageNum, $pageSize, $longitude, $latitude, $sortType, $distanceType, $metres, $category);
 
 		$err = $this->_getErrMsg('0');
 
@@ -238,7 +247,7 @@ class Api extends WebBase {
 
 
 	/**
-	 * 大虹桥景点列表
+	 * 大虹桥人文列表
 	 * level = 6
 	 *
 	 */
@@ -258,7 +267,9 @@ class Api extends WebBase {
 
 		$distanceType = $this->input->get('distanceType')?$this->input->get('distanceType'):$this->defaultDistance;    //距离类型
 
-		$result = $this->ApiModel->getTravelList($pageNum, $pageSize, $category, $longitude, $latitude, $sortType, $distanceType);
+		$metres = $this->input->get('metres')?$this->input->get('metres'):'';    //小于2000米
+
+		$result = $this->ApiModel->getTravelList($pageNum, $pageSize, $category, $longitude, $latitude, $sortType, $distanceType, $metres);
 
 		$err = $this->_getErrMsg('0');
 
@@ -267,8 +278,8 @@ class Api extends WebBase {
 
 
 	/**
-	 * 大虹桥景点详情
-	 * @param int $id 景点id
+	 * 大虹桥人文详情
+	 * @param int $id 人文id
 	 *
 	 */
 	public function travelDetail() {
@@ -304,6 +315,8 @@ class Api extends WebBase {
 
 		$pageSize = $this->input->get('pageSize')?$this->input->get('pageSize'):$this->defaultLimit;  //每页条数
 
+		$star = $this->input->get('star')?$this->input->get('star'):'';  //星级
+
 		$longitude = $this->input->get('longitude')?$this->input->get('longitude'):0; //当前经度
 
 		$latitude = $this->input->get('latitude')?$this->input->get('latitude'):0;    //当前纬度
@@ -312,7 +325,9 @@ class Api extends WebBase {
 
 		$distanceType = $this->input->get('distanceType')?$this->input->get('distanceType'):$this->defaultDistance;    //距离类型
 
-		$result = $this->ApiModel->getHotelList($pageNum, $pageSize, $longitude, $latitude, $sortType, $distanceType);
+		$metres = $this->input->get('metres')?$this->input->get('metres'):'';    //小于2000米
+
+		$result = $this->ApiModel->getHotelList($pageNum, $pageSize, $longitude, $latitude, $sortType, $distanceType, $metres, $star);
 
 		$err = $this->_getErrMsg('0');
 
@@ -341,6 +356,64 @@ class Api extends WebBase {
 		}
 
 		$result = $this->ApiModel->getHotelDetail($id, $longitude, $latitude);  //获取景点详细信息
+
+		$err = $this->_getErrMsg($result['errcode']);
+
+		$this->_returnJsonData($err, $result['data']);	//返回json数据	
+	}
+
+
+	/**
+	 * 大虹桥服务列表
+	 * level = 4
+	 *
+	 */
+	public function serviceList() {
+
+		$pageNum = $this->input->get('pageNum')?$this->input->get('pageNum'):$this->defaultPage;  //页数
+
+		$pageSize = $this->input->get('pageSize')?$this->input->get('pageSize'):$this->defaultLimit;  //
+
+		$longitude = $this->input->get('longitude')?$this->input->get('longitude'):0; //当前经度
+
+		$latitude = $this->input->get('latitude')?$this->input->get('latitude'):0;    //当前纬度
+
+		$floor = $this->input->get('floor')?$this->input->get('floor'):'';  //楼层
+
+		$category = $this->input->get('category')?$this->input->get('category'):'';  //分类
+
+		$sortType = $this->input->get('sortType')?$this->input->get('sortType'):'2';    //排序方式
+
+		$metres = $this->input->get('metres')?$this->input->get('metres'):'';    //小于2000米
+
+		$result = $this->ApiModel->getServiceList($pageNum, $pageSize, $floor, $category, $longitude, $latitude, $sortType, $metres);
+
+		$err = $this->_getErrMsg('0');
+
+		$this->_returnJsonData($err, $result);		//返回json数据		
+	}
+
+	/**
+	 * 大虹桥服务详情
+	 * @param int $id 服务id
+	 *
+	 */
+	public function serviceDetail() {
+
+		$id = $this->input->get('id')?$this->input->get('id'):'';  //服务id
+
+		$longitude = $this->input->get('longitude')?$this->input->get('longitude'):0; //当前经度
+
+		$latitude = $this->input->get('latitude')?$this->input->get('latitude'):0;    //当前纬度
+
+		if( empty($id) ) {
+
+			$err = $this->_getErrMsg('1');
+
+			$this->_returnJsonData($err);    //参数缺失
+		}
+
+		$result = $this->ApiModel->getServiceDetail($id, $longitude, $latitude);  //获取详细信息
 
 		$err = $this->_getErrMsg($result['errcode']);
 

@@ -141,7 +141,7 @@ class Coupon extends WebBase {
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_TITLE_ADDCOUPON');
 
 		$brandId = $this->input->get('brandId');
-		
+
 		$shopList                    = $this->CouponModel->getShopList($brandId);
 		$this->outData['shopList']   = $shopList['data']['list'];
 		$this->outData['areaList']   = $shopList['data']['areaList'];

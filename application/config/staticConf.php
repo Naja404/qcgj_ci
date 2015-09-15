@@ -110,7 +110,25 @@ $config = array(
 				'6'   => '普通券多张',
 				'999' => '临时活动',
 			),
-	);
+		// 审核目标
+		'APPROVE_COMMENT_TYPE' => array(
+				'1' => '商场',
+				'2' => '店铺',
+			),
+		// 审核状态
+		'APPROVE_STATUS' => array(
+				'0' => '待审核',
+				'1' => '已通过',
+				'2' => '不通过',
+			),
+
+		// 评论审核状态
+		'APPROVE_TD_DIV_1' => '<span class="label label-info">已通过</span>',
+		'APPROVE_TD_DIV_2' => '<span class="label label-danger">不通过</span>',
+		'APPROVE_A_DIV_2' => '<a onclick="upComment(\'%s\', \'%s\');"><i class="icon-remove bigger-120 green">不通过</i></a>',
+		'APPROVE_A_DIV_1' => '<a onclick="upComment(\'%s\', \'%s\');"><i class="icon-remove bigger-120">通过</i></a>',
+
+ 	);
 
 
 ?>

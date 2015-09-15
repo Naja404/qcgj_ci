@@ -428,37 +428,38 @@ class CouponModel extends CI_Model {
 			$queryRes = $this->getUserBrandShopList();
 		}
 
-
 		$cityList = $cityName = $areaName = array();
 		$bjAreaList = $shAreaList = $gzAreaList = '';
 
-		foreach ($queryRes as $k) {
-			if (!in_array($k['districtName'], $areaName)) {
-				array_push($areaName, $k['districtName']);
-			}else{
-				continue;
+		if ($queryRes) {
+			foreach ($queryRes as $k) {
+				if (!in_array($k['districtName'], $areaName)) {
+					array_push($areaName, $k['districtName']);
+				}else{
+					continue;
+				}
+
+				if (!in_array($k['cityName'], $cityName)) {
+					array_push($cityName, $k['cityName']);
+				}
+
+				$optionHTML = '<option value="'.$k['districtName'].'">'.$k['districtName'].'</option>';
+
+				switch ($k['cityName']) {
+					case '北京':
+						$bjAreaList .= $optionHTML;
+						break;
+					case '上海':
+						$shAreaList .= $optionHTML;
+						break;
+					case '广州':
+						$gzAreaList .= $optionHTML;
+						break;
+					default:
+						break;
+				}
+
 			}
-
-			if (!in_array($k['cityName'], $cityName)) {
-				array_push($cityName, $k['cityName']);
-			}
-
-			$optionHTML = '<option value="'.$k['districtName'].'">'.$k['districtName'].'</option>';
-
-			switch ($k['cityName']) {
-				case '北京':
-					$bjAreaList .= $optionHTML;
-					break;
-				case '上海':
-					$shAreaList .= $optionHTML;
-					break;
-				case '广州':
-					$gzAreaList .= $optionHTML;
-					break;
-				default:
-					break;
-			}
-
 		}
 
 		foreach ($this->lang->line('SELECT_CITY_LIST') as $k => $v) {

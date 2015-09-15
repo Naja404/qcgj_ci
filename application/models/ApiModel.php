@@ -12,6 +12,7 @@ class ApiModel extends CI_Model {
 	protected $ktvLevel;
 	protected $travelLevel;
 	protected $hotelLevel;
+	protected $serviceLevel;
 	protected $distance;
 	protected $nearby;
 
@@ -21,9 +22,10 @@ class ApiModel extends CI_Model {
 		$this->streetLevel = 2;		  //街边店
 		$this->restaurantLevel = 4;   //美食
 		$this->cinemaLevel = 5;		  //影院
-		$this->travelLevel = 6;		  //景点
+		$this->travelLevel = 6;		  //人文
 		$this->hotelLevel = 7;		  //酒店
 		$this->ktvLevel = 8;		  //KTV
+		$this->serviceLevel = 9;	  //服务
 		$this->distance = array( '1'=>'0-500',
 								 '2'=>'500-1000',
 								 '3'=>'1000-2000',
@@ -83,7 +85,7 @@ class ApiModel extends CI_Model {
 					'image'     => config_item('image_url').$v->pic_url,
 					'thumb_url' => config_item('image_url').str_replace('.jpg', '_thumb.jpg', $v->pic_url),
 					'mallID'    => $v->id,
-					'distance'  => $this->_formatDistance($v->distance),
+					'distance'  => $longitude == 0 && $latitude == 0 ? '' : $this->_formatDistance($v->distance),
 				);
 
 			array_push($returnRes, $tmp);
@@ -525,7 +527,6 @@ class ApiModel extends CI_Model {
 			$where .= $this->_getDistanceCondition($distanceType, $longitude, $latitude);
 		}
 
-
 		/*
 		SELECT a.id, a.name_en, a.name_zh, a.pic_url, a.category_name, a.longitude, a.latitude, a.avg_rating, a.avg_price, 
 		COUNT(b.tb_obj_id) AS viewnum, getDistance('','',a.latitude,a.longitude) AS distance FROM tb_mall a 
@@ -555,8 +556,6 @@ class ApiModel extends CI_Model {
 	 */
 	public function getRestaurantDetail($id, $longitude = '0', $latitude = '0') {
 
-		//$countData = $this->_getCountByLevel();  //获取其他分类数量
-
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 		}else {
@@ -578,6 +577,7 @@ class ApiModel extends CI_Model {
 				 a.tel,
 				 a.level,
 				 a.description,
+				 a.affiliated_facilities,
 				 b.name_zh as mall,
 				 b.longitude AS mall_longitude, b.latitude AS mall_latitude, 
 				 CONCAT(a.district_name,a.address) AS address,
@@ -623,6 +623,11 @@ class ApiModel extends CI_Model {
 				$data[0]['pic_url'] = explode(',',$data[0]['pic_url']);
 			}
 
+			//用户点评数据
+			$comments = $this->_getCommentsByMallId($data[0]['id']);
+
+			$data[0]['comments'] = $comments;
+
 			$result['data'] = $data;
 		}else {
 
@@ -642,7 +647,7 @@ class ApiModel extends CI_Model {
 	 * @param string $latitude  当前纬度
 	 * @param string $sort 排序 0 默认按创建时间  1 按距离最近   2 评价最好   3 人气最高  4 人均最低    5 人均最高
 	 */
-	public function getCinemaList($p, $limit, $longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0, $metres = '') {
+	public function getCinemaList($p, $limit, $longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0, $metres = '', $category = '') {
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -664,6 +669,11 @@ class ApiModel extends CI_Model {
 
 		$where = "where a.tb_district_id = 786 and a.status = 1 and a.level in ( '".$this->cinemaLevel."','".$this->ktvLevel."')";  //
 
+		if( $category != '' ) {
+
+			$where .= " and c.name = '".$category."'";
+		}
+
 		if( $metres == '1' ) {
 			$where .= ' and getDistance('.$latitude.','.$longitude.',a.latitude,a.longitude) <= 2000';
 		}
@@ -673,8 +683,8 @@ class ApiModel extends CI_Model {
 			$where .= $this->_getDistanceCondition($distanceType, $longitude, $latitude);
 		}
 
-		//$sql = "SELECT %s FROM ".tname('mall')." %s %s ";
-		$sql = "Select %s from ".tname('mall a')." LEFT JOIN ".tname('view b')." ON a.id = b.tb_obj_id %s %s ";
+		//$sql = "Select %s from ".tname('mall a')." LEFT JOIN ".tname('view b')." ON a.id = b.tb_obj_id %s %s ";
+		$sql = "Select %s from ".tname('mall a')." LEFT JOIN ".tname('view b')." ON a.id = b.tb_obj_id LEFT JOIN ".tname('category c')." ON c.id = a.tb_category_id %s %s ";
 
 		$orderby = $this->_sortByType($sortType);   //根据不同类型排序
 
@@ -695,8 +705,6 @@ class ApiModel extends CI_Model {
 	 * @param string $latitude  当前纬度
 	 */
 	public function getCinemaDetail($id, $longitude = '0', $latitude = '0') {
-
-		//$countData = $this->_getCountByLevel();  //获取其他分类数量
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -772,6 +780,10 @@ class ApiModel extends CI_Model {
 				$data[0]['pic_url'] = explode(',',$data[0]['pic_url']);
 			}
 
+			//用户点评数据
+			$comments = $this->_getCommentsByMallId($data[0]['id']);
+			$data[0]['comments'] = $comments;
+
 			$result['data'] = $data;
 		}else {
 
@@ -783,7 +795,7 @@ class ApiModel extends CI_Model {
 
 
 	/**
-	 * 获取景点列表
+	 * 获取人文列表
 	 * @param string $p 页数
 	 * @param string $limit  每页条数
 	 * @param string $category  分类
@@ -844,14 +856,12 @@ class ApiModel extends CI_Model {
 	}
 
 	/**
-	 * 获取景点详情
+	 * 获取人文详情
 	 * @param string $id 景点ID
 	 * @param string $longitude 当前经度
 	 * @param string $latitude  当前纬度
 	 */
 	public function getTravelDetail($id, $longitude = '0', $latitude = '0') {
-
-		//$countData = $this->_getCountByLevel();  //获取其他分类数量
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -873,6 +883,7 @@ class ApiModel extends CI_Model {
 				 a.tel,
 				 a.level,
 				 a.description,
+				 a.affiliated_facilities,
 				 b.name_zh as mall,
 				 b.longitude AS mall_longitude, b.latitude AS mall_latitude, 
 				 CONCAT(a.district_name,a.address) AS address,
@@ -908,6 +919,10 @@ class ApiModel extends CI_Model {
 				$data[0]['pic_url'] = explode(',',$data[0]['pic_url']);
 			}
 
+			//用户点评数据
+			$comments = $this->_getCommentsByMallId($data[0]['id']);
+			$data[0]['comments'] = $comments;
+
 			$result['data'] = $data;
 		}else {
 
@@ -926,7 +941,7 @@ class ApiModel extends CI_Model {
 	 * @param string $latitude  当前纬度
 	 * @param string $sort 排序 0 默认按距离最近  1 按距离最近   2 评价最好   3 人气最高  4 人均最低    5 人均最高
 	 */
-	public function getHotelList($p, $limit ,$longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0, $metres = '') {
+	public function getHotelList($p, $limit ,$longitude = '0', $latitude = '0', $sortType = 0, $distanceType = 0, $metres = '', $star = '') {
 
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -944,6 +959,7 @@ class ApiModel extends CI_Model {
 				a.latitude,
 				a.avg_rating,
 				a.avg_price,
+				a.hotel_rating,
 				count(b.tb_obj_id) as viewnum,
 				".$distanceCond;
 				//getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
@@ -954,6 +970,11 @@ class ApiModel extends CI_Model {
 			$where .= ' and getDistance('.$latitude.','.$longitude.',a.latitude,a.longitude) <= 2000';
 		}
 
+		if( $star != '' ) {
+
+			$where .= $this->_getConditionByStar($star);   //获取星级条件
+		}
+		
 		if( $distanceType > 0 ) {
 
 			$where .= $this->_getDistanceCondition($distanceType, $longitude, $latitude);
@@ -982,8 +1003,6 @@ class ApiModel extends CI_Model {
 	 */
 	public function getHotelDetail($id, $longitude = '0', $latitude = '0') {
 
-		//$countData = $this->_getCountByLevel();  //获取其他分类数量
-
 		if( $longitude != '0' && $latitude != '0' ) {
 			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
 		}else {
@@ -1005,6 +1024,7 @@ class ApiModel extends CI_Model {
 				 a.tel,
 				 a.level,
 				 a.description,
+				 a.affiliated_facilities,
 				 b.name_zh as mall,
 				 b.longitude AS mall_longitude, b.latitude AS mall_latitude, 
 				 CONCAT(a.district_name,a.address) AS address,
@@ -1039,6 +1059,155 @@ class ApiModel extends CI_Model {
 			if( !empty( $data[0]['pic_url'])) {
 				$data[0]['pic_url'] = explode(',',$data[0]['pic_url']);
 			}
+
+			//用户点评数据
+			$comments = $this->_getCommentsByMallId($data[0]['id']);
+			$data[0]['comments'] = $comments;
+
+			$result['data'] = $data;
+		}else {
+
+			$result['errcode'] = '3';
+		}
+
+		return $result;
+	}
+
+	/**
+	 * 获取服务列表
+	 * @param string $p 页数
+	 * @param string $limit  每页条数
+	 * @param string $category  分类
+	 * @param string $longitude 当前经度
+	 * @param string $latitude  当前纬度
+	 * @param string $sort 排序 0 默认按创建时间  2 评价最好   3 人气最高
+	 */
+	public function getServiceList($p, $limit, $floor = '', $category = '', $longitude = '0', $latitude = '0', $sortType = 2, $metres = '') {
+
+		if( $longitude != '0' && $latitude != '0' ) {
+			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
+		}else {
+			$distanceCond = "'' as distance ";			
+		}
+
+		$field = "a.id,
+				a.name_en,
+				a.name_zh,
+				a.pic_url,
+				a.thumb_url,
+				c.name as category_name,
+				a.longitude,
+				a.latitude,
+				a.avg_rating,
+				a.avg_price,
+				a.floor,
+				count(b.tb_obj_id) as viewnum,
+				".$distanceCond;
+				//getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
+
+		$where = 'where a.tb_district_id = 786 and a.status = 1 and a.level = '.$this->serviceLevel;  //
+
+		if( $category != '' ) {
+
+			$where .= " and c.name = '".$category."'";
+		}
+
+		if( $metres == '1' ) {
+			$where .= ' and getDistance('.$latitude.','.$longitude.',a.latitude,a.longitude) <= 2000';
+		}
+
+		/*
+		SELECT a.id, a.name_en, a.name_zh, a.pic_url, a.category_name, a.longitude, a.latitude, a.avg_rating, a.avg_price, 
+		COUNT(b.tb_obj_id) AS viewnum, getDistance('','',a.latitude,a.longitude) AS distance FROM tb_mall a 
+		LEFT JOIN tb_view b ON a.id = b.tb_obj_id WHERE LEVEL = 1 GROUP BY a.id	ORDER BY viewnum DESC
+		*/
+		//$sql = "SELECT %s FROM ".tname('mall a')." %s %s ";
+		$sql = "Select %s from ".tname('mall a')." LEFT JOIN ".tname('view b')." ON a.id = b.tb_obj_id LEFT JOIN ".tname('category c')." ON c.id = a.tb_category_id %s %s ";
+
+		$orderby = $this->_sortByType($sortType);   //根据不同类型排序
+
+		$pagelimit = ' group by a.id '.$orderby."LIMIT ".page( $p, $limit );
+
+		$sql = sprintf($sql, $field, $where, $pagelimit);
+
+		//echo $sql;die;
+
+		$result = $this->db->query($sql)->result_array();
+
+		//echo '<pre>';print_r($result);die;
+
+		return $result;
+	}
+
+	/**
+	 * 获取服务详情
+	 * @param sttrng $id 服务ID
+	 * @param string $longitude 当前经度
+	 * @param string $latitude  当前纬度
+	 */
+	public function getServiceDetail($id, $longitude = '0', $latitude = '0') {
+
+		if( $longitude != '0' && $latitude != '0' ) {
+			$distanceCond = "getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
+		}else {
+			$distanceCond = "'' as distance ";			
+		}
+
+		$field = "a.id,
+				 a.name_en,
+				 a.name_zh, 
+				 a.pic_url, 
+				 a.thumb_url,
+				 a.category_name,
+				 a.longitude,
+				 a.latitude,
+				 a.open_time,
+				 a.close_time,
+				 a.avg_rating,
+				 a.avg_price,
+				 a.tel,
+				 a.level,
+				 a.floor,
+				 a.description,
+				 a.affiliated_facilities,
+				 b.name_zh as mall,
+				 b.longitude AS mall_longitude, b.latitude AS mall_latitude, 
+				 CONCAT(a.district_name,a.address) AS address,
+				 ".$distanceCond.", a.name_zh as share_content";
+				 //getDistance('".$latitude."','".$longitude."',a.latitude,a.longitude) as distance ";
+
+		$sql = "Select ".$field." from ".tname('mall a').
+			   " LEFT JOIN ".tname('mall b')." ON a.branch_name = b.name_zh where a.id = '".$id."'";
+
+		$data = $this->db->query($sql)->result_array();
+
+		$result['errcode'] = '0';
+		$result['data'] = array();
+
+		if( !empty($data) ) {
+
+			if( $data[0]['level'] != $this->serviceLevel ) {
+				$result['errcode'] = '2';
+
+				return $result;
+			}
+		
+			//附近还有数量
+			//使用此函数计算得到结果后，带入sql查询。
+			$countData = $this->_getCountByLevel( $data[0]['longitude'], $data[0]['latitude']);
+
+			if( !empty( $countData ) ) {
+
+				$data[0]['count_level'] = $countData;
+			}
+
+			if( !empty( $data[0]['pic_url'])) {
+				$data[0]['pic_url'] = explode(',',$data[0]['pic_url']);
+			}
+
+			//用户点评数据
+			$comments = $this->_getCommentsByMallId($data[0]['id']);
+			$data[0]['comments'] = $comments;
 
 			$result['data'] = $data;
 		}else {
@@ -1152,6 +1321,7 @@ class ApiModel extends CI_Model {
 		$travel = 0;  //景点
 		$hotel = 0;  //酒店
 		$enterainment = 0; //娱乐
+		$service = 0;   //服务
 
 		$result = $this->db->query($sql)->result_array();
 
@@ -1178,16 +1348,70 @@ class ApiModel extends CI_Model {
 				case '7':
 					$hotel = intVal($item['count']);
 					break;
+				case '9':
+					$service = intVal($item['count']);
+					break;
 			}
 		}
-		array_push($data, $shopping, $restaruant, $travel, $hotel, $enterainment);
+		array_push($data, $shopping, $restaruant, $travel, $hotel, $enterainment, $service);
 		/*
-		 * 0 - 购物  1 - 美食  2 - 景点  3 - 酒店  4 - 娱乐
+		 * 0 - 购物  1 - 美食  2 - 景点  3 - 酒店  4 - 娱乐  5 - 服务
 		 */
 
 		//echo '<pre>';print_r($data);die;
 
 		return $data;
+	}
+
+
+	/**
+	 * 获取星级条件
+	 *
+	 *
+	 */
+	private function _getConditionByStar($star = '') {
+
+		$condition = '';
+
+		switch($star) {
+			case '1':
+				$condition = ' and a.hotel_rating = 5.0';
+				break;
+			case '2':
+				$condition = ' and a.hotel_rating = 4.5';
+				break;
+			case '3':
+				$condition = ' and a.hotel_rating = 4.0';
+				break;
+			case '4':
+				$condition = ' and a.hotel_rating = 3.5';
+				break;
+			case '5':
+				$condition = ' and a.hotel_rating = 3.0';
+				break;
+			default:
+				$condition = ' and a.hotel_rating < 3.0';
+				break;
+		}
+
+		return $condition;
+	}
+
+	/**
+	 * 用户评论数据
+	 * @param $mall_id 商场id
+	 *
+	 */
+	private function _getCommentsByMallId( $mall_id = '' ) {
+
+		$result = array();
+
+		//取出已审核的评论列表
+		$sql = "SELECT u.pic_url,u.nickname,c.grade,c.content,c.thumb_pic_url, c.create_time FROM ".tname('comment c')." INNER JOIN ".tname('user u')." ON u.id = c.tb_user_id WHERE c.tb_obj_id ='".$mall_id."' and c.status = 1";
+
+		$result = $this->db->query($sql)->result_array();
+
+		return $result;
 	}
 
 }
