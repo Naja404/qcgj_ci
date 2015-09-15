@@ -156,6 +156,20 @@ class ApproveModel extends CI_Model {
 	}
 
 	/**
+	 * 获取洋码头详细内容
+	 * @param string $ymtId 
+	 */
+	public function getYmtDetail($ymtId = false){
+		$where = array(
+				'id' => $ymtId,
+			);
+
+		$queryRes = $this->db->get_where(tname('ymt_participant'), $where)->first_row();
+
+		return $queryRes;
+	}
+
+	/**
 	 * 更新洋码头图片状态
 	 * @param array $reqData 更新内容
 	 */
@@ -177,6 +191,20 @@ class ApproveModel extends CI_Model {
 			);
 
 		return $status;
+	}
+
+	/**
+	 * 编辑洋码头图片
+	 * @param array $update 更新内容
+	 * @param string $ymtId 
+	 */
+	public function editYmt($update = array(), $ymtId = false){
+		
+		$where = array(
+				'id' => $ymtId,
+			);
+
+		return $this->db->where($where)->update(tname('ymt_participant'), $update);
 	}
 
 	/**

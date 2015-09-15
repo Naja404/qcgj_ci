@@ -132,6 +132,83 @@ class Approve extends WebBase {
 	}
 
 	/**
+	 * 编辑洋码头图片
+	 *
+	 */
+	public function editYmt(){
+		
+		$ymtId = $this->input->get('yid');
+
+		if ($this->input->is_ajax_request()) {
+			
+			$reqData = $this->input->post();
+
+			if (isset($reqData['origPicPath']) && !empty($reqData['origPicPath'])) {
+				
+				$update = array(
+						'orig_pic_url' => $reqData['origPicPath'],
+						'update_time'  => currentTime(),
+					);
+
+				$this->ApproveModel->editYmt($update, $ymtId);
+
+				$this->ajaxRes = array(
+						'status' => 0,
+					);
+			}
+
+			jsonReturn($this->ajaxRes);
+		}
+
+		$this->outData['pageTitle'] = $this->lang->line('TITLE_EDIT_YMT');
+
+		$this->outData['detail'] = $this->ApproveModel->getYmtDetail($ymtId);
+
+		$this->load->view('Approve/editYmt', $this->outData);
+	}
+
+	/**
+	 * 上传图片
+	 *
+	 */
+	public function uploadPic(){
+		if ($this->input->method() != 'post') {
+			echo json_encode($this->ajaxRes);exit;
+		}
+
+		$uploadConf = config_item('FILE_UPLOAD');
+		$filesName = $this->input->get('filesName');
+		
+		if ($filesName == 'origPic') {
+			$uploadConf['upload_path']   = './uploadtemp/ymatou/original/';
+			$uploadConf['file_name']     = md5(currentTime('MICROTIME'));
+			$uploadConf['relation_path'] = '/alidata1/apps/uploadtemp_app_admin_v400/ymatou/original/';
+		}
+
+		$this->load->library('upload');
+
+		$this->upload->initialize($uploadConf);
+
+		if (!$this->upload->do_upload($filesName)){
+			$this->ajaxRes['msg'] = $this->upload->display_errors();
+		}else{
+			
+			if ($filesName == 'brandLogo') {
+				$fullPath = $this->upload->data('full_path');
+				$this->_resetlogoPic($fullPath);
+			}
+
+			$this->ajaxRes = array(
+					'status' => 0,
+					'url'    => config_item('image_url').$this->upload->data('relative_path'),
+					'path'   => $this->upload->data('relative_path'),
+				);
+		}
+
+		echo json_encode($this->ajaxRes);exit;
+	}
+
+	/**
 	 * 获取评论审核查询条件内容
 	 *
 	 */

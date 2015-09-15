@@ -120,7 +120,7 @@
 													<tr>
 														<td><?php echo $v->name;?></td>
 														<td>
-															<img src="<?php echo config_item('image_url').$v->thumbUrl;?>" width="200px">
+															<img src="<?php echo config_item('image_url').$v->picUrl;?>" width="200px">
 														</td>
 														<td><?php echo $v->provinceName;?>
 														</td>
@@ -148,9 +148,9 @@
 																</span>
 																&nbsp;
 																&nbsp;
-<!-- 																<a style="color:red;" onclick="">
-																	<i class="icon-edit bigger-120">删除</i>
-																</a> -->
+																<a href="<?php echo site_url('Approve/editYmt').'?yid='.$v->ymtId;?>" target="_blank">
+																	<i class="icon-edit bigger-120"></i>编辑
+																</a>
 															</div>
 
 														</td>
