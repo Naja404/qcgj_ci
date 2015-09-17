@@ -22,6 +22,7 @@ class Brand extends WebBase {
 	 *
 	 */
 	public function mallList(){
+
 		$this->outData['pageTitle'] = '商场列表';
 			
 		$where = $this->_mallListWhere();
@@ -69,6 +70,31 @@ class Brand extends WebBase {
 		$this->outData['district'] = $this->BrandModel->getDistrictList($detail->tb_city_id);
 
 		$this->load->view('Brand/editMall', $this->outData);
+	}
+
+	/**
+	 * 更新商场
+	 *
+	 */
+	public function upMall(){
+
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$reqData = $this->input->post();
+
+		$status = $this->BrandModel->upMallStatus($reqData);
+
+		if ($status['error'] === false) {
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_UPDATE_FAILURE');
+		}else{
+			$this->ajaxRes = array(
+					'status'  => 0,
+					'tdDiv'   => config_item('HIDE_TD_DIV_'.$reqData['status']),
+					'spanDiv' => sprintf(config_item('HIDE_A_DIV_'.$status['status']), 'upMall', $reqData['mallId'], $status['status']),
+				);
+		}
+
+		jsonReturn($this->ajaxRes);
 	}
 
 	/**
@@ -200,6 +226,22 @@ class Brand extends WebBase {
 		// $this->outData['mallList']     = $this->BrandModel->getMallList($this->outData['cityList'][0]->id, 'html');
 
 		$this->load->view('Brand/addShop', $this->outData);
+	}
+
+	/**
+	 * 添加商场
+	 *
+	 */
+	public function addMall(){
+		if ($this->input->is_ajax_request()) return $this->_addMallForm(); 
+
+		$this->outData['pageTitle']  = $this->lang->line('TITLE_ADD_MALL');
+
+		$this->outData['city'] = $this->BrandModel->getCityList();
+
+		$this->outData['district'] = $this->BrandModel->getDistrictList('391db7b8fdd211e3b2bf00163e000dce');
+
+		$this->load->view('Brand/addMall', $this->outData);
 	}
 
 	/**
@@ -399,6 +441,27 @@ class Brand extends WebBase {
 		echo json_encode($this->ajaxRes);exit;
 
 	}
+
+	/**
+	 * 添加商场
+	 *
+	 */
+	public function _addMallForm(){
+		$reqData = $this->input->post();
+
+		$addRes = $this->BrandModel->addMall($reqData);
+
+		if ($addRes) {
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}else{
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_ADD_FAILURE');
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
 
 	/**
 	 * 添加店铺

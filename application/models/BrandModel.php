@@ -515,6 +515,34 @@ class BrandModel extends CI_Model {
 	}
 
 	/**
+	 * 添加商场
+	 * @param array 商场数据
+	 */
+	public function addMall($reqData = array()){
+
+		$add = array(
+				'id'             => makeUUID(),
+				'name_zh'        => $reqData['mallName'],
+				'address'        => $reqData['address'],
+				'status'         => 1,
+				'level'          => 1,
+				'tb_city_id'     => $reqData['cityId'],
+				'city_name'      => $this->BrandModel->getCityNameById($reqData['cityId']),
+				'tb_district_id' => $reqData['districtId'],
+				'district_name'  => $this->BrandModel->getDistrictNameById($reqData['districtId']),
+				'longitude'      => $reqData['lng'],
+				'latitude'       => $reqData['lat'],
+				'tel'            => $reqData['tel'],
+				'pic_url'        => $reqData['shopImgPath'],
+				'thumb_url'      => $reqData['shopThumbImgPath'],
+				'create_time'    => currentTime(),
+				'update_time'    => currentTime(),
+			);
+
+		return $this->db->insert(tname('mall'), $add);
+	}
+
+	/**
 	 * 添加品牌
 	 * @param array $reqData 品牌数据内容
 	 */
@@ -849,6 +877,29 @@ class BrandModel extends CI_Model {
 		$updateRes = $this->db->where($where)->update(tname('mall'), $update);
 
 		return $updateRes ? true : false;
+	}
+
+	/**
+	 * 更新商场
+	 * @param array 更新内容
+	 */
+	public function upMallStatus($reqData = array()){
+		$where = array(
+			'id' => $reqData['mallId'],
+			);
+
+		$update = array(
+				'status' => $reqData['status'],
+			);
+
+		$status = $this->db->where($where)->update(tname('mall'), $update);
+
+		$status = array(
+				'error'  => $status ? true : false,
+				'status' => $update['status'] == 1 ? 0 : 1,
+			);
+
+		return $status;
 	}
 
 	/**

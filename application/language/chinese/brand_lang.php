@@ -10,6 +10,7 @@ $lang = array(
 	'TITLE_ADD_SHOP'              => '添加店铺',
 	'TITLE_EDIT_SHOP'			  => '编辑店铺',
 	'TITLE_EDIT_BRAND'			  => '编辑品牌',
+	'TITLE_ADD_MALL'			  => '添加商场',
 	
 	'TEXT_NAME_EN'                => '品牌英文名',
 	'TEXT_NAME_ZH'                => '品牌中文名',
@@ -78,6 +79,9 @@ $lang = array(
 	'ERR_SHOP_LNG'                => '请正确填写门店经度',
 	'ERR_SHOP_LAT'                => '请正确填写门店纬度',
 	'ERR_SHOP_ADDRESS'            => '请正确填写门店地址',
+	'ERR_MALL_NAME'				  => '请正确填写商场名',
+	'ERR_MALL_LNG'				  => '请正确填写商场经度',
+	'ERR_MALL_LAT'				  => '请正确填写商场纬度',
 
 
 	'ADD_BRAND_VALIDATION' => array(

@@ -50,7 +50,7 @@
 							<li>
 								<a >品牌管理</a>
 							</li>
-							<li class="active">编辑商场</li>
+							<li class="active"><?php echo $this->lang->line('TITLE_ADD_MALL')?></li>
 						</ul>
 
 					</div>
@@ -62,12 +62,12 @@
 
 						<div class="row">
 							<div class="col-xs-12">
-								<form class="form-horizontal" role="form" id="editMall-form">
+								<form class="form-horizontal" role="form" id="addMall-form">
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right" for="mallName"> 商场名 </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="mallName" id="mallName" placeholder="" value="<?php echo !empty($detail->name_zh) ? $detail->name_zh : '';?>"/>
+											<input type="text" name="mallName" id="mallName" placeholder="" />
 										</div>
 									</div>
 
@@ -77,7 +77,7 @@
 										<div class="col-sm-9">
 											<select name="cityId" id="citySelect">
 												<?php foreach($city as $v):?>
-												<option value="<?php echo $v->id;?>" <?php echo $v->id == $detail->tb_city_id ? 'selected' : ''; ?>>
+												<option value="<?php echo $v->id;?>" >
 													<?php echo $v->name;?>市
 												</option>
 												<?php endforeach;?>
@@ -91,7 +91,7 @@
 										<div class="col-sm-9">
 											<select name="districtId" id="districtSelect">
 												<?php foreach($district as $v):?>
-												<option value="<?php echo $v->id;?>" <?php echo $v->id == $detail->tb_district_id ? 'selected' : ''; ?>>
+												<option value="<?php echo $v->id;?>" >
 													<?php echo $v->name;?>
 												</option>
 												<?php endforeach;?>
@@ -103,7 +103,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="address"> 地址 </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="address" id="address" placeholder="" value="<?php echo !empty($detail->address) ? $detail->address : '';?>"/><a class="btn btn-sm" onclick="getLngLat()">search</a>
+											<input type="text" name="address" id="address" placeholder="" /><a class="btn btn-sm" onclick="getLngLat()">search</a>
 										</div>
 									</div>
 
@@ -111,7 +111,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="lng"> 经度 </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="lng" id="lng" placeholder="" value="<?php echo !empty($detail->longitude) ? $detail->longitude : '';?>"/>
+											<input type="text" name="lng" id="lng" placeholder="" />
 										</div>
 									</div>
 
@@ -119,7 +119,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="lat"> 纬度 </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="lat" id="lat" placeholder="" value="<?php echo !empty($detail->latitude) ? $detail->latitude : '';?>"/>
+											<input type="text" name="lat" id="lat" placeholder="" />
 										</div>
 									</div>
 
@@ -127,7 +127,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="tel"> 电话 </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="tel" id="tel" placeholder="" value="<?php echo !empty($detail->tel) ? $detail->tel : '';?>"/>
+											<input type="text" name="tel" id="tel" placeholder="" />
 										</div>
 									</div>
 
@@ -135,13 +135,8 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopImg"> <?php echo $this->lang->line('TEXT_SHOP_IMG');?> </label>
 
 										<div class="col-sm-9">
-											<?php if (isset($detail->pic_url) && !empty($detail->pic_url)) {?>
-											<span id="shopImgPathSpan">
-												<img src="<?php echo config_item('image_url').''.$detail->pic_url;?>" style="width: 200px;"><a onclick="removeFileImg('shopImgPathSpan', 'shopImgPath');">重置</a>
-											</span>
-											<?php } ?>
 											<input type="file" name="shopImg" id="fileImage" />
-											<input type="hidden" name="shopImgPath" value="<?php echo $detail->pic_url;?>">
+											<input type="hidden" name="shopImgPath" value="">
 										</div>
 									</div>
 
@@ -149,19 +144,14 @@
 										<label class="col-sm-3 control-label no-padding-right" for="shopImg"> 缩略图 </label>
 
 										<div class="col-sm-9">
-											<?php if (isset($detail->thumb_url) && !empty($detail->thumb_url)) {?>
-											<span id="shopThumbImgPathSpan">
-												<img src="<?php echo config_item('image_url').''.$detail->thumb_url;?>" style="width: 200px;"><a onclick="removeFileImg('shopThumbImgPathSpan', 'shopThumbImgPath');">重置</a>
-											</span>
-											<?php } ?>
 											<input type="file" name="shopThumbImg" id="ThumbImg" />
-											<input type="hidden" name="shopThumbImgPath" value="<?php echo $detail->thumb_url;?>">
+											<input type="hidden" name="shopThumbImgPath" value="">
 										</div>
 									</div>
 
 									<div class="clearfix form-actions">
 										<div class="col-md-offset-3 col-md-9">
-											<button class="btn btn-info" type="button" onclick="subEditMall();">
+											<button class="btn btn-info" type="button" onclick="subAddMall();">
 												<i class="icon-ok bigger-110"></i>
 												<?php echo $this->lang->line('BTN_SUBMIT');?>
 											</button>
@@ -173,7 +163,6 @@
 											</button>
 										</div>
 									</div>
-									<input type="hidden" name="mallId" id="mallId" value="<?php echo $detail->id; ?>" >
 								</form>
 							</div>
 						</div><!-- /.row -->
@@ -260,7 +249,6 @@
 					},
 					onComplete: function(filename, response) {
 						window.clearInterval(interval);
-						console.log(response);
 						var $span = $("span." + $(this).attr("id")).text(filename + " "),
 							$fileInput = $("<input />")
 								.attr({
@@ -318,7 +306,7 @@
 				});
 
 
-				$('#editMall-form').validate({
+				$('#addMall-form').validate({
 					errorElement: 'div',
 					errorClass: 'help-block',
 					focusInvalid: false,
@@ -358,7 +346,6 @@
 						$(e).remove();
 					},
 					errorPlacement: function (error, element) {
-						console.log(error);
 						error.insertAfter(element.parent().children());
 					}
 				});
@@ -387,15 +374,15 @@
 				$("input[name="+filePath+"]").val('');
 			}
 	
-		function subEditMall(){
-			if(!$('#editMall-form').valid()){
+		function subAddMall(){
+			if(!$('#addMall-form').valid()){
 				return false;
 			}
 
 			$.ajax({
 				type:"POST",
-				url:"<?php echo site_url('Brand/editMall').'?id='.$this->input->get('id');?>",
-				data:$('#editMall-form').serialize(),
+				url:"<?php echo site_url('Brand/addMall');?>",
+				data:$('#addMall-form').serialize(),
 				success:function(data){
 					if (data.status == '0') {
 						window.location.href=document.referrer;

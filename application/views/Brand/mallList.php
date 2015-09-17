@@ -122,14 +122,27 @@
 														<td>
 															<?php echo $v->address;?>
 														</td>
-														<td>
+														<td id="cidTd_<?php echo $v->id;?>">
 															<span class="label label-<?php echo $v->status == 1 ? 'info' : 'danger';?>"><?php echo $v->status == 1 ? '显示' : '隐藏';?></span>
 														</td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 
 																<!-- <button class="btn btn-xs btn-info"> -->
+																	<span id="cid_<?php echo $v->id;?>">
+																	<?php if($v->status == 0){?>
+																	<a onclick="upMall('<?php echo $v->id;?>', '1');">
+																		<i class="icon-ok bigger-120">显示</i>
+																	</a>
+																	<?php }else{ ?>
+																	<a onclick="upMall('<?php echo $v->id;?>', '0');">
+																		<i class="icon-remove bigger-120 green">隐藏</i>
+																	</a>
+																	<?php } ?>
+																	</span>
+																	&nbsp;&nbsp;
 																	<a href="<?php echo site_url('Brand/editMall').'?id='.strEncrypt($v->id).'&p='.$this->input->get('p').'&mark='.$v->id;?>"><i class="icon-edit bigger-120">编辑</i></a>
+
 																<!-- </button> -->
 <!-- 																<button class="btn btn-xs btn-danger" onclick="delMall('<?php echo $v->id;?>');">
 																	<i class="icon-trash bigger-120"></i>
@@ -215,7 +228,7 @@
 				});
 			});
 			
-			function delMall(mallId){
+			function delMallbak(mallId){
 				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DELBRAND');?>")) {
 					return false;
 				}
@@ -226,6 +239,23 @@
 					data:{mallId:mallId},
 					success:function(data){
 						window.location.reload();
+					}
+				});
+			}
+
+			function upMall(mallId, status){
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Brand/upMall');?>",
+					data:{mallId:mallId, status:status},
+					success:function(data){
+						if (data.status == '0') {
+							$("#cid_"+mallId).html(data.spanDiv);
+							$("#cidTd_"+mallId).html(data.tdDiv);
+						}else{
+							alert(data.msg);
+						}
+						
 					}
 				});
 			}
