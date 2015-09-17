@@ -271,7 +271,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<textarea class="input-xlarge" name="couponUseGuide" id="couponUseGuide" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"></textarea>
+																			<textarea class="input-xlarge" style="width:400px;height:300px;" name="couponUseGuide" id="couponUseGuide" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"></textarea>
 																		</div>
 																	</div>
 																</div>
@@ -281,7 +281,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<textarea class="input-xlarge" name="couponNotice" id="couponNotice" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"></textarea>
+																			<textarea class="input-xlarge" style="width:400px;height:300px;" name="couponNotice" id="couponNotice" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"></textarea>
 																		</div>
 																	</div>
 																</div>

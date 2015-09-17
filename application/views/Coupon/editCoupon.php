@@ -248,7 +248,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<textarea class="input-xlarge" name="couponUseGuide" id="couponUseGuide" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"><?php echo $couponData->coupon_desc;?></textarea>
+																			<textarea class="input-xlarge" style="width:400px;height:300px;" name="couponUseGuide" id="couponUseGuide" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"><?php echo $couponData->coupon_desc;?></textarea>
 																		</div>
 																	</div>
 																</div>
@@ -268,7 +268,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<textarea class="input-xlarge" name="couponVerification" id="couponVerification" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"><?php echo $couponData->recommend_desc;?></textarea>
+																			<textarea class="input-xlarge" style="width:400px;height:300px;" name="couponVerification" id="couponVerification" placeholder="<?php echo $this->lang->line('TEXT_COUPON_USE_GUIDE_PLACEHOLDER');?>"><?php echo $couponData->recommend_desc;?></textarea>
 																		</div>
 																	</div>
 																</div>
