@@ -58,6 +58,11 @@
 						</ul>
 						<div class="nav-search">
 							<a href="<?php echo base_url('Brand/addBrand');?>"><button class="btn btn-xs btn-primary">添加品牌</button></a>
+							<?php if($this->input->get('showall') != 'yes'){?>
+							<a href="<?php echo base_url('Brand/listView').'?showall=yes';?><?php echo $this->input->get('category') == 'yes' ? '&category=yes' : '' ; ?>"><button class="btn btn-xs btn-primary">显示全部</button></a>
+							<?php }else{ ?>
+							<a href="<?php echo base_url('Brand/listView');?><?php echo $this->input->get('category') == 'yes' ? '?category=yes' : '' ; ?>"><button class="btn btn-xs btn-primary">显示正常</button></a>
+							<?php }?>
 						</div>
 					</div>
 
@@ -95,6 +100,7 @@
 														<th>分类</th>
 														<th><?php echo $this->lang->line('TEXT_CREATED_TIME');?></th>
 														<th><?php echo $this->lang->line('TEXT_UPDATED_TIME');?></th>
+														<th>状态</th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION_USER');?></th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
@@ -120,10 +126,24 @@
 														<td style="width:50px;"><?php echo $v->category;?></td>
 														<td><?php echo $v->create_time;?></td>
 														<td><?php echo $v->update_time;?></td>
+														<td id="cidTd_<?php echo $v->id;?>">
+															<span class="label label-<?php echo $v->status == 1 ? 'info' : 'danger';?>"><?php echo $v->status == 1 ? '显示' : '隐藏';?></span>
+														</td>
 														<td style="width:50px;"><?php echo $v->oper;?></td>
 														<td style="width:120px;">
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-
+																	<span id="cid_<?php echo $v->id;?>">
+																	<?php if($v->status == 0){?>
+																	<a onclick="upBrand('<?php echo $v->id;?>', '1');">
+																		<i class="icon-ok bigger-120">显示</i>
+																	</a>
+																	<?php }else{ ?>
+																	<a onclick="upBrand('<?php echo $v->id;?>', '0');">
+																		<i class="icon-remove bigger-120 green">隐藏</i>
+																	</a>
+																	<?php } ?>
+																	</span>
+																	&nbsp;&nbsp;
 																<!-- <button class="btn btn-xs btn-info"> -->
 																	<a href="<?php echo site_url('Brand/editBrand').'?brandId='.strEncrypt($v->id).'&p='.$this->input->get('p').'&category='.$this->input->get('category');?>"><i class="icon-edit bigger-120"></i>编辑</a>
 																<!-- </button> -->
@@ -195,6 +215,22 @@
 		<script src="<?php echo config_item('html_url');?>js/ace.min.js"></script>
 
 		<script type="text/javascript">
+			function upBrand(brandId, status){
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Brand/upBrand');?>",
+					data:{brandId:brandId, status:status},
+					success:function(data){
+						if (data.status == '0') {
+							$("#cid_"+brandId).html(data.spanDiv);
+							$("#cidTd_"+brandId).html(data.tdDiv);
+						}else{
+							alert(data.msg);
+						}
+						
+					}
+				});
+			}
 			function delBrand(brandId){
 				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DELBRAND');?>")) {
 					return false;

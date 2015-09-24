@@ -126,16 +126,24 @@ class Brand extends WebBase {
 	public function listView(){
 
 		$this->outData['pageTitle'] = $this->lang->line('TITLE_BRAND_LIST');
+
+		if ($this->input->get('showall') == 'yes') {
+			$showAll = true;
+			$showStatu = " status IN (1, 0) ";
+		}else{
+			$showAll = false;
+			$showStatu = " status = 1 ";
+		}
 		
-		$where = $where = " WHERE status = 1 ";
+		$where = " WHERE ".$showStatu;
 
 		$brandName = addslashes($this->input->get('brand'));
 		
-		if ($brandName) $where = " WHERE (name_zh LIKE '%".$brandName."%' OR name_en LIKE '%".$brandName."%') AND status = 1 ";
+		if ($brandName) $where = " WHERE (name_zh LIKE '%".$brandName."%' OR name_en LIKE '%".$brandName."%') AND ".$showStatu;
 		
 		$isCate = $this->input->get('category') == 'yes' ? true : false;
 
-		$brandList = $this->BrandModel->getBrandList($where, $this->p, $isCate);
+		$brandList = $this->BrandModel->getBrandList($where, $this->p, $isCate, $showAll);
 
 		$this->outData['pagination'] = $brandList['pagination'];
 
@@ -182,6 +190,30 @@ class Brand extends WebBase {
 		$this->outData['brandPrice'] = $this->BrandModel->getBrandPrice();
 
 		$this->load->view('Brand/addBrand', $this->outData);
+	}
+
+	/**
+	 * 更新品牌状态
+	 *
+	 */
+	public function upBrand(){
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$reqData = $this->input->post();
+
+		$status = $this->BrandModel->upBrandStatus($reqData);
+
+		if ($status['error'] === false) {
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_UPDATE_FAILURE');
+		}else{
+			$this->ajaxRes = array(
+					'status'  => 0,
+					'tdDiv'   => config_item('HIDE_TD_DIV_'.$reqData['status']),
+					'spanDiv' => sprintf(config_item('HIDE_A_DIV_'.$status['status']), 'upBrand', $reqData['brandId'], $status['status']),
+				);
+		}
+
+		jsonReturn($this->ajaxRes);
 	}
 
 	/**

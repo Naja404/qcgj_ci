@@ -192,10 +192,17 @@ class BrandModel extends CI_Model {
 	 * 获取品牌列表
 	 * @param string $where 查询条件
 	 * @param int $p 页数
+	 * @param bool $showAll 显示全部
 	 */
-	public function getBrandList($where = NULL, $p = 1, $isCate = false){
+	public function getBrandList($where = NULL, $p = 1, $isCate = false, $showAll = false){
 
 		$limit = " LIMIT ".page($p, 25);
+
+		if ($showAll) {
+			$showStatus = ' IN (1, 0) ';
+		}else{
+			$showStatus = ' = 1 ';
+		}
 
 		if($isCate){
 			$field = "  a.id, 
@@ -207,15 +214,16 @@ class BrandModel extends CI_Model {
 						a.create_time, 
 						a.update_time, 
 						LEFT(a.description, 50) AS summary, 
-						IF(CHAR_LENGTH(a.oper) = 32, (SELECT name FROM tb_qcgj_role_user WHERE user_id = a.oper LIMIT 1), a.oper) AS oper ";
+						IF(CHAR_LENGTH(a.oper) = 32, (SELECT name FROM tb_qcgj_role_user WHERE user_id = a.oper LIMIT 1), a.oper) AS oper,
+						a.status ";
 			$countField = " COUNT(*) AS total ";
 			$sql = "SELECT 
 						%s
 						FROM tb_brand AS a
 						LEFT JOIN tb_brand_category as b on b.tb_brand_id = a.`id`
-						 WHERE a.status = 1 and (b.tb_category_id is null or (a.description is null or a.description = '')) GROUP BY a.id ORDER BY a.create_time DESC %s ";
+						 WHERE a.status %s and (b.tb_category_id is null or (a.description is null or a.description = '')) GROUP BY a.id ORDER BY a.create_time DESC %s ";
 			
-			$queryTotal = $this->db->query(sprintf($sql, $countField, ''))->result();
+			$queryTotal = $this->db->query(sprintf($sql, $countField, $showStatus, ''))->result();
 
 			$pagination = $this->setPagination(site_url('Brand/listView'), count($queryTotal), 25);
 
@@ -239,7 +247,8 @@ class BrandModel extends CI_Model {
 					create_time, 
 					update_time, 
 					LEFT(description, 50) AS summary, 
-					IF(CHAR_LENGTH(oper) = 32, (SELECT name FROM tb_qcgj_role_user WHERE user_id = oper LIMIT 1), oper) AS oper ";
+					IF(CHAR_LENGTH(oper) = 32, (SELECT name FROM tb_qcgj_role_user WHERE user_id = oper LIMIT 1), oper) AS oper, 
+					status ";
 
 		$sql = "SELECT %s FROM ".tname('brand')." %s %s ";
 
@@ -885,6 +894,31 @@ class BrandModel extends CI_Model {
 		$updateRes = $this->db->where($where)->update(tname('mall'), $update);
 
 		return $updateRes ? true : false;
+	}
+
+	/**
+	 * 更新品牌状态
+	 * @param array 更新内容
+	 */
+	public function upBrandStatus($reqData = array()){
+		$where = array(
+			'id' => $reqData['brandId'],
+			);
+
+		$update = array(
+				'status'      => $reqData['status'],
+				'update_time' => currentTime(),
+				'oper'        => $this->userInfo->user_id,
+			);
+
+		$status = $this->db->where($where)->update(tname('brand'), $update);
+
+		$status = array(
+				'error'  => $status ? true : false,
+				'status' => $update['status'] == 1 ? 0 : 1,
+			);
+
+		return $status;
 	}
 
 	/**
