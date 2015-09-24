@@ -227,7 +227,7 @@ class BrandModel extends CI_Model {
 
 			$pagination = $this->setPagination(site_url('Brand/listView'), count($queryTotal), 25);
 
-			$queryRes = $this->db->query(sprintf($sql, $field, $limit))->result();
+			$queryRes = $this->db->query(sprintf($sql, $field, $showStatus, $limit))->result();
 
 			$returnRes = array(
 					'list'       => $queryRes,

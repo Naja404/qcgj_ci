@@ -52,20 +52,17 @@
 							</li>
 
 							<li>
-								<a href="<?php echo site_url('Discount/disList');?>"><?php echo $this->lang->line('TITLE_DISCOUNT_MANAGER');?></a>
+								<a href="<?php echo site_url('Approve/comment');?>"><?php echo $this->lang->line('TITLE_APPROVE_MANAGER');?></a>
 							</li>
 							<li class="active"><?php echo $this->lang->line('TITLE_DISCOUNT_LIST');?></li>
 						</ul>
-						<div class="nav-search">
-							<a href="<?php echo base_url('Discount/addDis');?>"><button class="btn btn-xs btn-primary">添加折扣</button></a>
-						</div>
 					</div>
 
 					<div class="page-content">
 
 						<div class="row">
 							<div class="col-xs-12">
-								<form method="get" action="<?php echo site_url('Discount/disList');?>">
+								<form method="get" action="<?php echo site_url('Approve/discount');?>">
 
 									折扣标题:<input type="text" name="title" value="<?php echo $this->input->get('title');?>">
 									&nbsp;
@@ -108,6 +105,7 @@
 													<tr>
 														<th>宣传图</th>
 														<th>标题</th>
+														<th>状态</th>
 														<th width="50px;">数据来源</th>
 														<th width="30px;">类型</th>
 														<th width="85px;">有效期开始</th>
@@ -123,28 +121,35 @@
 													<?php foreach ($list as $k => $v):?>
 													<tr>
 														<td>
-															<img src="<?php echo config_item('image_url').$v['brand_pic_url'];?>" width="100px;">	
+															<img src="<?php echo config_item('image_url').$v->brand_pic_url;?>" width="100px;">	
 														</td>
-														<td><?php echo $v['name_zh'];?></td>
-														<td><?php echo isset($v['data_source']) ? $v['data_source'] : '管理员';?></td>
-														<td width="50px;"><?php echo $this->lang->line('TEXT_DISCOUNT_TYPE_'.$v['type']);?></td>
-														<td><?php echo $v['begin_date'];?></td>
-														<td><?php echo $v['end_date'];?></td>
-														<td><?php echo $v['brand'];?></td>
-														<td><?php echo $v['category_name'];?></td>
-														<td><?php echo $v['discount_desc'];?></td>
+														<td><?php echo $v->name_zh;?></td>
+														<td id="cidTd_<?php echo $v->id;?>"><span class="label label-<?php echo (int)$v->audit == 1 ? 'info' : 'danger';?>"><?php echo $discountStatus[$v->audit];?></span></td>
+														<td><?php echo isset($v->data_source) ? $v->data_source : '管理员';?></td>
+														<td width="50px;"><?php echo $this->lang->line('TEXT_DISCOUNT_TYPE_'.$v->type);?></td>
+														<td><?php echo $v->begin_date;?></td>
+														<td><?php echo $v->end_date;?></td>
+														<td><?php echo $v->brand;?></td>
+														<td><?php echo $v->category_name;?></td>
+														<td><?php echo $v->discount_desc;?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-																<a href="<?php echo base_url('Discount/editDis').'?discountId='.$v['id'].'&brandId='.$v['tb_brand_id'];?>">
-																	<i class="icon-edit bigger-120">编辑</i>
+																<span id="cid_<?php echo $v->id;?>">
+																<?php if($v->audit != 1){?>
+																	<a onclick="upDiscount('<?php echo $v->id;?>', '1');">
+																		<i class="icon-ok bigger-120">通过</i>
+																	</a>
+																<?php }else{ ?>
+																<a onclick="upDiscount('<?php echo $v->id;?>', '2');">
+																	<i class="icon-remove bigger-120 green">不通过</i>
 																</a>
+																<?php }?>
+																</span>
 																&nbsp;
 																&nbsp;
-																<a style="color:red;" onclick="delDiscount('<?php echo $v['id'];?>', '<?php echo $v['tb_brand_id'];?>');">
+																<a style="color:red;" onclick="delDiscount('<?php echo $v->id;?>');">
 																	<i class="icon-edit bigger-120">删除</i>
 																</a>
-
-
 															</div>
 
 														</td>
@@ -209,15 +214,33 @@
 
 		<script type="text/javascript">
 
-			function delDiscount(discountId, brandId){
+			function upDiscount(discountId, status){
+
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Approve/upDiscount');?>",
+					data:{discountId:discountId, status:status},
+					success:function(data){
+						if (data.status == '0') {
+							$("#cid_"+discountId).html(data.spanDiv);
+							$("#cidTd_"+discountId).html(data.tdDiv);
+						}else{
+							alert(data.msg);
+						}
+						
+					}
+				});
+			}
+
+			function delDiscount(discountId){
 				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DEL_DISCOUNT');?>")) {
 					return false;
 				}
 
 				$.ajax({
 					type:"POST",
-					url:"<?php echo site_url('Discount/delDis');?>",
-					data:{discountId:discountId, brandId:brandId},
+					url:"<?php echo site_url('Approve/delDiscount');?>",
+					data:{discountId:discountId},
 					success:function(data){
 						if (data.status == '0') {
 							window.location.reload();

@@ -14,7 +14,79 @@ class Approve extends WebBase {
 		parent::__construct();
 
 		$this->load->model('ApproveModel');
+		$this->load->model('DiscountModel');
 		$this->lang->load('approve');
+	}
+
+	/**
+	 * 折扣审核
+	 *
+	 */
+	public function discount(){
+		$this->outData['pageTitle'] = $this->lang->line('TITLE_DISCOUNT_LIST');
+
+		$where = $this->_getDiscountWhere();
+
+		$discountList = $this->ApproveModel->getDiscountList($this->p, $where);
+
+		$this->outData['list'] = $discountList['list'];
+
+		$this->outData['page'] = $discountList['page'];
+
+		$this->outData['brandCate'] = $this->DiscountModel->getBrandCate();
+
+		$this->outData['disType'] = config_item('DISCOUNT_TYPE');
+
+		$this->outData['discountStatus'] = config_item('APPROVE_STATUS');
+
+		$this->load->view('Approve/discountList', $this->outData);
+	}
+
+	/**
+	 * 更新折扣审核状态
+	 *
+	 */
+	public function upDiscount(){
+
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$reqData = $this->input->post();
+
+		$status = $this->ApproveModel->upDiscountStatus($reqData);
+
+		if ($status['error'] === false) {
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_DISCOUNT_UPDATE_FAIL');
+		}else{
+			$this->ajaxRes = array(
+					'status'  => 0,
+					'tdDiv'   => config_item('APPROVE_TD_DIV_'.$reqData['status']),
+					'spanDiv' => sprintf(config_item('APPROVE_A_DIV_'.$status['status']), 'upDiscount', $reqData['discountId'], $status['status']),
+				);
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
+	 * 删除折扣
+	 *
+	 */
+	public function delDiscount(){
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$reqData = $this->input->post();
+
+		$status = $this->ApproveModel->delDiscount($reqData);
+
+		if ($status['error'] === false) {
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_DISCOUNT_DEL_FAIL');
+		}else{
+			$this->ajaxRes = array(
+					'status'  => 0,
+				);
+		}
+
+		jsonReturn($this->ajaxRes);	
 	}
 
 	/**
@@ -287,6 +359,31 @@ class Approve extends WebBase {
 
 		return $whereStr;
 
+	}
+
+	/**
+	 * 获取折扣审核查询条件
+	 *
+	 */
+	private function _getDiscountWhere(){
+		$where = array();
+
+		$where[] = " is_delete = 0 ";
+		$reqData = $this->input->get();
+
+		if (isset($reqData['title']) && !empty($reqData['title'])) $where[] = " name_zh LIKE '%".addslashes($reqData['title'])."%' ";
+
+		if (isset($reqData['type']) && in_array($reqData['type'], array(1, 2, 3, 4, 6, 7, 8))) $where[] = " type = '".(int)$reqData['type']."' ";
+
+		if (isset($reqData['brand']) && !empty($reqData['brand'])) $where[] = " (brand_name_en LIKE '%".addslashes($reqData['brand'])."%' OR brand_name_zh LIKE '%".addslashes($reqData['brand'])."%') ";
+
+		if (isset($reqData['category']) && !empty($reqData['category'])) $where[] = " tb_category_id = '".addslashes($reqData['category'])."' ";
+
+		if (isset($reqData['expStat']) && in_array($reqData['expStat'], array('normal', 'over'))) $where[] = " LEFT(end_date, 10) >= '".date('Y-m-d')."' ";
+
+		$whereStr = " WHERE ".implode(" AND ", $where);
+
+		return $whereStr;
 	}
 
 	/**
