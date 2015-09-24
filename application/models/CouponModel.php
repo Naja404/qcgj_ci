@@ -398,6 +398,8 @@ class CouponModel extends CI_Model {
 
 		$couponRes->mallID = $this->db->select('tb_mall_id AS id')->get_where(tname('coupon_mall'), array('tb_coupon_id' => $couponId))->result_array();
 
+		if ($couponRes->tb_brand_id) $couponRes->brandName = $this->db->get_where(tname('brand'), array('id' => $couponRes->tb_brand_id))->first_row();
+
 		$couponType = config_item('COUPON_TYPE');
 
 		$couponRes->typeHTML = $couponType[$couponRes->coupon_type];
@@ -565,12 +567,15 @@ class CouponModel extends CI_Model {
 	 * 置顶=1,推荐=2,取消置顶=101,取消推荐=102
 	 * @param string $couponId 优惠券id
 	 * @param int $reqStatus 状态码
+	 * @param int $sort 排序数值
 	 */
-	public function setCouponStatus($couponId = false, $reqStatus = 0){
+	public function setCouponStatus($couponId = false, $reqStatus = 0, $sort = 0){
 		if (empty($couponId) || !$couponId) return false;
 
 		$where = array('id' => $couponId);
 		$update = array('status' => (int)$reqStatus);
+
+		if ($sort > 0) $update['sort_num'] = $sort;
 
 		$updateRes = $this->db->where($where)->update(tname('coupon'), $update);
 

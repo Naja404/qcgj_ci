@@ -213,11 +213,11 @@ class BrandModel extends CI_Model {
 						%s
 						FROM tb_brand AS a
 						LEFT JOIN tb_brand_category as b on b.tb_brand_id = a.`id`
-						 WHERE a.status = 1 and (b.tb_category_id is null or (a.description is null or a.description = '')) ORDER BY a.create_time DESC %s ";
+						 WHERE a.status = 1 and (b.tb_category_id is null or (a.description is null or a.description = '')) GROUP BY a.id ORDER BY a.create_time DESC %s ";
 			
-			$queryTotal = $this->db->query(sprintf($sql, $countField, ''))->first_row();
+			$queryTotal = $this->db->query(sprintf($sql, $countField, ''))->result();
 
-			$pagination = $this->setPagination(site_url('Brand/listView'), $queryTotal->total, 25);
+			$pagination = $this->setPagination(site_url('Brand/listView'), count($queryTotal), 25);
 
 			$queryRes = $this->db->query(sprintf($sql, $field, $limit))->result();
 
@@ -243,11 +243,11 @@ class BrandModel extends CI_Model {
 
 		$sql = "SELECT %s FROM ".tname('brand')." %s %s ";
 
-		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, ''))->first_row();
+		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, 'GROUP BY id ORDER BY create_time DESC '))->result();
 
-		$pagination = $this->setPagination(site_url('Brand/listView'), $queryTotal->total, 25);
+		$pagination = $this->setPagination(site_url('Brand/listView'), count($queryTotal), 25);
 
-		$sql = sprintf($sql, $field, $where, ' ORDER BY create_time DESC '.$limit);
+		$sql = sprintf($sql, $field, $where, 'GROUP BY id ORDER BY create_time DESC '.$limit);
 
 		$queryRes = $this->db->query($sql)->result();
 
@@ -543,6 +543,14 @@ class BrandModel extends CI_Model {
 	}
 
 	/**
+	 * 删除商场
+	 * @param string $mallId 商场id
+	 */
+	public function delMall($mallId = false){
+		return $this->db->where(array('id' => $mallId))->delete(tname('mall'));
+	}
+
+	/**
 	 * 添加品牌
 	 * @param array $reqData 品牌数据内容
 	 */
@@ -774,8 +782,8 @@ class BrandModel extends CI_Model {
 		$brand = array(
 				'name_zh'     => $reqData['nameZh'],
 				'name_en'     => $reqData['nameEn'],
-				// 'logo_url'    => $reqData['brandLogoPath'],
-				// 'pic_url'     => $reqData['brandShowPath'],
+				'logo_url'    => $reqData['brandLogoPath'],
+				'pic_url'     => $reqData['brandShowPath'],
 				'update_time' => currentTime(),
 				'description' => $reqData['summary'],
 				'oper'        => $this->userInfo->user_id,

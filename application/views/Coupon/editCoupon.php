@@ -81,6 +81,15 @@
 
 															<form class="form-horizontal" id="editCouponform" method="post" enctype="multipart/form-data" >
 																<div class="form-group">
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponTitle">品牌:</label>
+
+																	<div class="col-xs-12 col-sm-9">
+																		<div class="clearfix">
+																			<input type="text" name="couponTitle" id="couponTitle" class="col-xs-12 col-sm-6" maxlength="40" value="<?php echo $couponData->brandName->name_zh.'  '.$couponData->brandName->name_en;?>"/>
+																		</div>
+																	</div>
+																</div>
+																<div class="form-group">
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponTitle"><?php echo $this->lang->line('TEXT_COUPON_TITLE');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">

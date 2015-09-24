@@ -144,9 +144,10 @@
 																	<a href="<?php echo site_url('Brand/editMall').'?id='.strEncrypt($v->id).'&p='.$this->input->get('p').'&mark='.$v->id;?>"><i class="icon-edit bigger-120">编辑</i></a>
 
 																<!-- </button> -->
-<!-- 																<button class="btn btn-xs btn-danger" onclick="delMall('<?php echo $v->id;?>');">
-																	<i class="icon-trash bigger-120"></i>
-																</button> -->
+																&nbsp;&nbsp;
+ 																<a class="red" onclick="delMall('<?php echo $v->id;?>');">
+																	<i class="icon-trash bigger-120">删除</i>
+																</a> 
 
 															</div>
 
@@ -228,14 +229,14 @@
 				});
 			});
 			
-			function delMallbak(mallId){
+			function delMall(mallId){
 				if (!confirm("<?php echo $this->lang->line('TEXT_CONFIRM_DELBRAND');?>")) {
 					return false;
 				}
 
 				$.ajax({
 					type:"POST",
-					url:"<?php echo site_url('HongQiao/delMall');?>",
+					url:"<?php echo site_url('Brand/delMall');?>",
 					data:{mallId:mallId},
 					success:function(data){
 						window.location.reload();

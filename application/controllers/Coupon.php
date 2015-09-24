@@ -351,6 +351,30 @@ class Coupon extends WebBase {
 	}
 
 	/**
+	 * 设置优惠券推荐
+	 *
+	 */
+	public function setRecommend(){
+		
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+		
+		$statusArr = array(1, 0);
+		$recStatus = $this->input->post('status');
+		$couponId  = $this->input->post('couponId');
+		$sort      = (int)$this->input->post('sort') == 0 ? 99 : (int)$this->input->post('sort');
+
+		if (!in_array($recStatus, $statusArr)) jsonReturn($this->ajaxRes);
+
+		$returnRes = $this->CouponModel->setCouponStatus($couponId, $recStatus, $sort);
+
+		if ($returnRes === true) {
+			$this->ajaxRes = array('status' => 0);
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
 	 * ajax上传优惠券图片
 	 *
 	 */

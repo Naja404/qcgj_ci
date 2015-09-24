@@ -129,7 +129,7 @@ $config = array(
 		'APPROVE_A_DIV_2' => '<a onclick="%s(\'%s\', \'%s\');"><i class="icon-remove bigger-120 green">不通过</i></a>',
 		'APPROVE_A_DIV_1' => '<a onclick="%s(\'%s\', \'%s\');"><i class="icon-remove bigger-120">通过</i></a>',
 
-		// 评论审核状态
+		// 显示状态
 		'HIDE_TD_DIV_1' => '<span class="label label-info">显示</span>',
 		'HIDE_TD_DIV_0' => '<span class="label label-danger">隐藏</span>',
 		'HIDE_A_DIV_0' => '<a onclick="%s(\'%s\', \'%s\');"><i class="icon-remove bigger-120 green">隐藏</i></a>',

@@ -159,11 +159,13 @@ class HongQiaoModel extends CI_Model {
 		if ($cacheRes) return $cacheRes; 
 
 		$list = $this->db->select('id, name_zh, name_en')
+						 ->group_start()
 						 ->like('name_zh', $brandName)
 						 ->or_like('name_en', $brandName)
+						 ->group_end()
 						 ->order_by('name_en, name_zh ASC')
 						 ->limit(20)
-						 ->get(tname('brand'))
+						 ->get_where(tname('brand'), array('status' => 1))
 						 ->result();
 
 		$returnList = array();

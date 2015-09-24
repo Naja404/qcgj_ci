@@ -137,6 +137,7 @@
 																<a style="color:red;" onclick="delCoupon('<?php echo strEncrypt($v->id);?>');">
 																	<i class="icon-trash bigger-120">删除</i>
 																</a>
+																&nbsp;
 																<?php if($v->saleStatus == 0 && $this->userInfo->role_id != 1){?>
 																<a onclick="editCoupon('<?php echo strEncrypt($v->id);?>');">
 																	<i class="icon-edit bigger-120">编辑</i>
@@ -146,20 +147,11 @@
 																<a onclick="editCoupon('<?php echo strEncrypt($v->id);?>', '<?php echo $v->tb_brand_id;?>');">
 																	<i class="icon-edit bigger-120">编辑</i>
 																</a>
-<!-- 																<select name="couponStatus" onchange="setCouponStatus(this, '<?php echo strEncrypt($v->id);?>')" >
-																	<option value="0" <?php echo $v->status == 0 ? 'selected' : ''; ?>>
-																		<?php echo $this->lang->line('TEXT_DEFAULT_STATUS');?>
-																	</option>
-																	<option value="1" <?php echo $v->status == 1 ? 'selected' : ''; ?>>
-																		<?php echo $this->lang->line('TEXT_RECOMMEND');?>
-																	</option>
-																	<option value="2" <?php echo $v->status == 2 ? 'selected' : ''; ?>>
-																		<?php echo $this->lang->line('TEXT_TOPCOUPON');?>
-																	</option>
-																	<option value="101"><?php echo $this->lang->line('TEXT_CANCEL_RECOMMEND');?></option>
-																	<option value="102"><?php echo $this->lang->line('TEXT_CANCEL_TOPCOUPON');?></option>
-																</select> -->
 																<?php } ?>
+																&nbsp;
+																<a href="#modal-recommend-coupon" role="button" data-toggle="modal" onclick="getRecommend('<?php echo $v->id;?>')">
+																	<i class="icon-external-link bigger-120">推荐</i>
+																</a>
 															</div>
 
 														</td>
@@ -304,6 +296,67 @@
 							</div><!-- /.modal-dialog -->
 						</div>
 
+						<div id="modal-recommend-coupon" class="modal fade" tabindex="-1">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header no-padding">
+										<div class="table-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+												<span class="white">&times;</span>
+											</button>
+											优惠券推荐
+										</div>
+									</div>
+
+									<div class="modal-body no-padding">
+										<table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+											<tbody>
+												<tr>
+													<td style="width:100px;">
+														状态
+													</td>
+													<td>
+														<label class="blue">
+															<input type="radio" id="recStatus" name="recStatus" value="1">
+															<span class="lbl">推荐</span>
+														</label>
+														&nbsp;
+														&nbsp;
+														<label class="red">
+															<input type="radio" id="recStatus" name="recStatus" value="0">
+															<span class="lbl">不推荐</span>
+														</label>
+													</td>
+												</tr>
+												<tr>
+													<td style="width:100px;">
+														排序
+													</td>
+													<td>
+														<div class="clearfix">
+															<input  type="text" id="recSort" placeholder="数字越小排序越前" value="" >
+														</div>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+										<input type="hidden" id="recCouponId" value="">
+									</div>
+
+									<div class="modal-footer no-margin-top">
+										<button class="btn btn-sm btn-danger pull-left" data-dismiss="modal" id="">
+											<i class="icon-remove"></i>
+											<?php echo $this->lang->line('BTN_CLOSE');?>
+										</button>
+										<button class="btn btn-sm pull-left" onclick="setRecommend();">
+											<i class="icon-info"></i>
+											保存
+										</button>
+									</div>
+								</div><!-- /.modal-content -->
+							</div><!-- /.modal-dialog -->
+						</div>
+
 					</div><!-- /.page-content -->
 				</div><!-- /.main-content -->
 			</div><!-- /.main-container-inner -->
@@ -382,6 +435,45 @@
 					}
 				});	
 			}
+
+			function getRecommend(couponId){
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Coupon/getCouponDetail');?>",
+					data:{couponId:couponId},
+					success:function(data){
+						if (data.status == '0') {
+							// $('#recStatus').html(data.data.status);
+							$("input[type=radio][value="+data.data.status+"]").attr("checked",'checked');
+							$('#recSort').val(data.data.sort_num);
+							$('#recCouponId').val(data.data.id);
+							return true;
+						}
+						alert(data.msg);
+						return false;
+					}
+				});	
+			}
+
+			function setRecommend(){
+				var recStatus = $("#recStatus").val();
+					recSort = $("#recSort").val();
+					recCouponId = $("#recCouponId").val();
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Coupon/setRecommend');?>",
+					data:{couponId:recCouponId, status:recStatus, sort:recSort},
+					success:function(data){
+						if (data.status == '0') {
+							$("#modal-recommend-coupon").modal('hide');
+							return true;
+						}
+						alert(data.msg);
+						return false;
+					}
+				});	
+			}
+
 			jQuery(function($) {
 						// 日期选择
 				$('input[name=dateRange]').daterangepicker().prev().on(ace.click_event, function(){

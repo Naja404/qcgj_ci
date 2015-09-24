@@ -88,11 +88,11 @@
 												<thead>
 													<tr>
 														<th><?php echo $this->lang->line('TEXT_LOGO');?></th>
-														<th><?php echo $this->lang->line('TEXT_PIC_URL');?></th>
-														<th><?php echo $this->lang->line('TEXT_NAME_ZH');?></th>
 														<th><?php echo $this->lang->line('TEXT_NAME_EN');?></th>
-														<th>分类</th>
+														<th><?php echo $this->lang->line('TEXT_NAME_ZH');?></th>
+														<th><?php echo $this->lang->line('TEXT_PIC_URL');?></th>
 														<th style="width:200px;"><?php echo $this->lang->line('TEXT_DESCRIPTION');?></th>
+														<th>分类</th>
 														<th><?php echo $this->lang->line('TEXT_CREATED_TIME');?></th>
 														<th><?php echo $this->lang->line('TEXT_UPDATED_TIME');?></th>
 														<th><?php echo $this->lang->line('TEXT_OPERATION_USER');?></th>
@@ -106,6 +106,8 @@
 														<td>
 															<img src="<?php echo config_item('image_url').$v->logo_url;?>" width="100px">
 														</td>
+														<td style="width:100px;"><?php echo $v->name_en;?></td>
+														<td style="width:100px;"><?php echo $v->name_zh;?></td>
 														<td style="width:100px;">
 															<?php $pic = explode(',', $v->pic_url);?>
 															<?php foreach($pic as $j => $m):?>
@@ -114,10 +116,8 @@
 																<?php }?>
 															<?php endforeach;?>
 														</td>
-														<td style="width:100px;"><?php echo $v->name_zh;?></td>
-														<td style="width:100px;"><?php echo $v->name_en;?></td>
-														<td style="width:50px;"><?php echo $v->category;?></td>
 														<td><?php echo $v->summary;?></td>
+														<td style="width:50px;"><?php echo $v->category;?></td>
 														<td><?php echo $v->create_time;?></td>
 														<td><?php echo $v->update_time;?></td>
 														<td style="width:50px;"><?php echo $v->oper;?></td>

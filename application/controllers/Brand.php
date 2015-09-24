@@ -245,6 +245,26 @@ class Brand extends WebBase {
 	}
 
 	/**
+	 * 删除商场
+	 *
+	 */
+	public function delMall(){
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$mallId = $this->input->post('mallId');
+
+		$delRes = $this->BrandModel->delMall($mallId, 1);
+
+		if ($delRes) {
+			$this->ajaxRes = array(
+					'status' => 0,
+				);
+		}
+
+		jsonReturn($this->ajaxRes);
+	}
+
+	/**
 	 * 编辑店铺
 	 *
 	 */

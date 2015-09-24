@@ -64,18 +64,18 @@
 							<div class="col-xs-12">
 								<form class="form-horizontal" role="form" id="editBrand-form">
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="nameZh"> <?php echo $this->lang->line('TEXT_NAME_ZH');?> </label>
-
-										<div class="col-sm-9">
-											<input type="text" name="nameZh" id="nameZh" placeholder="<?php echo $this->lang->line('PLACEHOLDER_NAME_ZH');?>" value="<?php echo $brand->name_zh;?>" >
-										</div>
-									</div>
-
-									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right" for="nameEn"> <?php echo $this->lang->line('TEXT_NAME_EN');?> </label>
 
 										<div class="col-sm-9">
 											<input type="text" name="nameEn" id="nameEn" placeholder="<?php echo $this->lang->line('PLACEHOLDER_NAME_EN');?>" value="<?php echo $brand->name_en;?>">
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="nameZh"> <?php echo $this->lang->line('TEXT_NAME_ZH');?> </label>
+
+										<div class="col-sm-9">
+											<input type="text" name="nameZh" id="nameZh" placeholder="<?php echo $this->lang->line('PLACEHOLDER_NAME_ZH');?>" value="<?php echo $brand->name_zh;?>" >
 										</div>
 									</div>
 
@@ -326,14 +326,14 @@
 					errorClass: 'help-block',
 					focusInvalid: false,
 					rules: {
-						nameZh: {
+						nameEn: {
 							required:true
 						}
 					},
 			
 					messages: {
-						nameZh: {
-							required:"<?php echo $this->lang->line('ERR_NAME_ZH');?>",
+						nameEn: {
+							required:"<?php echo $this->lang->line('ERR_NAME_EN');?>",
 						}
 					},
 			
