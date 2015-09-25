@@ -128,7 +128,7 @@
 															<a href="#modal-review-coupon" role="button" data-toggle="modal" onclick="getCouponDetail('<?php echo $v->id;?>')"><?php echo $v->title;?></a>
 														</td>
 														<td><?php echo $v->expire;?></td>
-														<td><?php echo $this->lang->line('TEXT_STATUS_'.$v->saleStatus);?></td>
+														<td id="userSpan_<?php echo strEncrypt($v->id);?>"><?php echo $this->lang->line('TEXT_STATUS_'.$v->saleStatus);?></td>
 														<td><?php echo $v->received;?></td>
 														<td><?php echo $v->used;?></td>
 														<td><?php echo $v->mallCount;?></td>
@@ -152,6 +152,18 @@
 																<a href="#modal-recommend-coupon" role="button" data-toggle="modal" onclick="getRecommend('<?php echo $v->id;?>')">
 																	<i class="icon-external-link bigger-120">推荐</i>
 																</a>
+																&nbsp;
+																<?php if($v->saleStatus == 2){?>
+																<a onclick="saleCoupon('<?php echo strEncrypt($v->id);?>');" >
+																	<i id="userIcon_<?php echo strEncrypt($v->id);?>" class="icon-ok bigger-120 green">上架</i>
+																</a>
+																<input type="hidden" name="userHide_<?php echo strEncrypt($v->id);?>" value="1" />
+																<?php }else{ ?>
+																<a onclick="saleCoupon('<?php echo strEncrypt($v->id);?>');" >
+																	<i id="userIcon_<?php echo strEncrypt($v->id);?>" class="icon-remove bigger-120 red">下架</i>
+																</a>
+																<input type="hidden" name="userHide_<?php echo strEncrypt($v->id);?>" value="2" />
+																<?php }?>
 															</div>
 
 														</td>
@@ -434,6 +446,27 @@
 						return false;
 					}
 				});	
+			}
+
+			function saleCoupon(couponId){
+				var couponStatus = $('input[name=userHide_'+couponId+']').val();
+
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Coupon/saleCoupon');?>",
+					data:{couponId:couponId, status:couponStatus},
+					success:function(data){
+						if (data.status == '0') {
+							$('#userSpan_' + couponId).html(data.html);
+							$('#userIcon_'+couponId).attr("class", data.class);
+							$('#userIcon_'+couponId).text(data.showText);
+							$('input[name=userHide_'+couponId+']').val(data.couponStatus);
+							return true;
+						}
+						alert(data.msg);
+						return false;
+					}
+				});
 			}
 
 			function getRecommend(couponId){

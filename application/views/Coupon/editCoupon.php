@@ -52,7 +52,7 @@
 							</li>
 
 							<li>
-								<a href="{:U('Coupon/rolelist')}"><?php echo $this->lang->line('TEXT_COUPON_MANAGER');?></a>
+								<a href="<?php echo base_url('Coupon/couponList');?>"><?php echo $this->lang->line('TEXT_COUPON_MANAGER');?></a>
 							</li>
 							<li class="active"><?php echo $this->lang->line('TEXT_COUPON_ADDCOUPON');?></li>
 						</ul>
@@ -85,7 +85,7 @@
 
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
-																			<input type="text" name="couponTitle" id="couponTitle" class="col-xs-12 col-sm-6" maxlength="40" value="<?php echo $couponData->brandName->name_zh.'  '.$couponData->brandName->name_en;?>"/>
+																			<input type="text" name="couponTitle" id="couponTitle" class="col-xs-12 col-sm-6" maxlength="40" value="<?php echo $couponData->brandName->name_zh.'  '.$couponData->brandName->name_en;?>" disabled/>
 																		</div>
 																	</div>
 																</div>
@@ -144,6 +144,21 @@
 																</div>
 
 																<div class="space-2"></div>
+
+																<div class="form-group">
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponImg">品牌宣传图:</label>
+
+																	<div class="col-xs-12 col-sm-9">
+																		<div class="clearfix">
+																			<?php foreach ($brandImage as $k => $v) {?>
+																				<img src="<?php echo config_item('image_url').$v;?>" width="100px;" height="100px;">
+																				<input type="radio" name="couponImg" value="<?php echo $v;?>" <?php echo $v == $couponData->brand_pic_url ? 'checked' : '';?>/>
+																				<br>
+																				<br>
+																			<?php }?>
+																		</div>
+																	</div>
+																</div>
 
 																<div class="form-group">
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_MONEY');?>:</label>

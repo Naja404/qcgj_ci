@@ -144,7 +144,7 @@
 																	<div class="col-xs-12 col-sm-9">
 																		<div class="clearfix">
 																			<?php foreach ($brandImg as $k => $v) {?>
-																				<img src="" width="100px;" height="100px;">
+																				<img src="<?php echo config_item('image_url').$v;?>" width="100px;" height="100px;">
 																				<input type="radio" name="discountImg" value="<?php echo $v;?>" />
 																				<br>
 																				<br>

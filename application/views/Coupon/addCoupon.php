@@ -160,6 +160,21 @@
 																<div class="space-2"></div>
 
 																<div class="form-group">
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="couponImg">品牌宣传图:</label>
+
+																	<div class="col-xs-12 col-sm-9">
+																		<div class="clearfix">
+																			<?php foreach ($brandImage as $k => $v) {?>
+																				<img src="<?php echo config_item('image_url').$v;?>" width="100px;" height="100px;">
+																				<input type="radio" name="couponImg" value="<?php echo $v;?>" <?php echo $k == 0 ? 'checked' : '';?>/>
+																				<br>
+																				<br>
+																			<?php }?>
+																		</div>
+																	</div>
+																</div>
+
+																<div class="form-group">
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right"><?php echo $this->lang->line('TEXT_COUPON_MONEY');?>:</label>
 
 																	<div class="col-xs-12 col-sm-9">
@@ -659,7 +674,7 @@
 				});
 
 				// 数字选择
-				$('#couponSum').ace_spinner({value:0,min:0,max:9999,step:10, btn_up_class:'btn-info' , btn_down_class:'btn-info'})
+				$('#couponSum').ace_spinner({value:0,min:0,max:9999,step:100, btn_up_class:'btn-info' , btn_down_class:'btn-info'})
 				.on('change', function(){
 					//alert(this.value)
 				});

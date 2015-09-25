@@ -14,6 +14,7 @@ class Coupon extends WebBase {
 
 		$this->load->model('CouponModel');
 		$this->load->model('HongQiaoModel');
+		$this->load->model('DiscountModel');
 		$this->load->library('Snoopy');
 		$this->outData['currentModule'] = __CLASS__;
 	}
@@ -150,6 +151,8 @@ class Coupon extends WebBase {
 		$this->outData['shAreaList'] = $shopList['data']['shAreaList'];
 		$this->outData['gzAreaList'] = $shopList['data']['gzAreaList'];
 
+		$this->outData['brandImage'] = $this->DiscountModel->getBrandImg($brandId);
+
 		if ($this->CouponModel->isAdminUser($this->userInfo->role_id)) {
 			if (!$this->CouponModel->hasBrandById($brandId)) {
 				redirect(base_url('Coupon/brandSelect'));
@@ -235,6 +238,8 @@ class Coupon extends WebBase {
 		$this->outData['bjAreaList'] = $shopList['data']['bjAreaList'];
 		$this->outData['shAreaList'] = $shopList['data']['shAreaList'];
 		$this->outData['gzAreaList'] = $shopList['data']['gzAreaList'];
+
+		$this->outData['brandImage'] = $this->DiscountModel->getBrandImg($this->outData['couponData']->brandName->id);
 
 		$this->load->view('Coupon/editCoupon', $this->outData);
 	}
