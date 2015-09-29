@@ -26,6 +26,9 @@ class Shop extends WebBase {
 	 *
 	 */
 	public function addShop(){
+
+		if ($this->input->is_ajax_request()) return $this->_addShopForm();
+
 		$this->outData['pageTitle'] = $this->lang->line('TEXT_ADD_SHOP');
 		$this->outData['cityList'] = $this->ShopModel->getCityList();
 
@@ -71,6 +74,27 @@ class Shop extends WebBase {
 		$this->outData['mallList'] = $this->ShopModel->getMallList($this->outData['detail']->cityId, $this->outData['detail']->districtId);
 
 		$this->load->view('Shop/editShop', $this->outData);
+	}
+
+	/**
+	 * 搜索门店地址
+	 *
+	 */
+	public function searchShop(){
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$reqData = $this->input->post();
+		
+		if (empty($reqData['name'])) jsonReturn($this->ajaxRes); 
+
+		$list = $this->ShopModel->searchShop($reqData, 'html');
+
+		$this->ajaxRes = array(
+				'status' => 0,
+				'list'   => $list,
+			);
+
+		jsonReturn($this->ajaxRes);
 	}
 
 	/**
@@ -220,6 +244,26 @@ class Shop extends WebBase {
 		$this->pagination->initialize($shopListPageConf);
 
 		$this->outData['pagination'] = $this->pagination->create_links();
+	}
+
+	/**
+	 * 添加门店
+	 *
+	 */
+	private function _addShopForm(){
+		$reqData = $this->input->post();
+
+		$addRes = $this->ShopModel->addShop($reqData);
+
+		if ($addRes === true) {	
+			$this->ajaxRes = array(
+					'status' => 0
+				);
+		}else{
+			$this->ajaxRes['msg'] = $addRes;
+		}
+
+		jsonReturn($this->ajaxRes);
 	}
 
 }

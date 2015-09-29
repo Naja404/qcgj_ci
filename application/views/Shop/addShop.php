@@ -72,7 +72,7 @@
 										<label class="col-sm-3 control-label no-padding-right" for="brandZh"> 品牌中文 </label>
 
 										<div class="col-sm-9">
-											<input type="text" name="brandZh" id="brandZh" placeholder="">
+											<input type="text" name="brandZh" id="brandZh" placeholder="可输入品牌英文">
 										</div>
 									</div>
 
@@ -80,51 +80,43 @@
 										<label class="col-sm-3 control-label no-padding-right" for="brandEn"> 品牌英文 </label>
 
 										<div class="col-sm-9">
-											<input type="text" value="" name="brandEn" id="brandEn">
+											<input type="text" value="" name="brandEn" id="brandEn" disabled>
 										</div>
 									</div>
 									<input type="hidden" name="brandId" id="brandId" >
+									
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="cityName"> <?php echo $this->lang->line('TEXT_CITY_NAME');?> </label>
+										<label class="col-sm-3 control-label no-padding-right" for="shopType"> 门店类型 </label>
 
 										<div class="col-sm-9">
-											<select  name="cityName">
-												<?php foreach($cityList as $v){?>
-												<option value="<?php echo $v->cityId;?>"><?php echo $v->cityName;?></option>
-												<?php };?>
-											</select>
+											<label class="blue">
+												<input name="shopType" value="1" type="radio" class="ace" checked />
+												<span class="lbl">商场</span>
+											</label>
+											&nbsp;&nbsp;&nbsp;&nbsp;
+											<label class="blue">
+												<input name="shopType" value="2" type="radio" class="ace"  />
+												<span class="lbl">街边店</span>
+											</label>
 										</div>
 									</div>
 
-									<div class="space-4"></div>
-
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="areaName"> <?php echo $this->lang->line('TEXT_AREA_NAME');?> </label>
+										<label class="col-sm-3 control-label no-padding-right" for="searchShop"> 搜索门店 </label>
 
 										<div class="col-sm-9">
-											<select  name="areaName">
-												<?php foreach($areaList as $v){?>
-												<option value="<?php echo $v->id;?>"><?php echo $v->name;?></option>
-												<?php };?>
-											</select>
+											<input type="text" name="searchShop" id="searchShop"  placeholder="商场名/地址"><a class="btn btn-sm" onclick="searchShop();">search</a>
 										</div>
 									</div>
 
-									<div class="space-4"></div>
-
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="mallName"> <?php echo $this->lang->line('TEXT_MALL_NAME');?> </label>
+										<label class="col-sm-3 control-label no-padding-right" for="shopId"> </label>
 
-										<div class="col-sm-9">
-											<select  name="mallName">
-												<?php foreach($mallList as $v){?>
-												<option value="<?php echo $v->id;?>"><?php echo $v->name_zh;?></option>
-												<?php };?>
-											</select>
+										<div class="col-sm-9" id="shopListDiv">
+
 										</div>
 									</div>
 
-									<div class="space-4"></div>
 
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right" for="floor"><?php echo $this->lang->line('TEXT_ADDRESS');?></label>
@@ -135,7 +127,7 @@
 
 									<div class="clearfix form-actions">
 										<div class="col-md-offset-3 col-md-9">
-											<button class="btn btn-info" type="button" onclick="">
+											<button class="btn btn-info" type="button" onclick="subAddShop();">
 												<i class="icon-ok bigger-110"></i>
 												<?php echo $this->lang->line('BTN_SUBMIT');?>
 											</button>
@@ -210,7 +202,7 @@
 					$.ajax({
 			      		type:"POST",
 			      		url:"<?php echo site_url('Brand/searchBrand');?>",
-			      		data:{brand:$("#brandZh").val()},
+			      		data:{brand:$("#brandZh").val(), status:1},
 			      		success:function(data){
 			      			if (data.status != 0) { return false;}
 			      			
@@ -249,90 +241,34 @@
 					});
 					$('#shopListHTML').html(shopListHTML);
 				});
+			})
 
-			$('#addShopForm').validate({
-					errorElement: 'div',
-					errorClass: 'help-block',
-					focusInvalid: false,
-					rules: {
-						managerName: {
-							required:true,
-							rangelength:[5, 32],
-							email:true
-						},
-						passwd: {
-							required:true,
-							minlength:6
-						},
-						confirmPasswd: {
-							required:true,
-							minlength:6,
-							equalTo:"#fieldPasswd"
-						}
-					},
-			
-					messages: {
-						managerName: {
-							required:"<?php echo $this->lang->line('ERR_ENTER_MANAGER_NAME');?>",
-							rangelength:"<?php echo $this->lang->line('ERR_MANAGER_NAME_LENGTH');?>",
-							email:"<?php echo $this->lang->line('ERR_MANAGER_NAME_FORMAT');?>"
-						},
-						passwd: {
-							required:"<?php echo $this->lang->line('ERR_ENTER_PASSWD');?>",
-							minlength:"<?php echo $this->lang->line('ERR_PASSWD_LENGTH');?>"
-						},
-						confirmPasswd: {
-							required:"<?php echo $this->lang->line('ERR_ENTER_CONFIRM_PASSWD');?>",
-							minlength:"<?php echo $this->lang->line('ERR_CONFIRM_PASSWD_LENGTH');?>",
-							equalTo:"<?php echo $this->lang->line('ERR_CONFIRM_PASSWD_NOTSAME');?>"
-						}
-					},
-			
-					invalidHandler: function (event, validator) { //display error alert on form submit   
-						$('.alert-danger', $('.login-form')).show();
-					},
-			
-					highlight: function (e) {
-						$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
-					},
-			
-					success: function (e) {
-						$(e).closest('.form-group').removeClass('has-error').addClass('has-info');
-						$(e).remove();
-					},
-			
-					errorPlacement: function (error, element) {
-						if(element.is(':checkbox') || element.is(':radio')) {
-							var controls = element.closest('div[class*="col-"]');
-							if(controls.find(':checkbox,:radio').length > 1) controls.append(error);
-							else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
-						}
-						else if(element.is('.select2')) {
-							error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
-						}
-						else if(element.is('.chosen-select')) {
-							error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
-						}
-						else error.insertAfter(element.parent());
-					},
-			
-					submitHandler: function (form) {
-					},
-					invalidHandler: function (form) {
-					}
-				});
-			});
-
-
-
-			function subAddManager(){
-				if(!$('#addShopForm').valid()){
+			function searchShop(){
+				var searchShop = $("#searchShop").val();
+					searchType = $('input[name=shopType]:checked').val();
+				if (!searchShop) {
+					alert('请填写搜索内容');
 					return false;
 				}
+				
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Shop/searchShop');?>",
+					data:{name:searchShop, type:searchType},
+					success:function(data){
+						if (data.status == "0") {
+							$("#shopListDiv").html(data.list);
+						}
+					}
+				});
+
+			}
+
+			function subAddShop(){
 
 				$.ajax({
 					type:"POST",
-					url:"<?php echo site_url('Shop/addShopManager');?>",
+					url:"<?php echo site_url('Shop/addShop');?>",
 					data:$('#addShopForm').serialize(),
 					success:function(data){
 						if (data.status) {
@@ -340,17 +276,17 @@
 							return false;
 						}else{
 							bootbox.dialog({
-								message: "<?php echo $this->lang->line('TEXT_ADDMANAGER_SUCCESS');?>", 
+								message: "门店添加成功", 
 								buttons: {
 									"goList" : {
-										"label" : "<?php echo $this->lang->line('TEXT_GO_MANAGERLIST');?>",
+										"label" : "返回门店列表",
 										"className" : "btn-sm btn-primary",
 										callback: function(){
-											window.location.href = "<?php echo site_url('Shop/managerList');?>";
+											window.location.href = "<?php echo site_url('Shop/shopList');?>";
 										}
 									},
 									"continue" : {
-										"label" : "<?php echo $this->lang->line('TEXT_CONTINUE_ADDMANAGER');?>",
+										"label" : "继续添加门店",
 										"className" : "btn-sm btn-primary",
 										callback: function(){
 											window.location.reload();

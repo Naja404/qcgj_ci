@@ -105,6 +105,7 @@ class DiscountModel extends CI_Model {
 				'begin_date'     => currentTime('', $date[0]),
 				'end_date'       => currentTime('', $date[1]),
 				'type'			 => (int)$reqData['discountType'],
+				'update_time'    => currentTime(),
 			);
 
 		if (!$this->isAdmin) $editDis['oper'] = $this->userInfo->user_id;
@@ -181,7 +182,7 @@ class DiscountModel extends CI_Model {
 	 * @param int $page 页码
 	 * @param string $where 查询条件
 	 */
-	public function getDiscountList($page = 1, $where = NULL){
+	public function getDiscountList($page = 1, $where = NULL, $order = NULL){
 
 		$totalField = " COUNT(*) AS total ";
 		$field = " 	id,
@@ -191,19 +192,23 @@ class DiscountModel extends CI_Model {
 					LEFT(begin_date, 10) AS begin_date, 
 					LEFT(end_date, 10) AS end_date ,
 					CONCAT(brand_name_en, '<br>', brand_name_zh) AS brand,
+					brand_name_zh,
+					brand_name_en,
 					category_name,
 					tb_brand_id,
-					LEFT(discount_desc, 30) AS discount_desc ";
+					LEFT(discount_desc, 30) AS discount_desc,
+					update_time,
+					IF(CHAR_LENGTH(oper) = 32, (SELECT name FROM tb_qcgj_role_user WHERE user_id = oper LIMIT 1), oper) AS oper ";
 
 		$page = ($page - 1) * 25;
 
 		$limit = ' LIMIT '.$page.',25';
 
-		$sql = "SELECT %s FROM ".tname('discount')." %s ORDER BY create_time DESC %s ";
+		$sql = "SELECT %s FROM ".tname('discount')." %s %s %s ";
 
-		$queryTotal = $this->db->query(sprintf($sql, $totalField, $where, ''))->first_row();
+		$queryTotal = $this->db->query(sprintf($sql, $totalField, $where, '', ''))->first_row();
 
-		$queryRes = $this->db->query(sprintf($sql, $field, $where, $limit))->result_array();
+		$queryRes = $this->db->query(sprintf($sql, $field, $where, $order, $limit))->result_array();
 
 		$returnData = array(
 				'list' => $queryRes,

@@ -152,6 +152,28 @@ class Approve extends WebBase {
 
 		jsonReturn($this->ajaxRes);
 	}
+ 
+ 	/**
+ 	 * 删除评论
+ 	 *
+ 	 */
+ 	public function delComment(){
+		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
+
+		$reqData = $this->input->post();
+
+		$status = $this->ApproveModel->delComment($reqData['commentId']);
+
+		if ($status === false) {
+			$this->ajaxRes['msg'] = $this->lang->line('ERR_COMMENT_DEL_FAIL');
+		}else{
+			$this->ajaxRes = array(
+					'status'  => 0,
+				);
+		}
+
+		jsonReturn($this->ajaxRes);
+ 	}
 
 	/**
 	 * 审核洋码头图片
@@ -368,7 +390,7 @@ class Approve extends WebBase {
 	private function _getDiscountWhere(){
 		$where = array();
 
-		$where[] = " is_delete = 0 ";
+		$where[] = " audit = 0 AND is_delete = 0 ";
 		$reqData = $this->input->get();
 
 		if (isset($reqData['title']) && !empty($reqData['title'])) $where[] = " name_zh LIKE '%".addslashes($reqData['title'])."%' ";

@@ -153,6 +153,17 @@ class ApproveModel extends CI_Model {
 	}
 
 	/**
+	 * 删除评论
+	 * @param string $commentId 评论id
+	 */
+	public function delComment($commentId = false){
+		$where = array(
+				'id' => $commentId,
+			);
+		return $this->db->where($where)->delete(tname('comment'));
+	}
+
+	/**
 	 * 更新折扣审核状态
 	 * @param array $reqData 更新内容
 	 */

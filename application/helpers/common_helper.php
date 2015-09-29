@@ -386,4 +386,25 @@ function get_dir($dir, $page = 1, $pagesize = 10) {
 
 	return $result;
 }
+
+/**
+ * array拼接url
+ * @param array $url_param 参数数组
+ * @param strin $base_url 域名地址
+ */
+function uri_param_url($url_param = array(), $base_url = NULL){
+	if ($base_url == NULL) $base_url = base_url();
+
+	$url_key = array_keys($url_param);
+
+	$tmp_param = array();
+
+	foreach ($url_key as $k) {
+		array_push($tmp_param, $k.'='.$url_param[$k]);
+	}
+
+	$tmp_param = implode('&', $tmp_param);
+
+	return $base_url.'?'.$tmp_param;
+}
 ?>

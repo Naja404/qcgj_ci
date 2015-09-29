@@ -362,7 +362,7 @@
 					$.ajax({
 			      		type:"POST",
 			      		url:"<?php echo site_url('Brand/searchBrand');?>",
-			      		data:{brand:$("#shopBrandName").val()},
+			      		data:{brand:$("#shopBrandName").val(), status:1},
 			      		success:function(data){
 			      			if (data.status != 0 || data.list.length == 0) { $("#shopBrandId").val(''); return false;}
 			      			

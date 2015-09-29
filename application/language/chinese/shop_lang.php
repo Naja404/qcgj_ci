@@ -37,11 +37,17 @@ $lang = array(
 	'ERR_ENTER_CONFIRM_PASSWD'   => '请输入正确的确认密码',
 	'ERR_CONFIRM_PASSWD_LENGTH'  => '确认密码长度不能低于6个字符',
 	'ERR_CONFIRM_PASSWD_NOTSAME' => '确认密码与登陆密码不一致',
-	'ERR_MANAGER_NAME_TRIM' 	 => '店长名不能包含空格及特殊符号',
+	'ERR_MANAGER_NAME_TRIM'      => '店长名不能包含空格及特殊符号',
 	'ERR_MANAGER_NAME_FORMAT'    => '请输入正确格式的店长名',
-	'ERR_MALLID'				 => '请正确选择地址',
-	'ERR_MANAGERNAME_EXISTS'	 => '店长名已存在',
-	'ERR_ADD_MANAGER_FAIL'	     => '添加店长失败,请刷新后重试',
+	'ERR_MALLID'                 => '请正确选择地址',
+	'ERR_MANAGERNAME_EXISTS'     => '店长名已存在',
+	'ERR_ADD_MANAGER_FAIL'       => '添加店长失败,请刷新后重试',
+	
+	'ERR_ADDSHOP_BRNAD_NAME'     => '请正确填写品牌名',
+	'ERR_ADDSHOP_SHOP_NAME'      => '请正确选择门店地址',
+	'ERR_ADDSHOP_FLOOR'          => '请正确填写楼层',
+	'ERR_ADDSHOP_EXISTS'         => '门店已存在',
+	'ERR_ADDSHOP_FAIL'			 => '门店添加失败',
 
 	'ADD_SHOPMANAGER_VALIDATION' => array(
 				array(

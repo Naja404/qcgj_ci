@@ -150,22 +150,30 @@ class HongQiaoModel extends CI_Model {
 	/**
 	 * 搜索品牌
 	 * @param string $brandName
+	 * @param bool $brandStatus 1显示 0全部
 	 */
-	public function searchBrand($brandName = false){
+	public function searchBrand($brandName = false, $brandStatus = 1){
 		if (!$brandName) return false;
 
-		$cacheRes = $this->cache->get(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName));
+		$cacheRes = $this->cache->get(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName.$brandStatus));
 		
 		if ($cacheRes) return $cacheRes; 
+
+		if ($brandStatus == 1) {
+			$status = array(1);
+		}else{
+			$status = array(0, 1);
+		}
 
 		$list = $this->db->select('id, name_zh, name_en')
 						 ->group_start()
 						 ->like('name_zh', $brandName)
 						 ->or_like('name_en', $brandName)
 						 ->group_end()
+						 ->where_in('status', $status)
 						 ->order_by('name_en, name_zh ASC')
 						 ->limit(20)
-						 ->get_where(tname('brand'), array('status' => 1))
+						 ->get(tname('brand'))
 						 ->result();
 
 		$returnList = array();
@@ -179,7 +187,7 @@ class HongQiaoModel extends CI_Model {
 			array_push($returnList, $tmp);
 		}
 
-		if (count($returnList)) $this->cache->save(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName), $returnList, 3600); 
+		if (count($returnList)) $this->cache->save(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName.$brandStatus), $returnList, 3600); 
 
 		return $returnList;
 	}

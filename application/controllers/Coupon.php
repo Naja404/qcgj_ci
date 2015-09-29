@@ -272,10 +272,11 @@ class Coupon extends WebBase {
 		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
 
 		$brandName = $this->input->post('brand');
+		$brandStatus = $this->input->post('status');
 		
 		if (empty($brandName)) jsonReturn($this->ajaxRes); 
 
-		$list = $this->HongQiaoModel->searchBrand($brandName);
+		$list = $this->HongQiaoModel->searchBrand($brandName, $brandStatus);
 
 		$this->ajaxRes = array(
 				'status' => 0,

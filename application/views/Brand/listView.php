@@ -81,6 +81,10 @@
 									<?php }else{ ?>
 									<a  href="<?php echo site_url('Brand/listView');?>">查看全部</a>
 									<?php } ?>
+
+									<?php if($this->input->get('showall') == 'yes'){?>
+									<input type="hidden" name="showall" value="yes">
+									<?php } ?>
 								</form>
 							</div>
 							<br>
@@ -93,7 +97,9 @@
 												<thead>
 													<tr>
 														<th><?php echo $this->lang->line('TEXT_LOGO');?></th>
-														<th><?php echo $this->lang->line('TEXT_NAME_EN');?></th>
+														<th><a href="<?php echo $orderBrand;?>"><?php echo $this->lang->line('TEXT_NAME_EN');?></a><?php if(!empty($getInfo['brandEn'])){?>
+															<b class="arrow icon-angle-<?php echo $this->input->get('brandEn') == 'asc' ? 'up' : 'down';?>"></b>
+															<?php }?></th>
 														<th><?php echo $this->lang->line('TEXT_NAME_ZH');?></th>
 														<th><?php echo $this->lang->line('TEXT_PIC_URL');?></th>
 														<th style="width:200px;"><?php echo $this->lang->line('TEXT_DESCRIPTION');?></th>

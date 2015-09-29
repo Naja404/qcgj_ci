@@ -157,7 +157,7 @@
 																</span>
 																&nbsp;
 																&nbsp;
-																<a style="color:red;" onclick="">
+																<a style="color:red;" onclick="delComment('<?php echo $v->commentId;?>');">
 																	<i class="icon-edit bigger-120">删除</i>
 																</a>
 															</div>
@@ -245,6 +245,26 @@
 						if (data.status == '0') {
 							$("#cid_"+commentId).html(data.spanDiv);
 							$("#cidTd_"+commentId).html(data.tdDiv);
+						}else{
+							alert(data.msg);
+						}
+						
+					}
+				});
+			}
+
+			function delComment(commentId){
+				if (!confirm("是否确认删除该条评论数据?")) {
+					return false;
+				}
+
+				$.ajax({
+					type:"POST",
+					url:"<?php echo site_url('Approve/delComment');?>",
+					data:{commentId:commentId},
+					success:function(data){
+						if (data.status == '0') {
+							window.location.reload();
 						}else{
 							alert(data.msg);
 						}

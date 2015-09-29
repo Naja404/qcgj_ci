@@ -97,7 +97,7 @@
 											</span>
 											<?php } ?>
 											<input type="file" name="brandLogo" id="brandLogo" />
-											<input type="hidden" name="brandLogoPath" value="<?php echo $detail->brandInfo->logo_url;?>">
+											<input type="hidden" name="brandLogoPath" value="<?php echo @$detail->brandInfo->logo_url;?>">
 										</div>
 									</div>
 

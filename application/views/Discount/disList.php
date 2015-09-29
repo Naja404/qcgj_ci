@@ -97,6 +97,9 @@
 										<option value="normal" <?php echo 'normal' == $this->input->get('expStat') ? 'selected' : '' ;?>>未过期</option>
 										<option value="over" <?php echo 'over' == $this->input->get('expStat') ? 'selected' : '' ;?>>已过期</option>
 									</select>
+									<?php if(!empty($getInfo['brandEn'])){?>
+									<input type="hidden" name="brandEn" value="<?php echo @$this->input->get('brandEn') == 'asc' ? 'asc' : 'desc';?>">
+									<?php }?>
 									<button type="submit"><?php echo $this->lang->line('BTN_SEARCH');?></button>
 								</form>
 								<br>
@@ -112,9 +115,14 @@
 														<th width="30px;">类型</th>
 														<th width="85px;">有效期开始</th>
 														<th width="85px;">有效期结束</th>	
-														<th >所属品牌</th>
+														<th width="85px;"><a href="<?php echo $orderBrand;?>">品牌英文</a><?php if(!empty($getInfo['brandEn'])){?>
+															<b class="arrow icon-angle-<?php echo $this->input->get('brandEn') == 'asc' ? 'up' : 'down';?>"></b>
+															<?php }?></th>
+														<th width="85px;">品牌中文</th>
 														<th width="70px;">所属分类</th>
 														<th>描述</th>
+														<th>更新时间</th>
+														<th>操作人</th>
 														<th width="130px;"><?php echo $this->lang->line('TEXT_OPERATION');?></th>
 													</tr>
 												</thead>
@@ -130,9 +138,12 @@
 														<td width="50px;"><?php echo $this->lang->line('TEXT_DISCOUNT_TYPE_'.$v['type']);?></td>
 														<td><?php echo $v['begin_date'];?></td>
 														<td><?php echo $v['end_date'];?></td>
-														<td><?php echo $v['brand'];?></td>
+														<td><?php echo @$v['brand_name_en'];?></td>
+														<td><?php echo @$v['brand_name_zh'];?></td>
 														<td><?php echo $v['category_name'];?></td>
 														<td><?php echo $v['discount_desc'];?></td>
+														<td><?php echo $v['update_time'];?></td>
+														<td><?php echo @$v['oper'];?></td>
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
 																<a href="<?php echo base_url('Discount/editDis').'?discountId='.$v['id'].'&brandId='.$v['tb_brand_id'];?>">

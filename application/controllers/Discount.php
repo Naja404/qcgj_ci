@@ -23,11 +23,14 @@ class Discount extends WebBase {
 	 *
 	 */
 	public function disList(){
+
 		$this->outData['pageTitle'] = $this->lang->line('TITLE_DISCOUNT_LIST');
 
 		$where = $this->_getDisListWhere();
 
-		$disList = $this->DiscountModel->getDiscountList($this->p, $where);
+		$order = $this->_getDisListOrder();
+
+		$disList = $this->DiscountModel->getDiscountList($this->p, $where, $order);
 
 		$this->outData['list'] = $disList['list'];
 
@@ -36,6 +39,10 @@ class Discount extends WebBase {
 		$this->outData['brandCate'] = $this->DiscountModel->getBrandCate();
 
 		$this->outData['disType'] = config_item('DISCOUNT_TYPE');
+
+		$this->outData['orderBrand'] = $this->_getOrderBrandUrl();
+
+		$this->outData['getInfo'] = $this->input->get();
 
 		$this->load->view('Discount/disList', $this->outData);
 	}
@@ -221,7 +228,7 @@ class Discount extends WebBase {
 
 		$where = array();
 
-		$where[] = " is_delete = 0 ";
+		$where[] = " audit = 1 AND is_delete = 0 ";
 		$reqData = $this->input->get();
 
 		if (isset($reqData['title']) && !empty($reqData['title'])) $where[] = " name_zh LIKE '%".addslashes($reqData['title'])."%' ";
@@ -237,5 +244,44 @@ class Discount extends WebBase {
 		$whereStr = " WHERE ".implode(" AND ", $where);
 
 		return $whereStr;
+	}
+
+	/**
+	 * 获取折扣列表 排序条件
+	 *
+	 */
+	private function _getDisListOrder(){
+		
+		$order = ' ORDER BY create_time DESC ';
+
+		$reqData = $this->input->get();
+
+		if (isset($reqData['brandEn']) && in_array($reqData['brandEn'], array('asc', 'desc'))) {
+
+			if ($reqData['brandEn'] == 'asc') {
+				$order = ' ORDER BY brand_name_en ASC ';
+			}
+
+			if ($reqData['brandEn'] == 'desc') {
+				$order = ' ORDER BY brand_name_en DESC ';
+			}
+		}
+
+		return $order;
+	}
+
+	/**
+	 * 获取品牌排序url
+	 *
+	 */
+	private function _getOrderBrandUrl(){
+
+		$uri = $_SERVER['REQUEST_URI'];
+		$reqData = $this->input->get();
+
+		$reqData['brandEn'] = @$reqData['brandEn'] == 'asc' ? 'desc' : 'asc';
+		$url = uri_param_url($reqData, base_url('Discount/disList'));
+
+		return $url;
 	}
 }

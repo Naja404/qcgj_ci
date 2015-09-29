@@ -17,6 +17,42 @@ class ShopModel extends CI_Model {
 	}
 
 	/**
+	 * 添加门店
+	 * @param array $reqData 请求数据
+	 */
+	public function addShop($reqData = array()){
+		if (!isset($reqData['brandId']) || empty($reqData['brandId'])) return $this->lang->line('ERR_ADDSHOP_BRNAD_NAME');
+
+		if (!isset($reqData['shopId']) || empty($reqData['shopId'])) return $this->lang->line('ERR_ADDSHOP_SHOP_NAME');
+
+		if (!isset($reqData['floor']) || empty($reqData['floor'])) return $this->lang->line('ERR_ADDSHOP_FLOOR');
+
+		$where = array(
+				'tb_brand_id' => $reqData['brandId'],
+				'tb_mall_id'  => $reqData['shopId'],
+			);
+
+		$queryRes = $this->db->get_where(tname('brand_mall'), $where)->result();
+
+		if (count($queryRes) > 0) return $this->lang->line('ERR_ADDSHOP_EXISTS');
+
+		$add = array(
+				'id'           => makeUUID(),
+				'tb_brand_id'  => $reqData['brandId'],
+				'tb_mall_id'   => $reqData['shopId'],
+				'create_time' => currentTime(),
+				'update_time'  => currentTime(),
+				'pic_url'      => 'uploadtemp/mall/default_shop.jpg',
+				'thumb_url'    => 'uploadtemp/mall/default_shop_thumb.jpg',
+				'address'      => $reqData['floor'],
+			);
+
+		$insertStatus = $this->db->insert(tname('brand_mall'), $add);
+
+		return $insertStatus ? true : $this->lang->line('ERR_ADDSHOP_FAIL');
+	}
+
+	/**
 	 * 删除门店
 	 * @param string $shopId 门店id
 	 */
@@ -27,6 +63,45 @@ class ShopModel extends CI_Model {
 
 		return $this->db->where($where)->delete(tname('brand_mall'));
 	}
+
+	/**
+	 * 搜索门店
+	 * @param array $reqData 请求数据
+	 * @param string $outType 输出类型
+	 */
+	public function searchShop($reqData = array(), $outType = 'html'){
+		$where = array(
+				'level'  => (int)$reqData['type'],
+				'status' => 1,
+			);
+
+		$queryRes = $this->db->group_start()
+							 ->like('name_zh', $reqData['name'])
+							 ->or_like('address', $reqData['name'])
+							 ->group_end()
+							 ->get_where(tname('mall'), $where, 10)->result();
+
+		if ($outType == 'html') {
+			$htmlRes = '';
+			foreach ($queryRes as $k => $v) {
+				
+				if ($k == 0) {
+					$checked = 'checked';
+				}else{
+					$checked = '';
+				}
+
+				$html = '<input type="radio" name="shopId" id="shop_%s" value="%s" %s>&nbsp;&nbsp;<label for="shop_%s">%s(%s)</label><br>';
+				$htmlRes .= sprintf($html, $v->id, $v->id, $checked, $v->id, $v->name_zh, $v->city_name.$v->address);
+			}
+
+			$queryRes = $htmlRes;
+		}
+
+		return $queryRes;
+
+	}
+
 
 	/**
 	 * 获取门店详情

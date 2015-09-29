@@ -10,6 +10,7 @@ $lang = array(
 		'TITLE_DISCOUNT_LIST'       => '折扣审核',
 		
 		'ERR_COMMENT_UPDATE_FAIL'   => '评论审核更新失败',
+		'ERR_COMMENT_DEL_FAIL'	    => '评论删除失败',
 		'ERR_YMT_UPDATE_FAIL'       => '洋码头审核更新失败',
 		'ERR_DISCOUNT_UPDATE_FAIL'  => '折扣审核更新失败',
 		'ERR_DISCOUNT_DEL_FAIL'	    => '折扣删除失败',

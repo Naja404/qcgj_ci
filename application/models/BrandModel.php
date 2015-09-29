@@ -193,8 +193,9 @@ class BrandModel extends CI_Model {
 	 * @param string $where 查询条件
 	 * @param int $p 页数
 	 * @param bool $showAll 显示全部
+	 * @param 
 	 */
-	public function getBrandList($where = NULL, $p = 1, $isCate = false, $showAll = false){
+	public function getBrandList($where = NULL, $p = 1, $isCate = false, $showAll = false, $order = NULL){
 
 		$limit = " LIMIT ".page($p, 25);
 
@@ -221,13 +222,13 @@ class BrandModel extends CI_Model {
 						%s
 						FROM tb_brand AS a
 						LEFT JOIN tb_brand_category as b on b.tb_brand_id = a.`id`
-						 WHERE a.status %s and (b.tb_category_id is null or (a.description is null or a.description = '')) GROUP BY a.id ORDER BY a.create_time DESC %s ";
+						 WHERE a.status %s and (b.tb_category_id is null or (a.description is null or a.description = '')) GROUP BY a.id %s %s ";
 			
-			$queryTotal = $this->db->query(sprintf($sql, $countField, $showStatus, ''))->result();
+			$queryTotal = $this->db->query(sprintf($sql, $countField, $showStatus, $order, ''))->result();
 
 			$pagination = $this->setPagination(site_url('Brand/listView'), count($queryTotal), 25);
 
-			$queryRes = $this->db->query(sprintf($sql, $field, $showStatus, $limit))->result();
+			$queryRes = $this->db->query(sprintf($sql, $field, $showStatus, $order, $limit))->result();
 
 			$returnRes = array(
 					'list'       => $queryRes,
@@ -250,13 +251,13 @@ class BrandModel extends CI_Model {
 					IF(CHAR_LENGTH(oper) = 32, (SELECT name FROM tb_qcgj_role_user WHERE user_id = oper LIMIT 1), oper) AS oper, 
 					status ";
 
-		$sql = "SELECT %s FROM ".tname('brand')." %s %s ";
+		$sql = "SELECT %s FROM ".tname('brand')." %s GROUP BY id %s %s";
 
-		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, 'GROUP BY id ORDER BY create_time DESC '))->result();
+		$queryTotal = $this->db->query(sprintf($sql, 'COUNT(*) AS total', $where, $order, ''))->result();
 
 		$pagination = $this->setPagination(site_url('Brand/listView'), count($queryTotal), 25);
 
-		$sql = sprintf($sql, $field, $where, 'GROUP BY id ORDER BY create_time DESC '.$limit);
+		$sql = sprintf($sql, $field, $where, $order, $limit);
 
 		$queryRes = $this->db->query($sql)->result();
 
@@ -433,17 +434,27 @@ class BrandModel extends CI_Model {
 	/**
 	 * 搜索品牌
 	 * @param string $brandName 品牌名
+	 * @param bool $brandStatus 1显示 0全部
 	 */
-	public function searchBrand($brandName = false){
+	public function searchBrand($brandName = false, $brandStatus = 1){
 		if (!$brandName) return false;
 
-		$cacheRes = $this->cache->get(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName));
+		$cacheRes = $this->cache->get(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName.$brandStatus));
 		
 		if ($cacheRes) return $cacheRes; 
 
+		if ($brandStatus == 1) {
+			$status = array(1);
+		}else{
+			$status = array(0, 1);
+		}
+
 		$list = $this->db->select('id, name_zh, name_en')
+						 ->group_start()
 						 ->like('name_zh', $brandName)
 						 ->or_like('name_en', $brandName)
+						 ->group_end()
+						 ->where_in('status', $status)
 						 ->order_by('name_en, name_zh ASC')
 						 ->limit(20)
 						 ->get(tname('brand'))
@@ -460,11 +471,11 @@ class BrandModel extends CI_Model {
 			array_push($returnList, $tmp);
 		}
 
-		if (count($returnList)) $this->cache->save(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName), $returnList, 3600); 
+		if (count($returnList)) $this->cache->save(config_item('NORMAL_CACHE.SEARCH_BRAND_LIST').md5($brandName.$brandStatus), $returnList, 3600); 
 
 		return $returnList;
 	}
-
+	
 	/**
 	 * 搜索地址
 	 * @param string $address 品牌名
@@ -575,6 +586,7 @@ class BrandModel extends CI_Model {
 				'update_time' => currentTime(),
 				'description' => $reqData['summary'],
 				'oper'        => $this->userInfo->user_id,
+				'status'      => 1,
 			);
 		
 		$insertRes = $this->db->insert(tname('brand'), $brand);

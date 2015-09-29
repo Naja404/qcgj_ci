@@ -143,11 +143,17 @@ class Brand extends WebBase {
 		
 		$isCate = $this->input->get('category') == 'yes' ? true : false;
 
-		$brandList = $this->BrandModel->getBrandList($where, $this->p, $isCate, $showAll);
+		$order = $this->_getListViewOrder($isCate);
+
+		$brandList = $this->BrandModel->getBrandList($where, $this->p, $isCate, $showAll, $order);
 
 		$this->outData['pagination'] = $brandList['pagination'];
 
 		$this->outData['brandList'] = $brandList['list'];
+
+		$this->outData['orderBrand'] = $this->_getOrderBrandUrl();
+
+		$this->outData['getInfo'] = $this->input->get();
 
 		$this->load->view('Brand/listView', $this->outData);
 	}
@@ -393,10 +399,11 @@ class Brand extends WebBase {
 		if (!$this->input->is_ajax_request()) jsonReturn($this->ajaxRes);
 
 		$brandName = $this->input->post('brand');
+		$brandStatus = $this->input->post('status');
 		
 		if (empty($brandName)) jsonReturn($this->ajaxRes); 
 
-		$list = $this->BrandModel->searchBrand($brandName);
+		$list = $this->BrandModel->searchBrand($brandName, $brandStatus);
 
 		$this->ajaxRes = array(
 				'status' => 0,
@@ -750,5 +757,46 @@ class Brand extends WebBase {
 		
 		imagealphamask($sourceImg, $mask);
 		imagepng($sourceImg, $fullPath);
+	}
+
+	/**
+	 * 获取折扣列表 排序条件
+	 *
+	 */
+	private function _getListViewOrder($isCate = false){
+
+		$reqData = $this->input->get();
+
+		$isCate = $isCate ? 'a.' : '';
+
+		$order = ' ORDER BY %screate_time DESC ';
+
+		if (isset($reqData['brandEn']) && in_array($reqData['brandEn'], array('asc', 'desc'))) {
+
+			if ($reqData['brandEn'] == 'asc') {
+				$order = ' ORDER BY %sname_en ASC ';
+			}
+
+			if ($reqData['brandEn'] == 'desc') {
+				$order = ' ORDER BY %sname_en DESC ';
+			}
+		}
+
+		return sprintf($order, $isCate);
+	}
+
+	/**
+	 * 获取品牌排序url
+	 *
+	 */
+	private function _getOrderBrandUrl(){
+
+		$uri = $_SERVER['REQUEST_URI'];
+		$reqData = $this->input->get();
+
+		$reqData['brandEn'] = @$reqData['brandEn'] == 'asc' ? 'desc' : 'asc';
+		$url = uri_param_url($reqData, base_url('Brand/listView'));
+
+		return $url;
 	}
 }

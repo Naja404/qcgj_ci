@@ -52,7 +52,7 @@
 							</li>
 
 							<li>
-								<a href="{:U('Discount/disList')}"><?php echo $this->lang->line('TITLE_DISCOUNT_MANAGER');?></a>
+								<a href="<?php echo base_url('Discount/disList');?>"><?php echo $this->lang->line('TITLE_DISCOUNT_MANAGER');?></a>
 							</li>
 							<li class="active"><?php echo $this->lang->line('TITLE_DISCOUNT_EDIT');?></li>
 						</ul>
@@ -80,6 +80,24 @@
 														<div class="step-pane active" id="step1">
 
 															<form class="form-horizontal" id="editDis-form" method="post" enctype="multipart/form-data" >
+																<div class="form-group">
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="brandZh">品牌中文:</label>
+
+																	<div class="col-xs-12 col-sm-9">
+																		<div class="clearfix">
+																			<input type="text" name="brandZh" id="brandZh" class="col-xs-12 col-sm-6" value="<?php echo $discountDetail->brand_name_zh;?>" disabled >
+																		</div>
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="brandEn">品牌英文:</label>
+
+																	<div class="col-xs-12 col-sm-9">
+																		<div class="clearfix">
+																			<input type="text" name="brandEn" id="brandEn" class="col-xs-12 col-sm-6" value="<?php echo $discountDetail->brand_name_en;?>" disabled>
+																		</div>
+																	</div>
+																</div>
 																<div class="form-group">
 																	<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="discountTitle"><?php echo $this->lang->line('TEXT_DISCOUNT_TITLE');?>:</label>
 

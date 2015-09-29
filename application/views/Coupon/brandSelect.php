@@ -158,7 +158,7 @@
 					$.ajax({
 			      		type:"POST",
 			      		url:"<?php echo site_url('Coupon/searchBrand');?>",
-			      		data:{brand:$("#brandZH").val()},
+			      		data:{brand:$("#brandZH").val(), status:1},
 			      		success:function(data){
 			      			if (data.status != 0) { return false;}
 			      			
