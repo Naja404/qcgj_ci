@@ -198,6 +198,12 @@
 										<table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
 											<tbody>
 												<tr>
+													<td style="width:100px;">所属品牌
+													</td>
+													<td id="modal_brand_name">
+													</td>
+												</tr>
+												<tr>
 													<td style="width:100px;">
 														优惠券标题
 													</td>
@@ -427,6 +433,7 @@
 					data:{couponId:couponId},
 					success:function(data){
 						if (data.status == '0') {
+							$('#modal_brand_name').html(data.data.brandName.name_zh+' '+data.data.brandName.name_en);
 							$('#modal_name').html(data.data.name);
 							$('#modal_type').html(data.data.typeHTML);
 							$('#modal_price').html(data.data.price);

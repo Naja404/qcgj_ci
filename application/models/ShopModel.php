@@ -37,14 +37,14 @@ class ShopModel extends CI_Model {
 		if (count($queryRes) > 0) return $this->lang->line('ERR_ADDSHOP_EXISTS');
 
 		$add = array(
-				'id'           => makeUUID(),
-				'tb_brand_id'  => $reqData['brandId'],
-				'tb_mall_id'   => $reqData['shopId'],
+				'id'          => makeUUID(),
+				'tb_brand_id' => $reqData['brandId'],
+				'tb_mall_id'  => $reqData['shopId'],
 				'create_time' => currentTime(),
-				'update_time'  => currentTime(),
-				'pic_url'      => 'uploadtemp/mall/default_shop.jpg',
-				'thumb_url'    => 'uploadtemp/mall/default_shop_thumb.jpg',
-				'address'      => $reqData['floor'],
+				'update_time' => currentTime(),
+				'pic_url'     => 'uploadtemp/mall/default_shop.jpg',
+				'thumb_url'   => 'uploadtemp/mall/default_shop_thumb.jpg',
+				'address'     => $reqData['floor'],
 			);
 
 		$insertStatus = $this->db->insert(tname('brand_mall'), $add);
